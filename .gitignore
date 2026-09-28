@@ -1,0 +1,8 @@
+data/
+QuantiPhy/
+results/*_raw/
+results/cache/
+results/logs/
+__pycache__/
+*.pyc
+.venv/
