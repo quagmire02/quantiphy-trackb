@@ -13,7 +13,9 @@ from pipeline.data import load_split  # noqa: E402
 from pipeline.video import read_frames  # noqa: E402
 
 out, ids = sys.argv[1], sys.argv[2:]
-paths = load_split("validation").drop_duplicates("video_id").set_index("video_id")["video_path"]
+import pandas as pd  # noqa: E402
+
+paths = pd.concat([load_split("validation"), load_split("test")]).drop_duplicates("video_id").set_index("video_id")["video_path"]
 rows = []
 for vid in ids:
     fr = read_frames(paths[vid])

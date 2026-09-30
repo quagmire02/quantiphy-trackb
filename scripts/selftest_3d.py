@@ -52,8 +52,9 @@ cases = [
      [fa], ["ball a"], 100 * float(np.linalg.norm(PA[45] - PA[15]))),
 ]
 ok = True
+all_feats = {"ball a": fa, "ball b": fb}
 for name, q, feats, keys, truth in cases:
-    out = solve_3d({**base, **q}, fa, feats, ("ball a", keys), depth, FPS, T, W, H)
+    out = solve_3d({**base, **q}, all_feats, ("ball a", keys), depth, FPS, T, W, H)
     err = out["value"] / truth - 1
     ok &= abs(err) < 0.02
     print(f"{name:32s} truth {truth:8.4f}  solved {out['value']:8.4f}  err {err:+.2%}  f {out['f_px']:.1f} (true {F_TRUE})")
@@ -61,8 +62,22 @@ for name, q, feats, keys, truth in cases:
 # Speed prior instead of size prior: calibrate f from ball A's average speed.
 spd = {"prior_value": float(np.linalg.norm(vA)), "prior_unit": "m/s", "ref_quantity": "speed", "ref_time": None,
        "target_quantity": "diameter", "target_time": None, "target_unit": "m"}
-out = solve_3d(spd, fa, [fb], ("ball a", ["ball b"]), depth, FPS, T, W, H)
+out = solve_3d(spd, all_feats, ("ball a", ["ball b"]), depth, FPS, T, W, H)
 err = out["value"] / 0.30 - 1
 ok &= abs(err) < 0.02
 print(f"{'speed prior -> diameter of B':32s} truth   0.3000  solved {out['value']:8.4f}  err {err:+.2%}  f {out['f_px']:.1f}")
+
+# Ball C (diameter 0.40 m) has NO stated distance; MoGe-like distances with an arbitrary global scale
+# (x0.6, as MoGe's metric scale is unreliable) transfer ball B's stated distance to it via the ratio.
+PC = np.tile([-0.8, 0.3, 10.0], (T, 1))
+fc = render(PC, 0.20)
+moge = {fi: {"ball a": 0.6 * dist(PA, fi), "ball b": 0.6 * dist(PB, fi), "ball c": 0.6 * dist(PC, fi)}
+        for fi in (15, 30, 45)}
+feats_c = {**all_feats, "ball c": fc}
+q = {"target_quantity": "diameter", "target_time": None, "target_unit": "m"}
+out = solve_3d({**base, **q}, feats_c, ("ball a", ["ball c"]), depth, FPS, T, W, H, moge=moge)
+err = out["value"] / 0.40 - 1
+ok &= abs(err) < 0.02 and out["moge_used"]
+print(f"{'C without distance (MoGe ratio)':32s} truth   0.4000  solved {out['value']:8.4f}  err {err:+.2%}  "
+      f"moge_used {out['moge_used']}")
 print("PASS" if ok else "FAIL")

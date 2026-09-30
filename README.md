@@ -44,7 +44,13 @@ cd /mnt/d/quantiphy
 | submission_v1.csv | 2346 / 896 / 47 | first full run | valid; ~66 absurd rows (gravity scales, speedboat, depth typo) |
 | submission_v2.csv | 2147 / 1084 / 58 | parse fix, depth-outlier filter, accel relative-SE check, person-height guard, VLM unit conversion | valid; 30 implausible rows, 14-row regression |
 | submission_v3.csv | 2184 / 1024 / 81 | 5-point accel check, "^2" parser fix, free-fall guard; G1 item-only in 3D (mistake) | valid; ~20 absurd 3D rows came back |
-| **submission_v4.csv** | 2140 / 1068 / 81 | v3 with G1 clip-level in 3D again | expected best: v4 >= v3 >= v2 |
+| submission_v4.csv | 2140 / 1068 / 81 | v3 with G1 clip-level in 3D again | **leaderboard 0.555** (v3: 0.553) |
+| submission_v5.csv | 2407 / 808 / 74 | 3D: MoGe-2 relative-depth transfer for objects without a stated distance | valid; name-match misses, invented depth motion, regions |
+| submission_v6.csv | 2213 / 999 / 77 | fuzzy depth-name match, single transferred anchor + agreement checks, region rule, vehicle guard | better than v5; bicycle speeds 17-88 m/s regression |
+| **submission_v6_1.csv** | 2197 / 1015 / 77 | v6 + fixed transferred distance for motion when size-scaling spans > 2x | 39 rows vs v6, as predicted by the reviewer; val 58.5 |
+
+Validation (58.5 for v6.1) partly reflects rules designed after looking at validation failures; the
+124-item overlap sample: v4 0.570, v5 0.579, v6 0.607.
 
 Each was built by `scripts/run_test.sh` (v1) / `scripts/run_test_v2.sh <solutions> <name>` (v2+) and audited by an
 independent reviewer agent (format, alignment, provenance reproduction, plausibility). On the 124 test items that

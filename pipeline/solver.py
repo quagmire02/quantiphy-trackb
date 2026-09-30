@@ -21,6 +21,13 @@ SETTINGS = {
     "accel_half_s": 0.35,     # half-window (s) for instantaneous acceleration fits
     "min_ref_motion_px": 20,  # a speed/acceleration prior needs the reference to actually move
     "max_accel_rel_se": 0.25,  # acceleration prior: reference acceleration must be known to +-25%
+    "accel_segment": True,     # acceleration prior: use the longest constant-acceleration phase
+    "segment_min_s": 0.2,      # shortest phase considered (s)
+    "segment_max_rel_se": 0.15,  # phase must pin the acceleration down to +-15% (stricter: many candidates)
+    "segment_max_resid_px": 3.0,  # ...and every tracked point must lie within this of the parabola
+    "segment_resid_frac": 0.015,  # ...or within this fraction of the phase's extent (large motions)
+    "segment_noise_k": 4.0,    # ...or within this many times the track's own noise level
+    "segment_min_inliers": 0.9,  # ...for at least this share of the phase's points (glitches allowed)
 }
 
 
@@ -92,6 +99,69 @@ class Track:
         acc, var = np.array(acc), np.array(var)
         mag = float(np.linalg.norm(acc))
         return float(np.sqrt((acc ** 2 * var).sum()) / mag ** 2) if mag > 0 else np.inf
+
+    def accel_segment(self, a: float, b: float, contain: float | None = None) -> tuple[float, float, float, float]:
+        """Constant-acceleration phase inside [a, b]: the longest contiguous run of tracked frames that
+        one parabola fits (robust fit: >= segment_min_inliers of the points within the noise-adaptive
+        tolerance, relative SE of the acceleration <= segment_max_rel_se), optionally containing `contain`.
+        Real references often accelerate only part of the time (rest -> fall -> landing; tossed and
+        caught twice; flight then bounce), so a whole-window fit fails although one phase is clean.
+        Returns (acceleration magnitude, relative SE, start, end)."""
+        sel = np.flatnonzero((self.t >= a - 1e-6) & (self.t <= b + 1e-6))
+        n = len(sel)
+        if n < 5:
+            raise SolveError(f"only {n} tracked frames in [{a:.2f}, {b:.2f}]s")
+        t, p = self.t[sel], self.pts[sel]
+        # Shortest phase: segment_min_s in *samples* (long clips are tracked on a strided subset, so
+        # the sample spacing can be several video frames), never longer than the window itself.
+        spacing = float(np.median(np.diff(t)))
+        min_len = max(5, min(int(np.ceil(SETTINGS["segment_min_s"] / spacing)), n))
+        # Tracking noise of this object, from the robust spread of second differences (for i.i.d.
+        # position noise sigma, var(second difference) = 6 sigma^2); jittery masks get more tolerance.
+        d2 = np.diff(p, 2, axis=0)
+        sigma = float(np.max(1.4826 * np.median(np.abs(d2 - np.median(d2, 0)), 0) / np.sqrt(6))) if len(d2) >= 3 else 0.0
+        tol_px = max(SETTINGS["segment_max_resid_px"], SETTINGS["segment_noise_k"] * sigma)
+        step = max(1, n // 40)  # bound the search on long tracks
+        best = None
+        for length in range(n, min_len - 1, -step):
+            for i in range(0, n - length + 1, step):
+                tt, pp = t[i:i + length], p[i:i + length]
+                if contain is not None and not tt[0] - 1e-6 <= contain <= tt[-1] + 1e-6:
+                    continue
+                if np.linalg.norm(pp.max(0) - pp.min(0)) < SETTINGS["min_ref_motion_px"]:
+                    continue
+                fit = self._robust_parabola(tt, pp, max(tol_px, SETTINGS["segment_resid_frac"]
+                                                        * float(np.linalg.norm(pp.max(0) - pp.min(0)))))
+                if fit is not None and fit[1] <= SETTINGS["segment_max_rel_se"]:
+                    if best is None or fit[1] < best[1]:
+                        best = (fit[0], fit[1], float(tt[0]), float(tt[-1]))
+            if best is not None:  # longest valid length found; keep the most precise run of that length
+                return best
+        raise SolveError("no constant-acceleration phase in the reference's track")
+
+    @staticmethod
+    def _robust_parabola(t: np.ndarray, p: np.ndarray, tol: float):
+        """Parabola fit tolerant to tracking glitches: fit, drop points farther than `tol` px, refit
+        on the rest. Valid if at least segment_min_inliers of the points are inliers.
+        Returns (acceleration magnitude, relative SE) or None."""
+        tc = t - t.mean()
+        keep = np.ones(len(t), bool)
+        for _ in range(2):
+            if keep.sum() < 5:
+                return None
+            coefs = [np.polyfit(tc[keep], p[keep, k], 2) for k in range(p.shape[1])]
+            res = np.linalg.norm(np.stack([p[:, k] - np.polyval(c, tc) for k, c in enumerate(coefs)], 1), axis=1)
+            keep = res <= tol
+        if keep.mean() < SETTINGS["segment_min_inliers"] or keep.sum() < 5:
+            return None
+        acc, var = [], []
+        for k in range(p.shape[1]):
+            coef, cov = np.polyfit(tc[keep], p[keep, k], 2, cov=True)
+            acc.append(2 * coef[0])
+            var.append(4 * cov[0, 0])
+        acc, var = np.array(acc), np.array(var)
+        mag = float(np.linalg.norm(acc))
+        return (mag, float(np.sqrt((acc ** 2 * var).sum()) / mag ** 2)) if mag > 0 else None
 
     def check_accelerating(self, a: float, b: float):
         """An acceleration prior sets the scale only if the reference's acceleration is measured
@@ -202,6 +272,12 @@ def meters_per_pixel(rec: dict, ref: np.ndarray, fps: float, duration: float) ->
         a, b = tw if tw else (0.0, duration)
         if q == "speed":
             px = tr.velocity_at(a) if _is_instant(tw) else tr.mean_speed(a, b)
+        elif SETTINGS["accel_segment"]:
+            # "at t": a phase containing t within +-0.75 s; a window / no time: any phase inside it.
+            if _is_instant(tw):
+                px = tr.accel_segment(a - 0.75, a + 0.75, contain=a)[0]
+            else:
+                px = tr.accel_segment(a, b)[0]
         else:
             tr.check_accelerating(*accel_check_window(tw, a, b))
             px = tr.accel_at(a) if _is_instant(tw) else tr.accel_window(a, b)

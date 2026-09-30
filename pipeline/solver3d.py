@@ -8,6 +8,7 @@ Z = d / sqrt(1 + ((u-cx)^2 + (v-cy)^2) / f^2).
 f is calibrated per clip so the reference object reproduces the prior (its size, speed or
 acceleration); every target quantity is then computed in metres from its 3D track.
 """
+import difflib
 import re
 
 import numpy as np
@@ -22,6 +23,9 @@ SETTINGS = {
     "depth_interp": "linear",  # >=2 timed distances: "linear" in time, or "size" (apparent-size scaling)
     "f_range": (0.1, 30.0),    # search range for f, in multiples of the frame width
     "depth_outlier_factor": 20.0,  # distances this far from the clip's median distance are typos
+    "moge_transfer": True,     # objects without a stated distance get one via MoGe depth ratios
+    "max_anchor_spread": 2.0,  # transfer: known objects / frames must agree within this factor
+    "fuzzy_name_match": 0.85,  # letters-only similarity to match 'whiteboard' with 'white_board'
 }
 
 _NUM = r"\d*\.?\d+"
@@ -58,10 +62,19 @@ def parse_depth(text) -> list[dict]:
     return out
 
 
+def _compacts(text: str) -> set[str]:
+    """Letters-only spellings, in the given and in sorted word order ('white_board' -> whiteboard, boardwhite)."""
+    words = [re.sub(r"[^a-z]", "", w) for w in re.split(r"[\s_]+", text.lower().split("#")[0])]
+    words = [w for w in words if w and w not in _STOP]
+    return {"".join(words), "".join(sorted(words))}
+
+
 def match_depth(entries: list[dict], phrase: str) -> list[dict]:
     """Depth entries whose name best matches an object phrase (all timestamps of that name).
     Jaccard overlap, so 'ball b' prefers 'ball_b' over 'ball_a' and 'left tennis ball' prefers
-    'left_tennis_ball' over 'right_tennis_ball'."""
+    'left_tennis_ball' over 'right_tennis_ball'. If nothing overlaps, fall back to comparing
+    letters-only spellings, so compound words and typos still match: 'whiteboard' ~ 'white_board',
+    'shoppingbag' ~ 'shopping_bag', 'soccor ball' ~ 'soccer_ball'."""
     want = _tokens(phrase.split("#")[0])
     best, best_score = None, 0.0
     for name in dict.fromkeys(e["name"] for e in entries):
@@ -71,7 +84,15 @@ def match_depth(entries: list[dict], phrase: str) -> list[dict]:
         score = len(want & toks) / len(want | toks)
         if score > best_score:
             best, best_score = name, score
-    return [e for e in entries if e["name"] == best] if best_score >= 0.5 else []
+    if best_score >= 0.5:
+        return [e for e in entries if e["name"] == best]
+    best, best_score = None, 0.0
+    for name in dict.fromkeys(e["name"] for e in entries):
+        score = max(difflib.SequenceMatcher(None, a, b).ratio()
+                    for a in _compacts(phrase) for b in _compacts(name))
+        if score > best_score:
+            best, best_score = name, score
+    return [e for e in entries if e["name"] == best] if best_score >= SETTINGS["fuzzy_name_match"] else []
 
 
 class Camera:
@@ -88,8 +109,9 @@ class Camera:
 class Object3D:
     """Tracked object + its distance anchors; yields metric 3D tracks for a given camera."""
 
-    def __init__(self, feats: np.ndarray, anchors: list[dict], fps: float):
-        self.feats, self.anchors, self.fps = feats, anchors, fps
+    def __init__(self, feats: np.ndarray, anchors: list[dict], fps: float, motion: bool = False):
+        """motion: the object's speed/acceleration/position is asked (not only its size)."""
+        self.feats, self.anchors, self.fps, self.motion = feats, anchors, fps, motion
         self.present = np.flatnonzero(feats[:, F["present"]] == 1)
         if len(self.present) == 0:
             raise SolveError("object never segmented")
@@ -119,8 +141,18 @@ class Object3D:
             d = np.where(self.t > ts[-1], ds[-1] + slope * (self.t - ts[-1]), d)
             return np.maximum(d, 1e-3)
         # Apparent-size scaling (distance inversely proportional to size), averaged over anchors.
-        est = [d0 * self.scale[self._nearest(t0)] / self.scale for t0, d0 in timed]
-        return np.mean(est, axis=0)
+        est = np.mean([d0 * self.scale[self._nearest(t0)] / self.scale for t0, d0 in timed], axis=0)
+        # A MoGe-transferred distance scaled by apparent size explodes when the object is partly
+        # masked or entering the frame (a bicycle went 44 m -> 123 m, speeds 17-88 m/s): for motion
+        # quantities keep the transferred distance fixed when the scaled distances span > 2x.
+        if self.motion and any(a.get("derived") for a in self.anchors) and est.max() / est.min() > 2.0:
+            return np.full(len(self.t), float(timed[0][1]))
+        return est
+
+    def distance_at(self, fi: int) -> float:
+        """Euclidean camera distance at frame index fi (nan if the object is not tracked there)."""
+        pos = np.flatnonzero(self.present == fi)
+        return float(self.distances()[pos[0]]) if len(pos) else float("nan")
 
     def track(self, cam: Camera) -> Track:
         z = cam.z_from_distance(self.distances(), self.u, self.v)
@@ -140,6 +172,39 @@ class Object3D:
         at_anchor = np.isin(idx, timed)
         sel = at_anchor if at_anchor.any() else np.ones(len(idx), bool)
         return float(np.median(px[keep][sel] * z[sel] / cam.f))
+
+
+def transfer_anchors(key: str, anchored: dict[str, Object3D], moge: dict[int, dict[str, float]],
+                     fps: float) -> list[dict]:
+    """One distance anchor for an object without a stated distance. Per frame with MoGe distances:
+    d_key = d_known(frame) * moge_key / moge_known for every object with a stated distance.
+    Frames whose estimates disagree by more than max_anchor_spread are dropped, and so is the whole
+    transfer if the per-frame values disagree that much across frames. The result is ONE anchor at
+    the frame whose estimate is the median, so depth changes come from apparent size, not from MoGe
+    frame-to-frame noise (joining noisy per-frame estimates invented motion)."""
+    per_frame = []
+    for fi, dists in sorted(moge.items()):
+        if key not in dists:
+            continue
+        est = []
+        for k, obj in anchored.items():
+            if k == key or k not in dists:
+                continue
+            try:
+                d_known = obj.distance_at(fi)
+            except SolveError:  # one unusable known object must not sink the transfer
+                continue
+            if np.isfinite(d_known) and d_known > 0:
+                est.append(d_known * dists[key] / dists[k])
+        if est and max(est) / min(est) <= SETTINGS["max_anchor_spread"]:
+            per_frame.append((fi, float(np.median(est))))
+    if not per_frame:
+        return []
+    ds = np.array([d for _, d in per_frame])
+    if ds.max() / ds.min() > SETTINGS["max_anchor_spread"]:
+        return []
+    fi, d = per_frame[int(np.argmin(np.abs(ds - np.median(ds))))]
+    return [{"name": f"moge:{key}", "tokens": set(), "t": fi / fps, "d": d, "derived": True}]
 
 
 def quantity_3d(q: str, tw, objs: list[Object3D], cam: Camera, duration: float) -> float:
@@ -194,8 +259,10 @@ def calibrate_f(rec: dict, ref: Object3D, width: int, height: int, duration: flo
     return float(brentq(lambda f: np.log(predicted(f) / prior_si), grid[i], grid[i + 1], xtol=1e-3))
 
 
-def solve_3d(rec: dict, ref_feats: np.ndarray, target_feats: list[np.ndarray], keys: tuple[str, list[str]],
-             depth_text, fps: float, n_frames: int, width: int, height: int) -> dict:
+def solve_3d(rec: dict, feats: dict[str, np.ndarray], keys: tuple[str, list[str]], depth_text, fps: float,
+             n_frames: int, width: int, height: int, moge: dict[int, dict[str, float]] | None = None) -> dict:
+    """feats: every tracked object of the clip (key -> per-frame features); moge: frame -> {key: MoGe
+    distance} (optional) used to give objects without a stated distance one via transfer_anchors()."""
     duration = (n_frames - 1) / fps
     entries = parse_depth(depth_text)
     if not entries:
@@ -204,11 +271,28 @@ def solve_3d(rec: dict, ref_feats: np.ndarray, target_feats: list[np.ndarray], k
     if rec["ref_quantity"] == "acceleration":  # same sanity check as 2D, on the pixel track
         tw = _resolve(rec["ref_time"], duration)
         a, b = tw if tw else (0.0, duration)
-        Track.from_feats(ref_feats, fps).check_accelerating(*accel_check_window(tw, a, b))
-    ref = Object3D(ref_feats, match_depth(entries, ref_key), fps)
+        Track.from_feats(feats[ref_key], fps).check_accelerating(*accel_check_window(tw, a, b))
+
+    anchored = {}
+    for k, f in feats.items():
+        if match_depth(entries, k):
+            try:
+                anchored[k] = Object3D(f, match_depth(entries, k), fps)
+            except SolveError:
+                pass
+
+    def make(k: str, quantity: str) -> Object3D:
+        anchors = match_depth(entries, k)
+        if not anchors and moge and SETTINGS["moge_transfer"]:
+            anchors = transfer_anchors(k, anchored, moge, fps)
+        return Object3D(feats[k], anchors, fps, motion=quantity not in SIZE_QUANTITIES)
+
+    ref = make(ref_key, rec["ref_quantity"])
     f = calibrate_f(rec, ref, width, height, duration)
     cam = Camera(width, height, f)
-    objs = [Object3D(tf, match_depth(entries, k), fps) for tf, k in zip(target_feats, tgt_keys)]
+    objs = [make(k, rec["target_quantity"]) for k in tgt_keys]
     value_si = quantity_3d(rec["target_quantity"], _resolve(rec["target_time"], duration), objs, cam, duration)
+    derived = any(a.get("derived") for o in [ref] + objs for a in o.anchors)
     return {"value": float(from_si(value_si, rec["target_unit"])), "f_px": f, "f_over_w": f / width,
-            "ref_depth": ref.anchors[0]["name"], "tgt_depth": ",".join(o.anchors[0]["name"] for o in objs)}
+            "ref_depth": ref.anchors[0]["name"], "tgt_depth": ",".join(o.anchors[0]["name"] for o in objs),
+            "moge_used": derived}

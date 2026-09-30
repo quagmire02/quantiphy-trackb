@@ -67,7 +67,8 @@ def main():
             for video_id, group in tqdm(todo.groupby("video_id", sort=False), desc="videos"):
                 frames = idx = None
                 if args.mode == "video":
-                    all_frames = read_frames(group["video_path"].iloc[0])
+                    # Downscale while decoding: a long 4K clip decoded at full size exceeds WSL's RAM.
+                    all_frames = read_frames(group["video_path"].iloc[0], longest=2 * args.longest)
                     idx = sample_indices(len(all_frames), args.max_frames)
                     frames = resize_longest(all_frames[idx], args.longest)
                     total = len(all_frames)

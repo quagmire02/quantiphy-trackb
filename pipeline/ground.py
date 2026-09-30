@@ -44,13 +44,17 @@ def head_noun(phrase: str) -> str:
     return words[-1] if words else ""
 
 
+_AREA = lambda b: (b[2] - b[0]) * (b[3] - b[1])  # noqa: E731
 _PICK = [  # contrastive modifier -> how to choose among candidate boxes
-    (r"\b(big|bigger|biggest|large|larger|largest)\b", lambda b: (b[2] - b[0]) * (b[3] - b[1]), max),
-    (r"\b(small|smaller|smallest|little|tiny)\b", lambda b: (b[2] - b[0]) * (b[3] - b[1]), min),
+    (r"\b(big|bigger|biggest|large|larger|largest)\b", _AREA, max),
+    (r"\b(small|smaller|smallest|little|tiny)\b", _AREA, min),
     (r"\bleft\b", lambda b: b[0] + b[2], min),
     (r"\bright\b", lambda b: b[0] + b[2], max),
     (r"\b(top|upper|higher)\b", lambda b: b[1] + b[3], min),
     (r"\b(bottom|lower)\b", lambda b: b[1] + b[3], max),
+    # depth words: farther objects look smaller
+    (r"\b(back|behind|far|farther|further|rear|distant|background)\b", _AREA, min),
+    (r"\b(front|near|nearer|closer|foreground)\b", _AREA, max),
 ]
 
 
@@ -59,6 +63,53 @@ def pick_by_modifier(phrase: str, boxes: list) -> list | None:
         if re.search(pat, phrase.lower()):
             return choose(boxes, key=key)
     return None
+
+
+# Colour words -> HSV rule (OpenCV: H 0-179, S and V 0-255), evaluated per pixel.
+_COLOURS = {
+    "black": lambda h, s, v: v < 60,
+    "white": lambda h, s, v: (s < 45) & (v > 175),
+    "grey": lambda h, s, v: (s < 45) & (v >= 60) & (v <= 200),
+    "red": lambda h, s, v: ((h < 8) | (h > 170)) & (s > 90) & (v > 60),
+    "orange": lambda h, s, v: (h >= 8) & (h < 20) & (s > 90) & (v > 170),  # brighter than brown
+    "brown": lambda h, s, v: (h >= 5) & (h < 25) & (s > 60) & (v > 30) & (v <= 170),
+    "yellow": lambda h, s, v: (h >= 20) & (h < 35) & (s > 80) & (v > 90),
+    "green": lambda h, s, v: (h >= 35) & (h < 85) & (s > 50) & (v > 40),
+    "blue": lambda h, s, v: (h >= 85) & (h < 130) & (s > 50) & (v > 40),
+    "purple": lambda h, s, v: (h >= 130) & (h < 155) & (s > 50) & (v > 40),
+    "pink": lambda h, s, v: (((h >= 145) & (h <= 179)) | (h < 8)) & (s > 30) & (s < 160) & (v > 150),
+}
+_COLOUR_WORDS = {"gray": "grey", "silver": "grey", "violet": "purple", "golden": "yellow", "gold": "yellow"}
+
+
+def colour_word(phrase: str) -> str | None:
+    for w in re.findall(r"[a-z]+", phrase.lower()):
+        w = _COLOUR_WORDS.get(w, w)
+        if w in _COLOURS:
+            return w
+    return None
+
+
+def colour_fraction(frame: np.ndarray, box, colour: str) -> float:
+    """Share of pixels in the central part of the box that look like `colour`."""
+    import cv2
+    x1, y1, x2, y2 = box
+    dx, dy = (x2 - x1) * 0.2, (y2 - y1) * 0.2
+    crop = frame[int(y1 + dy):int(max(y1 + dy + 1, y2 - dy)), int(x1 + dx):int(max(x1 + dx + 1, x2 - dx))]
+    if crop.size == 0:
+        return 0.0
+    hsv = cv2.cvtColor(crop, cv2.COLOR_RGB2HSV).reshape(-1, 3).astype(int)
+    return float(_COLOURS[colour](hsv[:, 0], hsv[:, 1], hsv[:, 2]).mean())
+
+
+def pick_by_colour(phrase: str, boxes: list, frame: np.ndarray, margin: float = 0.15) -> list | None:
+    """Candidate that best matches the phrase's colour word, if it clearly beats the others."""
+    colour = colour_word(phrase)
+    if colour is None or len(boxes) < 2:
+        return None
+    scores = [colour_fraction(frame, b, colour) for b in boxes]
+    order = np.argsort(scores)[::-1]
+    return boxes[order[0]] if scores[order[0]] - scores[order[1]] >= margin else None
 
 
 def ground(vlm, frame: np.ndarray, obj: str, every: bool = False) -> dict:
@@ -86,8 +137,10 @@ def _words(phrase: str) -> set[str]:
 def resolve_conflicts(vlm, frames: np.ndarray, objects: dict) -> dict:
     """Different objects with the same head noun ('big bird' / 'small bird') that received
     overlapping boxes on the same frame: re-ground every instance of the bare noun and assign
-    candidates by the contrastive modifier (size / left-right / top-bottom). Unresolvable ones
-    lose their box (-> VLM fallback) instead of silently sharing one mask.
+    candidates by the contrastive modifier (size, left-right, top-bottom, front-back), else by colour
+    word, else by elimination. If only one such object exists in the clip, the two phrases describe
+    the same object and keep the shared box. Unresolvable ones lose their box (-> VLM fallback)
+    instead of silently sharing one mask.
     Phrases whose words are a subset of the other's ('bird' / 'big bird') may be the same object
     and are left alone."""
     bases = [b for b, o in objects.items() if o["boxes"]]
@@ -108,9 +161,22 @@ def resolve_conflicts(vlm, frames: np.ndarray, objects: dict) -> dict:
                 cands = ground(vlm, frames[fi], head_noun(pa), every=True)["boxes"]
                 if len(cands) >= 2:
                     break
-            picks = {k: pick_by_modifier(objects[k].get("phrase", k), cands) if len(cands) >= 2 else None
+            if len(cands) <= 1:
+                # Only one such object anywhere: both phrases describe it ("horse at the back" =
+                # "brown horse") and may share the box.
+                for k in (a, b):
+                    objects[k]["conflict"] = {"with": b if k == a else a, "resolved": True,
+                                              "same_object": True, "candidates": cands}
+                continue
+            phrases = {k: objects[k].get("phrase", k) for k in (a, b)}
+            picks = {k: pick_by_modifier(phrases[k], cands) or pick_by_colour(phrases[k], cands, frames[fi])
                      for k in (a, b)}
-            ok = all(picks.values()) and iou(picks[a], picks[b]) < 0.5
+            # Elimination: with two candidates, a resolved phrase leaves the other candidate.
+            if len(cands) == 2 and sum(v is not None for v in picks.values()) == 1:
+                known = next(k for k in (a, b) if picks[k] is not None)
+                other = next(k for k in (a, b) if k != known)
+                picks[other] = next(c for c in cands if c is not picks[known])
+            ok = all(v is not None for v in picks.values()) and iou(picks[a], picks[b]) < 0.5
             for k in (a, b):
                 objects[k]["conflict"] = {"with": b if k == a else a, "resolved": ok, "candidates": cands,
                                           "frame": fi}

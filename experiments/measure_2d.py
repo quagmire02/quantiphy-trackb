@@ -25,7 +25,7 @@ from tqdm import tqdm
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from pipeline.data import load_split  # noqa: E402
 from pipeline.geometry import F  # noqa: E402
-from pipeline.guards import apply_guards  # noqa: E402
+from pipeline.guards import apply_guards, check_targets  # noqa: E402
 from pipeline.parse import (finalize_prior, finalize_question, prior_description, prior_messages,  # noqa: E402
                             prior_object, question_messages)
 from pipeline.scoring import RESULTS, mra, official_score, quick_report, write_predictions  # noqa: E402
@@ -35,6 +35,7 @@ from pipeline.video import read_frames  # noqa: E402
 
 TRACK_LONGEST = 1024  # tracking/grounding resolution (longest side, px)
 MAX_TRACK_FRAMES = 96  # longer clips are tracked on a strided subset
+GROUND_SWEEP_FRAMES = 12  # frames searched for an object not found at the key frame / quarter points
 VLM_ID = "Qwen/Qwen3-VL-4B-Instruct"
 COLORS = [(255, 60, 60), (60, 200, 60), (60, 120, 255), (255, 200, 0), (255, 0, 255), (0, 220, 220)]
 
@@ -131,9 +132,11 @@ def stage_ground(df, parsed, cache: Path, vlm):
             n, fps = len(frames), float(items["fps"].iloc[0])
             objects = {}
             for base, (fi, phrase) in key_frames(items, parsed, n, fps).items():
-                # Try the key frame, then quarter points of the clip.
+                # Try the key frame and the quarter points, then a dense sweep: objects that appear only
+                # briefly (a dropped acorn, a passing rider) are invisible at most frames.
                 tried = []
-                for f in dict.fromkeys([fi, n // 2, n // 4, 3 * n // 4]):
+                sweep = np.linspace(0, n - 1, GROUND_SWEEP_FRAMES).round().astype(int).tolist()
+                for f in dict.fromkeys([fi, n // 2, n // 4, 3 * n // 4] + sweep):
                     g = ground(vlm, frames[f], phrase)
                     tried.append({"frame": f, "reply": g["reply"]})
                     if g["boxes"]:
@@ -211,6 +214,88 @@ def stage_track(df, parsed, cache: Path):
             torch.cuda.empty_cache()
 
 
+# ---------------------------------------------------------------- stage: refix (motion priors)
+def stage_refix(df, parsed, cache: Path, vlm):
+    """A speed/acceleration prior means the reference moves. If its track is static (or it was not
+    found), re-ground it inside the regions that actually move (pipeline/motion.py), then drop the
+    clip's tracks so the track/geom stages recompute them with the new box."""
+    from pipeline.ground import ground
+    from pipeline.motion import ground_moving
+    from pipeline.solver import SETTINGS as SOLVER, Track
+    for vid, items in tqdm(list(df.groupby("video_id")), desc="refix"):
+        recs = [parsed.get(i) for i in items["id"]]
+        rec = next((r for r in recs if r and r["ok"] and r["ref_quantity"] in ("speed", "acceleration")), None)
+        gpath, tpath = cache / "ground" / f"{vid}.json", cache / "tracks" / f"{vid}.npz"
+        if rec is None or not gpath.exists() or not tpath.exists():
+            continue
+        ground_json = json.loads(gpath.read_text())
+        ref = object_keys(rec)[0]
+        obj = ground_json["objects"].get(ref, {})
+        if obj.get("refixed") is not None:
+            continue  # already tried
+        feats = dict(np.load(tpath))
+        fps = float(items["fps"].iloc[0])
+        static = ref not in feats or (feats[ref][:, F["present"]] == 1).sum() == 0 \
+            or Track.from_feats(feats[ref], fps).extent() < SOLVER["min_ref_motion_px"]
+        if not static:
+            continue
+        try:
+            frames = read_frames(items["video_path"].iloc[0], TRACK_LONGEST)
+            hit = ground_moving(vlm, frames, obj.get("phrase", rec["ref_object"]), ground)
+        except Exception as e:  # one bad clip must not stop a long run
+            tqdm.write(f"  REFIX ERROR {vid}: {type(e).__name__}: {e}")
+            continue
+        obj = {**obj, "phrase": obj.get("phrase", rec["ref_object"].lower()), "refixed": bool(hit)}
+        if hit:
+            obj.update({"frame": hit["frame"], "boxes": [hit["box"]], "motion_region": hit["region"]})
+            for p in [tpath, cache / "moge" / f"{vid}.json", cache / "overlays" / f"{vid}.jpg"]:
+                p.unlink(missing_ok=True)
+        ground_json["objects"][ref] = obj
+        gpath.write_text(json.dumps(ground_json))
+        tqdm.write(f"  refix {vid}: reference {ref!r} {'re-grounded on moving region' if hit else 'no moving match'}")
+
+
+# ---------------------------------------------------------------- stage: geom (3D only)
+def stage_geom(df, cache: Path):
+    """MoGe-2 distances of every tracked object at the clip's distance timestamps and quarter points,
+    for transferring stated distances to objects without one (pipeline/depth.py)."""
+    from pipeline.depth import MoGe
+    from pipeline.solver3d import parse_depth
+    moge = MoGe()
+    out_dir = cache / "moge"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    d3 = df[df["video_type"].str[1] == "3"]
+    for vid, items in tqdm(list(d3.groupby("video_id")), desc="geom"):
+        path, tpath = out_dir / f"{vid}.json", cache / "tracks" / f"{vid}.npz"
+        if path.exists() or not tpath.exists():
+            continue
+        try:
+            feats = dict(np.load(tpath))
+            if not feats:
+                path.write_text(json.dumps({"frames": {}, "f_px": []}))
+                continue
+            n, fps = len(next(iter(feats.values()))), float(items["fps"].iloc[0])
+            stamps = {int(np.clip(round(e["t"] * fps), 0, n - 1)) for e in parse_depth(items["depth_info"].iloc[0])
+                      if e["t"] is not None}
+            wanted = sorted(stamps | {n // 4, n // 2, 3 * n // 4})
+            frames = read_frames(items["video_path"].iloc[0], TRACK_LONGEST)
+            res, fpx = {}, []
+            for fi in wanted:
+                if fi < len(frames):
+                    res[str(fi)], f = moge.object_distances(frames[fi], feats, fi)
+                    fpx.append(f)
+            path.write_text(json.dumps({"frames": res, "f_px": fpx}))
+        except Exception as e:  # one bad clip must not stop a long run; a rerun retries it
+            tqdm.write(f"  GEOM ERROR {vid}: {type(e).__name__}: {e}")
+
+
+def load_moge(cache: Path, vid: str) -> dict[int, dict[str, float]] | None:
+    p = cache / "moge" / f"{vid}.json"
+    if not p.exists():
+        return None
+    return {int(k): v for k, v in json.loads(p.read_text())["frames"].items()}
+
+
 # ---------------------------------------------------------------- stage: solve
 def stage_solve(df, parsed, cache: Path) -> pd.DataFrame:
     rows = []
@@ -229,10 +314,11 @@ def stage_solve(df, parsed, cache: Path) -> pd.DataFrame:
             if missing:
                 raise SolveError(f"not grounded: {missing}")
             n_frames = len(next(iter(feats.values())))
+            check_targets(rec, feats, (ref, tgts), is_3d=str(row.video_type)[1] == "3")
             if str(row.video_type)[1] == "3":
                 h, w = json.loads((cache / "ground" / f"{row.video_id}.json").read_text())["shape"]
-                out = solve_3d(rec, feats[ref], [feats[k] for k in tgts], (ref, tgts), row.depth_info,
-                               float(row.fps), n_frames, w, h)
+                out = solve_3d(rec, feats, (ref, tgts), row.depth_info, float(row.fps), n_frames, w, h,
+                               moge=load_moge(cache, row.video_id))
             else:
                 out = solve(rec, feats[ref], [feats[k] for k in tgts], float(row.fps), n_frames)
             if not np.isfinite(out["value"]) or out["value"] <= 0:
@@ -273,6 +359,15 @@ def main():
     parsed = load_parsed(df, cache)
     if "track" in stages:
         stage_track(df, parsed, cache)
+    if "refix" in stages:  # needs tracks; re-tracks what it changes
+        from pipeline.vlm import QwenVL
+        vlm = QwenVL(VLM_ID)
+        stage_refix(df, parsed, cache, vlm)
+        del vlm
+        torch.cuda.empty_cache()
+        stage_track(df, parsed, cache)
+    if "geom" in stages:
+        stage_geom(df, cache)
     if "solve" not in stages:
         return
 
