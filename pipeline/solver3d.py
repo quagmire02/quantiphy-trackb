@@ -16,7 +16,7 @@ from scipy.optimize import brentq
 
 from pipeline.geometry import F
 from pipeline.solver import (SIZE_QUANTITIES, SolveError, Track, _is_instant, _resolve,  # noqa: F401
-                             accel_check_window, size_series)
+                             accel_check_window, size_series, target_accel)
 from pipeline.units import from_si, to_si
 
 SETTINGS = {
@@ -26,6 +26,10 @@ SETTINGS = {
     "moge_transfer": True,     # objects without a stated distance get one via MoGe depth ratios
     "max_anchor_spread": 2.0,  # transfer: known objects / frames must agree within this factor
     "fuzzy_name_match": 0.85,  # letters-only similarity to match 'whiteboard' with 'white_board'
+    "f_source": "prior",       # "prior" = calibrate f from the prior; "moge" = MoGe-2's focal length only;
+                               # "blend" = geometric mean of both (motion priors only, else "prior")
+    "f_fallback_moge": True,   # prior calibration impossible -> use MoGe-2's focal length
+    "min_f_over_w": 0.3,       # calibrated f below this (field of view > 118 deg) is implausible -> MoGe-2 f
 }
 
 _NUM = r"\d*\.?\d+"
@@ -92,7 +96,15 @@ def match_depth(entries: list[dict], phrase: str) -> list[dict]:
                     for a in _compacts(phrase) for b in _compacts(name))
         if score > best_score:
             best, best_score = name, score
-    return [e for e in entries if e["name"] == best] if best_score >= SETTINGS["fuzzy_name_match"] else []
+    if best_score >= SETTINGS["fuzzy_name_match"]:
+        return [e for e in entries if e["name"] == best]
+    # Compound nouns: 'basketball' / 'football' is the stated 'ball' when exactly one stated name is
+    # the tail of one of the phrase's words (keys hold sorted words, so any word, not just the last).
+    words = {re.sub(r"[^a-z]", "", w) for w in phrase.lower().split("#")[0].split()}
+    tails = [name for name in dict.fromkeys(e["name"] for e in entries)
+             if len(c := re.sub(r"[^a-z]", "", name.lower())) >= 3
+             and any(w != c and w.endswith(c) for w in words)]
+    return [e for e in entries if e["name"] == tails[0]] if len(tails) == 1 else []
 
 
 class Camera:
@@ -207,8 +219,9 @@ def transfer_anchors(key: str, anchored: dict[str, Object3D], moge: dict[int, di
     return [{"name": f"moge:{key}", "tokens": set(), "t": fi / fps, "d": d, "derived": True}]
 
 
-def quantity_3d(q: str, tw, objs: list[Object3D], cam: Camera, duration: float) -> float:
-    """Requested quantity in SI units from metric 3D tracks."""
+def quantity_3d(q: str, tw, objs: list[Object3D], cam: Camera, duration: float, target: bool = True) -> float:
+    """Requested quantity in SI units from metric 3D tracks. target=False: the reference during
+    focal-length calibration (keeps the local acceleration fit, which validated better there)."""
     if q in SIZE_QUANTITIES:
         return objs[0].size(cam, q)
     if q == "distance":
@@ -226,7 +239,9 @@ def quantity_3d(q: str, tw, objs: list[Object3D], cam: Camera, duration: float) 
     if q == "speed":
         return tr.velocity_at(a) if _is_instant(tw) else tr.mean_speed(a, b)
     if q == "acceleration":
-        return tr.accel_at(a) if _is_instant(tw) else tr.accel_window(a, b)
+        if not target:
+            return tr.accel_at(a) if _is_instant(tw) else tr.accel_window(a, b)
+        return target_accel(tr, Track.from_feats(objs[0].feats, objs[0].fps), tw, a, b)
     if q == "displacement":
         return float(np.linalg.norm(tr.position_at(b) - tr.position_at(a)))
     if q == "path_length":
@@ -240,7 +255,7 @@ def calibrate_f(rec: dict, ref: Object3D, width: int, height: int, duration: flo
     tw = _resolve(rec["ref_time"], duration)
 
     def predicted(f):
-        return quantity_3d(rec["ref_quantity"], tw, [ref], Camera(width, height, f), duration)
+        return quantity_3d(rec["ref_quantity"], tw, [ref], Camera(width, height, f), duration, target=False)
 
     lo, hi = SETTINGS["f_range"]
     grid = np.geomspace(lo * width, hi * width, 60)
@@ -260,19 +275,16 @@ def calibrate_f(rec: dict, ref: Object3D, width: int, height: int, duration: flo
 
 
 def solve_3d(rec: dict, feats: dict[str, np.ndarray], keys: tuple[str, list[str]], depth_text, fps: float,
-             n_frames: int, width: int, height: int, moge: dict[int, dict[str, float]] | None = None) -> dict:
+             n_frames: int, width: int, height: int, moge: dict[int, dict[str, float]] | None = None,
+             moge_f: float | None = None) -> dict:
     """feats: every tracked object of the clip (key -> per-frame features); moge: frame -> {key: MoGe
-    distance} (optional) used to give objects without a stated distance one via transfer_anchors()."""
+    distance} (optional) used to give objects without a stated distance one via transfer_anchors();
+    moge_f: MoGe-2's focal length (px of the tracking frames), an alternative to calibrating f."""
     duration = (n_frames - 1) / fps
     entries = parse_depth(depth_text)
     if not entries:
         raise SolveError("no parsable distances")
     ref_key, tgt_keys = keys
-    if rec["ref_quantity"] == "acceleration":  # same sanity check as 2D, on the pixel track
-        tw = _resolve(rec["ref_time"], duration)
-        a, b = tw if tw else (0.0, duration)
-        Track.from_feats(feats[ref_key], fps).check_accelerating(*accel_check_window(tw, a, b))
-
     anchored = {}
     for k, f in feats.items():
         if match_depth(entries, k):
@@ -287,12 +299,34 @@ def solve_3d(rec: dict, feats: dict[str, np.ndarray], keys: tuple[str, list[str]
             anchors = transfer_anchors(k, anchored, moge, fps)
         return Object3D(feats[k], anchors, fps, motion=quantity not in SIZE_QUANTITIES)
 
-    ref = make(ref_key, rec["ref_quantity"])
-    f = calibrate_f(rec, ref, width, height, duration)
+    def from_prior() -> tuple[float, Object3D]:
+        if rec["ref_quantity"] == "acceleration":  # same sanity check as 2D, on the pixel track
+            tw = _resolve(rec["ref_time"], duration)
+            a, b = tw if tw else (0.0, duration)
+            Track.from_feats(feats[ref_key], fps).check_accelerating(*accel_check_window(tw, a, b))
+        ref = make(ref_key, rec["ref_quantity"])
+        return calibrate_f(rec, ref, width, height, duration), ref
+
+    usable_moge = moge_f is not None and np.isfinite(moge_f) and moge_f > 0
+    ref, f_source = None, "prior"
+    if SETTINGS["f_source"] == "moge" and usable_moge:
+        f, f_source = moge_f, "moge"
+    else:
+        try:
+            f, ref = from_prior()
+            if (SETTINGS["f_fallback_moge"] and usable_moge and f / width < SETTINGS["min_f_over_w"]
+                    and moge_f / width >= SETTINGS["min_f_over_w"]):
+                f, f_source = moge_f, "moge"  # no real camera here is that wide: the calibration is broken
+            elif SETTINGS["f_source"] == "blend" and usable_moge and rec["ref_quantity"] not in SIZE_QUANTITIES:
+                f, f_source = float(np.sqrt(f * moge_f)), "blend"
+        except SolveError:
+            if not (SETTINGS["f_fallback_moge"] and usable_moge):
+                raise
+            f, f_source = moge_f, "moge"
     cam = Camera(width, height, f)
     objs = [make(k, rec["target_quantity"]) for k in tgt_keys]
     value_si = quantity_3d(rec["target_quantity"], _resolve(rec["target_time"], duration), objs, cam, duration)
-    derived = any(a.get("derived") for o in [ref] + objs for a in o.anchors)
+    derived = any(a.get("derived") for o in ([ref] if ref else []) + objs for a in o.anchors)
     return {"value": float(from_si(value_si, rec["target_unit"])), "f_px": f, "f_over_w": f / width,
-            "ref_depth": ref.anchors[0]["name"], "tgt_depth": ",".join(o.anchors[0]["name"] for o in objs),
-            "moge_used": derived}
+            "f_source": f_source, "ref_depth": ref.anchors[0]["name"] if ref else "",
+            "tgt_depth": ",".join(o.anchors[0]["name"] for o in objs), "moge_used": derived}

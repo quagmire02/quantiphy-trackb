@@ -191,6 +191,9 @@ def stage_track(df, parsed, cache: Path):
                 i = int(inst or 0)
                 if obj.get("frame") is not None and len(obj["boxes"]) > i:
                     prompts[key] = (obj["frame"], obj["boxes"][i])
+        for key, obj in g["objects"].items():  # stated-distance objects added by stage_anchors
+            if obj.get("anchor") and obj.get("frame") is not None and obj["boxes"]:
+                prompts.setdefault(key, (obj["frame"], obj["boxes"][0]))
         if not prompts:
             np.savez_compressed(path)
             continue
@@ -255,6 +258,54 @@ def stage_refix(df, parsed, cache: Path, vlm):
         tqdm.write(f"  refix {vid}: reference {ref!r} {'re-grounded on moving region' if hit else 'no moving match'}")
 
 
+# ---------------------------------------------------------------- stage: anchors (3D only)
+def stage_anchors(df, parsed, cache: Path, vlm):
+    """3D clips where an asked object has no stated distance: ground the objects that DO have a stated
+    distance but are never asked about, so they get tracked and can lend their distance through MoGe
+    depth ratios (pipeline/solver3d.py: transfer_anchors). Drops the clip's tracks so they are redone."""
+    from pipeline.ground import ground
+    from pipeline.solver3d import match_depth, parse_depth
+    d3 = df[df["video_type"].str[1] == "3"]
+    for vid, items in tqdm(list(d3.groupby("video_id")), desc="anchors"):
+        gpath = cache / "ground" / f"{vid}.json"
+        if not gpath.exists():
+            continue
+        g = json.loads(gpath.read_text())
+        if g.get("anchors_done"):
+            continue
+        entries = parse_depth(items["depth_info"].iloc[0])
+        keys = {k for i in items["id"] if parsed.get(i, {}).get("ok") for k in
+                [object_keys(parsed[i])[0]] + object_keys(parsed[i])[1]}
+        added = []
+        if entries and any(not match_depth(entries, k) for k in keys):
+            covered = {m[0]["name"] for k in keys | set(g["objects"]) if (m := match_depth(entries, k))}
+            try:
+                frames = read_frames(items["video_path"].iloc[0], TRACK_LONGEST)
+                n, fps = len(frames), float(items["fps"].iloc[0])
+                for name in dict.fromkeys(e["name"] for e in entries):
+                    if name in covered:
+                        continue
+                    phrase = name.replace("_", " ").strip()
+                    t = next((e["t"] for e in entries if e["name"] == name and e["t"] is not None), None)
+                    fi = n // 2 if t is None else int(np.clip(round(t * fps), 0, n - 1))
+                    sweep = np.linspace(0, n - 1, GROUND_SWEEP_FRAMES).round().astype(int).tolist()
+                    for f in dict.fromkeys([fi, n // 4, 3 * n // 4] + sweep):
+                        b = ground(vlm, frames[f], phrase)["boxes"]
+                        if b:
+                            g["objects"][norm(phrase)] = {"phrase": phrase, "frame": f, "boxes": b[:1], "anchor": True}
+                            added.append(phrase)
+                            break
+            except Exception as e:  # one bad clip must not stop a long run
+                tqdm.write(f"  ANCHORS ERROR {vid}: {type(e).__name__}: {e}")
+                continue
+        g["anchors_done"] = True
+        gpath.write_text(json.dumps(g))
+        if added:
+            for p in [cache / "tracks" / f"{vid}.npz", cache / "moge" / f"{vid}.json", cache / "overlays" / f"{vid}.jpg"]:
+                p.unlink(missing_ok=True)
+            tqdm.write(f"  anchors {vid}: added {added}")
+
+
 # ---------------------------------------------------------------- stage: geom (3D only)
 def stage_geom(df, cache: Path):
     """MoGe-2 distances of every tracked object at the clip's distance timestamps and quarter points,
@@ -296,8 +347,49 @@ def load_moge(cache: Path, vid: str) -> dict[int, dict[str, float]] | None:
     return {int(k): v for k, v in json.loads(p.read_text())["frames"].items()}
 
 
+def load_moge_f(cache: Path, vid: str) -> float | None:
+    """MoGe-2's focal length for the clip (median over its frames, px of the tracking frames)."""
+    p = cache / "moge" / f"{vid}.json"
+    if not p.exists():
+        return None
+    fs = [f for f in json.loads(p.read_text())["f_px"] if f and np.isfinite(f)]
+    return float(np.median(fs)) if fs else None
+
+
 # ---------------------------------------------------------------- stage: solve
+CLIP_GUARD = r"person height in clip|vehicle size in clip|faster than free fall"
+
+
 def stage_solve(df, parsed, cache: Path) -> pd.DataFrame:
+    """Solve every item, then apply the plausibility guards. 3D clips whose prior calibration a
+    clip-level guard rejects are solved once more with MoGe-2's focal length (independent of the
+    prior) and guarded again."""
+    import pipeline.solver3d as s3
+    sol = apply_guards(df, parsed, _solve_rows(df, parsed, cache))
+    if not s3.SETTINGS["f_fallback_moge"] or s3.SETTINGS["f_source"] == "moge":
+        return sol
+    rejected = sol["reason"].fillna("").str.contains(CLIP_GUARD) & sol["id"].isin(df.loc[df["video_type"].str[1] == "3", "id"])
+    vids = set(df.loc[df["id"].isin(sol.loc[rejected, "id"]), "video_id"])
+    if not vids:
+        return sol
+    sub = df[df["video_id"].isin(vids)]
+    old = s3.SETTINGS["f_source"]
+    s3.SETTINGS["f_source"] = "moge"
+    try:
+        retry = apply_guards(sub, parsed, _solve_rows(sub, parsed, cache))
+    finally:
+        s3.SETTINGS["f_source"] = old
+    retry = retry[retry["value"].notna() & retry["id"].isin(sol.loc[rejected, "id"])]
+    sol = sol.set_index("id")
+    retry = retry.set_index("id")
+    for col in retry.columns:
+        if col not in sol.columns:
+            sol[col] = np.nan
+    sol.loc[retry.index, retry.columns] = retry
+    return sol.reset_index()
+
+
+def _solve_rows(df, parsed, cache: Path) -> pd.DataFrame:
     rows = []
     for row in df.itertuples():
         rec = parsed.get(row.id)
@@ -318,7 +410,7 @@ def stage_solve(df, parsed, cache: Path) -> pd.DataFrame:
             if str(row.video_type)[1] == "3":
                 h, w = json.loads((cache / "ground" / f"{row.video_id}.json").read_text())["shape"]
                 out = solve_3d(rec, feats, (ref, tgts), row.depth_info, float(row.fps), n_frames, w, h,
-                               moge=load_moge(cache, row.video_id))
+                               moge=load_moge(cache, row.video_id), moge_f=load_moge_f(cache, row.video_id))
             else:
                 out = solve(rec, feats[ref], [feats[k] for k in tgts], float(row.fps), n_frames)
             if not np.isfinite(out["value"]) or out["value"] <= 0:
@@ -329,7 +421,7 @@ def stage_solve(df, parsed, cache: Path) -> pd.DataFrame:
         except Exception as e:  # unexpected numeric/data error: fall back for this item only
             res["reason"] = f"error {type(e).__name__}"
         rows.append(res)
-    return apply_guards(df, parsed, pd.DataFrame(rows))
+    return pd.DataFrame(rows)
 
 
 def main():
@@ -358,6 +450,13 @@ def main():
         torch.cuda.empty_cache()
     parsed = load_parsed(df, cache)
     if "track" in stages:
+        stage_track(df, parsed, cache)
+    if "anchors" in stages:  # needs grounding; re-tracks what it changes
+        from pipeline.vlm import QwenVL
+        vlm = QwenVL(VLM_ID)
+        stage_anchors(df, parsed, cache, vlm)
+        del vlm
+        torch.cuda.empty_cache()
         stage_track(df, parsed, cache)
     if "refix" in stages:  # needs tracks; re-tracks what it changes
         from pipeline.vlm import QwenVL

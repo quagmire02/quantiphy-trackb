@@ -6,3 +6,5 @@ results/logs/
 __pycache__/
 *.pyc
 .venv/
+
+HANDOVER.md

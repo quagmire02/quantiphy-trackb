@@ -28,6 +28,8 @@ SETTINGS = {
     "segment_resid_frac": 0.015,  # ...or within this fraction of the phase's extent (large motions)
     "segment_noise_k": 4.0,    # ...or within this many times the track's own noise level
     "segment_min_inliers": 0.9,  # ...for at least this share of the phase's points (glitches allowed)
+    "target_accel_segment": "3d",   # target acceleration over the constant-acceleration phase: True (2D+3D), "3d", False
+                                    # (validation: 3D targets S3 66.7 -> 68.8; 2D targets and 3D calibration got worse)
 }
 
 
@@ -221,6 +223,23 @@ class Track:
         return self.pts[i]
 
 
+def target_accel(tr: Track, pix: Track, tw, a: float, b: float) -> float:
+    """Target acceleration on track `tr` (pixels in 2D, metres in 3D). With target_accel_segment the
+    window is the constant-acceleration phase found on the pixel track `pix` (containing t for an
+    instant), so a decaying or interrupted acceleration is not averaged with other phases; falls
+    back to the local fit when no clean phase exists."""
+    if SETTINGS["target_accel_segment"] is True or (SETTINGS["target_accel_segment"] == "3d" and tr.pts.shape[1] == 3):
+        try:
+            if _is_instant(tw):
+                _, _, s, e = pix.accel_segment(a - 0.75, a + 0.75, contain=a)
+            else:
+                _, _, s, e = pix.accel_segment(a, b)
+            return tr.accel_window(s, e)
+        except SolveError:
+            pass
+    return tr.accel_at(a) if _is_instant(tw) else tr.accel_window(a, b)
+
+
 def size_series(feats: np.ndarray, quantity: str) -> tuple[np.ndarray, np.ndarray]:
     """(frame indices, per-frame pixel size) over frames where the object is fully in view
     (all present frames if it always touches the border)."""
@@ -306,7 +325,7 @@ def target_pixels(rec: dict, feats: list[np.ndarray], fps: float, duration: floa
     if q == "speed":
         return tr.velocity_at(a) if _is_instant(tw) else tr.mean_speed(a, b)
     if q == "acceleration":
-        return tr.accel_at(a) if _is_instant(tw) else tr.accel_window(a, b)
+        return target_accel(tr, tr, tw, a, b)
     if q == "displacement":
         return float(np.linalg.norm(tr.position_at(b) - tr.position_at(a)))
     if q == "path_length":

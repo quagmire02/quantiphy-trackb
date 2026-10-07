@@ -112,12 +112,6 @@ id,video_id,video_type,inference_type,question,parsed_value,raw_response
 1041,simulation_0008,S3MC,SS,What is the height of the cabin floor above the ground in meters?,3.2,3.2 m
 1048,simulation_0009,V3MC,DS,"When t=3s, what is the minimum distance from the outer end of the pier to the boat in meters?",11.827,11.827 m
 1051,simulation_0009,V3MC,DS,What is the height of the cabin floor above the ground in meters?,3.0,3.0 m
-1066,simulation_0014,A3MC,DS,What is the height of the house’s door in meters?,2.0,2.0 m
-1067,simulation_0014,A3MC,DS,What is the diameter of the cart’s wheels in meters?,0.8,0.8 m
-1068,simulation_0014,A3MC,DS,What is the width between the two widest eaves of the house in meters?,3.0,3.0 m
-1069,simulation_0014,A3MC,DS,What is the maximum height of the cart from the ground in meters?,0.0,0.0 m
-1070,simulation_0014,A3MC,DS,What is the height of the rectangular cargo box on the cart in meters?,0.5,0.5 m
-1071,simulation_0014,A3MC,DS,What is the length of rectangular cargo box on the cart in meters?,1.2,1.2 m
 1073,simulation_0015,S3MC,SS,What is the width of the pedestal (square base) of the central sculpture in meters?,1.2,1.2 m
 1074,simulation_0015,S3MC,SS,What is the height of the pedestal (square base) of the central sculpture in meters?,1.2,1.2 m
 1076,simulation_0015,S3MC,SS,What is the height of the bench seat in the atrium in meters?,0.45,0.45 m
@@ -139,14 +133,6 @@ id,video_id,video_type,inference_type,question,parsed_value,raw_response
 1127,simulation_0031,V3MC,DS,What is the length of the eagle in meters?,1.2,1.2 m
 1128,simulation_0031,V3MC,DD,What is the speed of the eagle at 1.0s in m/s?,1.3,1.3 m/s
 1129,simulation_0031,V3MC,DS,What is the eagle’s wingspan (the distance from the tip of one wing to the tip of the other when fully spread) in meters?,1.5,1.5 m
-1130,simulation_0033,A3MC,DD,What is the walking speed of the person at 1.0s in m/s?,0.129,0.129 m/s
-1131,simulation_0033,A3MC,DS,What is the height of the fire hydrant in meters?,1.2,1.2 m
-1132,simulation_0033,A3MC,DS,What is the height of the streetlight in meters?,4.5,4.5 m
-1133,simulation_0033,A3MC,DS,What is the height of the person in meters?,1.8,1.8 m
-1134,simulation_0033,A3MC,DD,What is the speed of the green car at 1.0s in m/s?,13.077,13.077 m/s
-1135,simulation_0033,A3MC,DS,What is the length of the orange car in meters?,4.5,4.5 m
-1136,simulation_0033,A3MC,DS,What is the height of the orange car in meters?,1.4,1.4 m
-1137,simulation_0033,A3MC,DS,What is the height of the curb along the road in meters?,0.8,0.8 m
 1173,simulation_0045,V3MC,DD,What is the speed of the walking person from the beginning to the end in m/s?,1.21,1.21 m/s
 1174,simulation_0045,V3MC,DS,What is the height of the walking person in meters?,1.7,1.7 m
 1175,simulation_0045,V3MC,DS,What is the height of the telephone booth in meters?,2.5,2.5 m
@@ -160,25 +146,11 @@ id,video_id,video_type,inference_type,question,parsed_value,raw_response
 1198,simulation_0049,V3MC,DS,What is the height of the telephone booth in meters?,2.5,2.5 m
 1199,simulation_0049,V3MC,DS,What is the distance between the left pillar of the near door and the right pillar of the far door in meters?,12.0,12.0 m
 1200,simulation_0049,V3MC,DS,What is the diameter of the wheel of the moving bicycle in meters?,0.67,0.67 m
-1201,simulation_0050,V3MC,DS,What is the height of the walking person in meters?,1.75,1.75 m
-1202,simulation_0050,V3MC,DS,What is the height of the telephone booth in meters?,1.2,1.2 m
-1203,simulation_0050,V3MC,DS,What is the width of the telephone booth in meters?,0.8,0.8 m
-1204,simulation_0050,V3MC,DS,What is the distance between the left pillar of the near door and the right pillar of the far door in meters?,10.0,10.0 m
-1205,simulation_0050,V3MC,DS,What is the length of the moving bicycle in meters?,1.236,1.236 m
-1206,simulation_0050,V3MC,DD,What is the average speed of the moving bicycle from 1.0s to 2.0s in m/s?,2.7459,2.7459 m/s
-1207,simulation_0050,V3MC,DS,"What is the height of the moving bicycle (from the handlebar to the ground, including below the wheel) in meters?",1.2,1.2 m
-1208,simulation_0050,V3MC,DS,What is the diameter of the wheel of the moving bicycle in meters?,0.67,0.67 m
-1209,simulation_0050,V3MC,DS,What is the height of the first step in front of the door of the nearer house in meters?,0.8,0.8 m
 1216,simulation_0052,A3MC,DS,What is the height of the green car in meters?,1.2,1.2 m
 1217,simulation_0052,A3MC,DS,What is the length of the green car in meters?,4.5,4.5 m
-1219,simulation_0055,A3MC,DS,What is the height of the fire hydrant in meters?,1.2,1.2 m
-1220,simulation_0055,A3MC,DS,What is the height of the streetlight in meters?,8.9,8.9 m
 1221,simulation_0055,A3MC,DS,What is the length of the orange car in meters?,4.5,4.5 m
 1222,simulation_0055,A3MC,DS,What is the height of the orange car in meters?,1.4,1.4 m
 1223,simulation_0055,A3MC,DS,What is the height of the curb along the road in meters?,0.3,0.3 m
-1224,simulation_0055,A3MC,DD,What is the average walking speed of the person from 1.0s to 2.0s in m/s?,0.124,0.124 m/s
-1225,simulation_0055,A3MC,DS,What is the height of the person in meters?,1.7,1.7 m
-1229,simulation_0056,A3MC,DS,What is the width of the orange car in meters?,1.8,1.8 m
 1230,simulation_0056,A3MC,DS,What is the width of the green car in meters?,2.1,2.1 m
 1231,simulation_0056,A3MC,DS,What is the distance between the right streetlight and the left streetlight in meters?,8.0,8.0 m
 1232,simulation_0058,A3MC,DD,What is the speed of the yellow car at 2.5s in m/s?,10.5,10.5 m/s
@@ -212,30 +184,16 @@ id,video_id,video_type,inference_type,question,parsed_value,raw_response
 1285,simulation_0062,A3MC,DS,What is the width of the turning yellow car in meters?,2.5,2.5 m
 1293,simulation_0063,A3MC,DS,What is the width of the lane in meters?,3.5,3.5 m
 1298,simulation_0063,A3MC,DS,What is the width of the turning yellow car in meters?,2.5,2.5 m
-1305,simulation_0064,A3MC,DD,What is the speed of the yellow car at 2.5s in m/s?,10.5,10.5 m/s
 1306,simulation_0064,A3MC,DS,What is the width of the lane in meters?,3.5,3.5 m
 1307,simulation_0064,A3MC,DS,What is the height of the white car in meters?,2.0,2.0 m
 1308,simulation_0064,A3MC,DS,What is the width of the white car in meters?,4.5,4.5 m
-1309,simulation_0064,A3MC,DS,What is the length of the turning yellow car in meters?,4.5,4.5 m
 1310,simulation_0064,A3MC,DS,What is the height of the turning yellow car in meters?,1.8,1.8 m
 1311,simulation_0064,A3MC,DS,What is the width of the turning yellow car in meters?,2.5,2.5 m
-1312,simulation_0064,A3MC,DS,What is the diameter of the bicycle wheel in meters?,0.7,0.7 m
-1313,simulation_0064,A3MC,DS,What is the height of the traffic light in meters?,5.0,5.0 m
-1314,simulation_0064,A3MC,DD,What is the average speed of the walking pedestrian from 1.0s to the end in m/s?,0.8,0.8 m/s
-1315,simulation_0064,A3MC,DS,What is the height of the walking pedestrian in meters?,1.8,1.8 m
-1316,simulation_0064,A3MC,DD,What is the average speed of the bicycle from the beginning to the end in m/s?,1.75,1.75 m/s
-1317,simulation_0065,A3MC,DD,What is the average speed of the yellow car from the beginning to the end in m/s?,1.5,1.5 m/s
 1318,simulation_0065,A3MC,DS,What is the width of the lane in meters?,3.5,3.5 m
 1319,simulation_0065,A3MC,DS,What is the height of the white car in meters?,1.8,1.8 m
 1320,simulation_0065,A3MC,DS,What is the width of the white car in meters?,4.5,4.5 m
-1321,simulation_0065,A3MC,DS,What is the length of the turning yellow car in meters?,4.5,4.5 m
 1322,simulation_0065,A3MC,DS,What is the height of the turning yellow car in meters?,1.5,1.5 m
 1323,simulation_0065,A3MC,DS,What is the width of the turning yellow car in meters?,2.5,2.5 m
-1324,simulation_0065,A3MC,DS,What is the diameter of the bicycle wheel in meters?,0.7,0.7 m
-1325,simulation_0065,A3MC,DS,What is the height of the traffic light in meters?,5.0,5.0 m
-1326,simulation_0065,A3MC,DD,What is the average speed of the walking pedestrian from 1.0s to 2.0s in m/s?,0.83,0.83 m/s
-1327,simulation_0065,A3MC,DS,What is the height of the walking pedestrian in meters?,1.8,1.8 m
-1328,simulation_0065,A3MC,DD,What is the average speed of the bicycle from the beginning to the end in m/s?,1.75,1.75 m/s
 1330,simulation_0066,A3MC,DS,What is the width of the lane in meters?,3.5,3.5 m
 1331,simulation_0066,A3MC,DS,What is the width of the white car in meters?,2.0,2.0 m
 1333,simulation_0066,A3MC,DS,What is the height of the white car in meters?,1.5,1.5 m
@@ -244,21 +202,13 @@ id,video_id,video_type,inference_type,question,parsed_value,raw_response
 1341,simulation_0066,A3MC,DS,What is the width of the green car in meters?,2.5,2.5 m
 1344,simulation_0066,A3MC,DS,What is the width of the purple car in meters?,2.0,2.0 m
 1345,simulation_0066,A3MC,DS,What is the height of the purple car in meters?,1.5,1.5 m
-1346,simulation_0067,A3MC,DD,What is the speed of the yellow car at 2.5s in m/s?,10.5,10.5 m/s
 1347,simulation_0067,A3MC,DS,What is the width of the lane in meters?,3.5,3.5 m
 1348,simulation_0067,A3MC,DS,What is the width of the white car in meters?,4.5,4.5 m
-1349,simulation_0067,A3MC,DS,What is the length of the white car in meters?,4.5,4.5 m
 1350,simulation_0067,A3MC,DS,What is the height of the white car in meters?,2.5,2.5 m
-1351,simulation_0067,A3MC,DS,What is the length of the turning yellow car in meters?,4.5,4.5 m
 1352,simulation_0067,A3MC,DS,What is the height of the turning yellow car in meters?,1.5,1.5 m
 1353,simulation_0067,A3MC,DS,What is the width of the turning yellow car in meters?,2.5,2.5 m
-1354,simulation_0067,A3MC,DS,What is the diameter of the bicycle wheel in meters?,0.7,0.7 m
-1355,simulation_0067,A3MC,DD,What is the average speed of the walking pedestrian from the beginning to the end in m/s?,1.23,1.23 m/s
-1356,simulation_0067,A3MC,DS,What is the height of the walking pedestrian in meters?,1.8,1.8 m
-1357,simulation_0067,A3MC,DD,What is the average speed of the bicycle from the beginning to the end in m/s?,3.5,3.5 m/s
 1358,simulation_0067,A3MC,DS,What is the width of the purple car in meters?,2.5,2.5 m
 1359,simulation_0067,A3MC,DS,What is the height of the purple car in meters?,1.5,1.5 m
-1360,simulation_0067,A3MC,DS,What is the length of the purple car in meters?,4.5,4.5 m
 1361,simulation_0074,S3MS,SS,What is the length of the turning yellow car in meters?,4.5,4.5 m
 1364,simulation_0074,S3MS,SD,What is the average speed of the turing yellow car from the beginning to the end in m/s?,1.13,1.13 m/s
 1365,simulation_0074,S3MS,SS,What is the width of the turning yellow car in meters?,2.0,2.0 m
@@ -269,16 +219,7 @@ id,video_id,video_type,inference_type,question,parsed_value,raw_response
 1375,simulation_0074,S3MS,SD,What is the height of the white car in meters?,2.0,2.0 m
 1381,simulation_0143,S3MC,SS,What is the side length of the floor tile in meters?,0.6,0.6 m
 1390,simulation_0168,V3MC,DS,What is the width of the road that the bike crossed through in meters?,3.66,3.66 m
-1391,simulation_0168,V3MC,DS,What is the length of the bike in meters?,1.2,1.2 m
-1392,simulation_0168,V3MC,DS,What is the length of the police car in meters?,6.0,6.0 m
-1393,simulation_0168,V3MC,DS,What is the width of the police car in meters?,4.5,4.5 m
-1394,simulation_0168,V3MC,DD,What is the average speed of the police car in m/s?,5.52,5.52 m/s
 1395,simulation_0168,V3MC,DS,What is the width of the road that the bike and the car are on in meters?,12.0,12.0 m
-1396,simulation_0168,V3MC,DS,What is the diameter of the police car's tire in meters?,0.6,0.6 m
-1397,simulation_0168,V3MC,DS,What is the diameter of the bike's wheel in meters?,0.65,0.65 m
-1414,simulation_0176,V3MC,DS,What is the length of the airplane in meters?,30.0,30.0 m
-1415,simulation_0176,V3MC,DS,What is the height of the stone cliff on the beach in meters?,12.5,12.5 m
-1416,simulation_0176,V3MC,DS,What is the diameter of the rear wheels on an aircraft landing gear in meters?,0.45,0.45 m
 1420,simulation_0180,A3MC,DS,What is the length of the side of the orange tiles on the floor in meters?,0.3,0.3 m
 1439,simulation_0188,A3SS,DS,What is the height of the truck in meters?,3.5,3.5 m
 1443,simulation_0188,A3SS,DS,What is the width of the truck in meters?,2.5,2.5 m
@@ -286,50 +227,27 @@ id,video_id,video_type,inference_type,question,parsed_value,raw_response
 1456,simulation_0300,A3SX,DS,What is the height of the car in meters?,1.2,1.2 m
 1465,simulation_0301,A3MX,DS,What is the width (from the left wheel to the right wheel) of the car in meters?,1.8,1.8 m
 1466,simulation_0301,A3MX,DS,What is the height of the car in meters?,1.2,1.2 m
-1492,simulation_0311,S3SC,SD,"What is the speed of the car at 1.0s, in m/s?",5.3751,5.3751 m/s
-1493,simulation_0311,S3SC,SD,"What is the speed of the car at 2.0s, in m/s?",5.37,5.37 m/s
-1494,simulation_0311,S3SC,SS,What is the length ((from the front to the back) of the car in meters?,4.5,4.5 m
 1495,simulation_0311,S3SC,SS,What is the width (from the left wheel to the right wheel) of the car in meters?,1.8,1.8 m
-1496,simulation_0311,S3SC,SD,What is the acceleration of the car at 1.0s in m/s^2?,1.32,1.32 m/s^2
-1500,simulation_0030,V3MC,DS,What is the length of the eagle in meters?,1.2,1.2 m
 1504,simulation_0140,S3MC,SS,What is the distance between the bird’s flight path and the wall with the neon sign in meters?,10.5,10.5 m
-1507,simulation_0141,V3MC,DS,What is the height of the man in meters?,1.8,1.8 m
-1508,simulation_0141,V3MC,DS,What is the total distance the man walked in meters?,0.88,0.88 m
 1509,simulation_0141,V3MC,DS,What is the side length of the floor tile in meters?,0.5,0.5 m
 1510,simulation_0141,V3MC,DS,What is the distance from the man’s foot to the left wall in meters?,0.0,0.0 m
 1511,simulation_0141,V3MC,DS,What is the distance from the man’s foot to the right wall in meters?,1.5,1.5 m
 1513,simulation_0144,S3MC,SS,What is the width of the vehicle in meters?,7.2,7.2 m
 1517,simulation_0144,S3MC,SD,"What is the width of the road the vehicle is on, in meters?",10.0,10.0 m
 1518,simulation_0149,S3MC,SS,What is the width of the car in meters?,2.0,2.0 m
-1519,simulation_0149,S3MC,SS,"What is the height, in meters, of the black-and-white collision warning markings on the pillar?",1.2,1.2 m
-1520,simulation_0149,S3MC,SS,"What is the width of the pillar, in meters, with the collision warning markings on it?",1.2,1.2 m
-1521,simulation_0149,S3MC,SD,What is the speed of the car at time 0.5s in m/s?,3.82,3.82 m/s
-1522,simulation_0149,S3MC,SD,What is the acceleration of the car at time 0.5s in m/s^2?,2.0,0.0 m/s^2
-1523,simulation_0149,S3MC,SD,What is the speed of the car at time 1s in m/s?,3.82,3.82 m/s
-1524,simulation_0149,S3MC,SD,What is the acceleration of the car at time 1s in m/s^2?,2.0,0.0 m/s^2
 1525,simulation_0150,S3MC,SS,What is the width of the car in meters?,2.1,2.1 m
-1526,simulation_0150,S3MC,SS,"What is the height, in meters, of the black-and-white collision warning markings on the pillar?",0.87,0.87 m
-1527,simulation_0150,S3MC,SS,"What is the width of the pillar, in meters, with the collision warning markings on it?",0.82,0.82 m
-1528,simulation_0150,S3MC,SD,What is the speed of the car at time 0.5s in m/s?,2.5,2.5 m/s
-1529,simulation_0150,S3MC,SD,What is the acceleration of the car at time 0.5s in m/s^2?,2.0,0.82 m/s^2
-1530,simulation_0150,S3MC,SD,What is the speed of the car at time 1s in m/s?,1.87,1.87 m/s
-1531,simulation_0150,S3MC,SD,What is the acceleration of the car at time 1s in m/s^2?,2.0,0.87 m/s^2
-1532,simulation_0150,S3MC,SS,"What is the width, in meters, of the 'B1' lettering on the wall behind the car?",2.3,2.3 m
-1533,simulation_0150,S3MC,SS,"What is the height, in meters, of the 'B1' lettering on the wall behind the car?",3.0,3.0 m
 1534,simulation_0150,S3MC,SS,"What is the distance, in meters, between the pillars on one side?",3.0,3.0 m
-1535,simulation_0151,S3MC,SS,"What is the width, in meters, of the blue car?",2.12,2.12 m
-1536,simulation_0151,S3MC,SD,What is the speed of the yellow car at time 1s in m/s?,2.27,2.27 m/s
-1537,simulation_0151,S3MC,SD,What is the acceleration of the yellow car at time 1s in m/s^2?,2.0,0.0 m/s^2
-1538,simulation_0151,S3MC,SD,What is the speed of the blue car at time 1s in m/s?,0.87,0.87 m/s
-1539,simulation_0151,S3MC,SD,What is the acceleration of the blue car at time 1s in m/s^2?,2.0,0.0 m/s^2
-1540,simulation_0152,S3MC,SS,"What is the width, in meters, of the blue car?",2.1,2.1 m
-1541,simulation_0152,S3MC,SD,What is the speed of the yellow car at time 1s in m/s?,0.764,0.764 m/s
-1542,simulation_0152,S3MC,SD,What is the acceleration of the yellow car at time 1s in m/s^2?,2.0,0.0 m/s^2
-1543,simulation_0152,S3MC,SD,What is the speed of the blue car at time 1s in m/s?,0.369,0.369 m/s
-1544,simulation_0152,S3MC,SD,What is the acceleration of the blue car at time 1s in m/s^2?,2.0,0.0 m/s^2
 1553,simulation_0195,V3MS,DS,What is the orbital diameter of the Callisto model in meters?,13.856,13.856 m
-1554,simulation_0195,V3MS,DS,What is the diameter of the model of Callisto (orbiting model) in meters?,0.012,0.012 m
-1555,simulation_0195,V3MS,DS,What is the diameter of the model of Jupiter (the one at the center) in meters?,13.004,13.004 m
+1556,simulation_0202,A3MC,DS,What is the length of the table in meters?,1.416,1.416 m
+1557,simulation_0202,A3MC,DS,What is the width of the table in meters?,1.5,1.5 m
+1558,simulation_0202,A3MC,DS,What is the length of the typewriter in meters?,0.35,0.35 m
+1559,simulation_0202,A3MC,DS,What is the width of the typewriter in meters?,0.35,0.35 m
+1560,simulation_0202,A3MC,DS,What is the height of the typewriter in meters?,0.8,0.8 m
+1561,simulation_0202,A3MC,DS,What is the width of the paper next to the magnifying glass in meters?,0.12,0.12 m
+1573,simulation_0206,A3MC,DS,What is the length of the table in meters?,1.416,1.416 m
+1574,simulation_0206,A3MC,DS,What is the width of the table in meters?,1.2,1.2 m
+1581,simulation_0206,A3MC,DS,What is the width of the paper next to the typewriter in meters?,0.12,0.12 m
+1582,simulation_0206,A3MC,DS,What is the length of the letter placed under the gun in meters?,0.06,0.06 m
 1600,simulation_0211,V3MS,DS,What is the height of the floor mirror in meters?,1.2,1.2 m
 1601,simulation_0211,V3MS,DS,What is the length of the floor mirror in meters?,1.2,1.2 m
 1602,simulation_0211,V3MS,DS,What is the distance in meters between the black cat and the camera at 0.5 s?,4.31,4.31 m
@@ -353,10 +271,6 @@ id,video_id,video_type,inference_type,question,parsed_value,raw_response
 1707,simulation_0031_segmented,V3MX,DS,What is the length of the eagle in meters?,0.5,0.5 m
 1708,simulation_0031_segmented,V3MX,DD,What is the average speed of the eagle in m/s?,3.51,3.51 m/s
 1709,simulation_0031_segmented,V3MX,DS,What is the eagle’s wingspan (the distance from the tip of one wing to the tip of the other when fully spread) in meters?,1.2,1.2 m
-1710,simulation_0032_segmented,A3MX,DS,What is the height of the person in meters?,1.8,1.8 m
-1711,simulation_0032_segmented,A3MX,DD,What is the initial velocity of the ball in m/s?,13.7978,13.7978 m/s
-1712,simulation_0032_segmented,A3MX,DS,What is the diameter of the ball in meters?,0.21,0.21 m
-1713,simulation_0032_segmented,A3MX,DD,What is the acceleration of the orange car at 2s in m/s^2?,2.0,0.45 m/s^2
 1714,simulation_0032_segmented,A3MX,DD,What is the average speed of the green car in m/s?,2.59,2.59 m/s
 1732,simulation_0038_segmented,V3MX,DS,What is the length of the rock in meters?,2.5,2.5 m
 1733,simulation_0038_segmented,V3MX,DS,What is the width of the rock in meters?,12.5,12.5 m
@@ -415,11 +329,6 @@ id,video_id,video_type,inference_type,question,parsed_value,raw_response
 1990,simulation_0248_segmented,V2MX,DS,What is the height of the white horse in meters?,1.2,1.2 m
 1991,simulation_0248_segmented,V2MX,DS,What is the length of the white horse in meters?,2.0,2.0 m
 2009,simulation_0030_segmented,V3MX,DS,What is the length of the eagle in meters?,0.5,0.5 m
-2010,simulation_0151_segmented,S3MX,SS,"What is the width, in meters, of the blue car?",2.12,2.12 m
-2011,simulation_0151_segmented,S3MX,SD,What is the speed of the yellow car at time 1s in m/s?,1.87,1.87 m/s
-2012,simulation_0151_segmented,S3MX,SD,What is the acceleration of the yellow car at time 1s in m/s^2?,2.0,0.0 m/s^2
-2013,simulation_0151_segmented,S3MX,SD,What is the speed of the blue car at time 1s in m/s?,0.54,0.54 m/s
-2014,simulation_0151_segmented,S3MX,SD,What is the acceleration of the blue car at time 1s in m/s^2?,2.0,0.0 m/s^2
 2015,internet_0001,S2SC,SS,What is the length of the black car in meters?,4.5,4.5 m
 2016,internet_0001,S2SC,SS,What is the width of the black car in meters?,2.0,2.0 m
 2017,internet_0001,S2SC,SD,What is the average speed of the black car in m/s?,15.0,15.0 m/s
@@ -486,92 +395,36 @@ id,video_id,video_type,inference_type,question,parsed_value,raw_response
 2158,captured_0006s,A3SS,DS,What the displacement of the toy between 1s and 1.2s in cm? ,33.7,-33.7 cm
 2159,captured_0006s,A3SS,DS,What is the velocity of the toy when hitting the desk for the first time in m/s? ,0.33,0.33 m/s
 2160,captured_0008,A3SC,DS,What is the basketball's initial distance from the desk in cm? ,35.0,35 cm
-2161,captured_0008,A3SC,DS,What is the basketball's diameter in cm?,24.0,24 cm
-2162,captured_0008,A3SC,DS,What is the maximum rebounce height (with respect to the desk) of the basketball in cm? ,33.0,33 cm
-2163,captured_0008,A3SC,DS,What is the basketball's velocity at 1.2s in m/s? ,0.163,0.163 m/s
 2164,captured_0008,A3SC,DS,What is the basketball's  distance from the camera at 1.2s in meters? ,1.564,1.5640 m
 2165,captured_0008s,A3SS,DS,What is the basketball's initial distance from the desk in cm? ,35.0,35 cm
-2166,captured_0008s,A3SS,DS,What is the basketball's diameter in cm?,24.0,24 cm
-2167,captured_0008s,A3SS,DS,What is the maximum rebounce height (with respect to the desk) of the basketball in cm? ,32.0,32 cm
-2168,captured_0008s,A3SS,DS,What is the basketball's velocity at 1.2s in m/s? ,0.5,0.5 m/s
 2169,captured_0008s,A3SS,DS,What is the basketball's  distance from the camera at 1.2s in meters? ,1.564,1.5640 m
 2170,captured_0008x,A3SX,DS,What is the basketball's initial distance from the desk in cm? ,35.0,35 cm
-2171,captured_0008x,A3SX,DS,What is the basketball's diameter in cm?,24.0,24 cm
-2172,captured_0008x,A3SX,DS,What is the maximum rebounce height (with respect to the desk) of the basketball in cm? ,35.0,35 cm
-2173,captured_0008x,A3SX,DS,What is the basketball's velocity at 1.2s in m/s? ,0.5,0.5 m/s
 2174,captured_0008x,A3SX,DS,What is the basketball's  distance from the camera at 1.2s in meters? ,1.564,1.5640 m
-2175,captured_0009,A3SC,DS,What is the basketball's initial distance from the floor in cm? ,20.3,20.3 cm
-2176,captured_0009,A3SC,DS,What is the basketball's diameter in cm?,24.0,24 cm
-2177,captured_0009,A3SC,DS,What is the maximum rebounce height of the basketball in cm? ,1.5795,1.5795 m
-2178,captured_0009,A3SC,DS,What is the basketball's velocity at 1.8s in m/s? ,0.14,0.14 m/s
 2179,captured_0009,A3SC,DS,What is the basketball's  distance from the camera at 1.8s in meters? ,1.5835,1.5835 m
 2180,captured_0009s,A3SS,DS,What is the basketball's initial distance from the floor in cm? ,103.0,103 cm
 2181,captured_0009s,A3SS,DS,What is the basketball's diameter in cm?,24.0,24 cm
 2182,captured_0009s,A3SS,DS,What is the maximum rebounce height of the basketball in cm? ,103.0,103 cm
-2183,captured_0009s,A3SS,DS,What is the basketball's velocity at 1.8s in m/s? ,0.14,0.14 m/s
 2184,captured_0009s,A3SS,DS,What is the basketball's  distance from the camera at 1.8s in meters? ,1.5835,1.5835 m
 2185,captured_0009x,A3SX,DS,What is the basketball's initial distance from the floor in cm? ,100.0,100 cm
 2186,captured_0009x,A3SX,DS,What is the basketball's diameter in cm?,24.0,24 cm
 2187,captured_0009x,A3SX,DS,What is the maximum rebounce height of the basketball in cm? ,1.5795,1.5795 m
-2188,captured_0009x,A3SX,DS,What is the basketball's velocity at 1.8s in m/s? ,0.14,0.14 m/s
 2189,captured_0009x,A3SX,DS,What is the basketball's  distance from the camera at 1.8s in meters? ,1.5835,1.5835 m
 2190,captured_0010,A3SC,DS,What is the length of the string in cm? ,30.0,30 cm
-2191,captured_0010,A3SC,DS,What is the ball's diameter in cm?,2.5,2.5 cm
-2192,captured_0010,A3SC,DS,What is the ball's velocity at 0.3s in m/s? ,0.0,0.0 m/s
-2193,captured_0010,A3SC,DS,What is the ball's velocoty at 0.6s in m/s? ,0.87,-0.87 m/s
-2194,captured_0010,A3SC,DS,What is that ball's acceleration at 0.3s in m/s^2? ,2.0,0.0 m/s^2
-2195,captured_0010,A3SC,DS,What is that ball's acceleration at 0.6s in m/s^2? ,2.0,0.0 m/s^2
-2196,captured_0010s,A3SS,DS,What is the length of the string in cm? ,30.0,30 cm
-2197,captured_0010s,A3SS,DS,What is the ball's diameter in cm?,1.5,1.5 cm
-2198,captured_0010s,A3SS,DS,What is the ball's velocity at 0.3s in m/s? ,0.0,0.0 m/s
-2199,captured_0010s,A3SS,DS,What is the ball's velocoty at 0.6s in m/s? ,1.0,-1.0 m/s
-2200,captured_0010s,A3SS,DS,What is that ball's acceleration at 0.3s in m/s^2? ,2.0,-1.2 m/s^2
-2201,captured_0010s,A3SS,DS,What is that ball's acceleration at 0.6s in m/s^2? ,2.0,-1.0 m/s^2
-2202,captured_0010X,A3SX,DS,What is the length of the string in cm? ,30.0,30 cm
-2203,captured_0010X,A3SX,DS,What is the ball's diameter in cm?,2.5,2.5 cm
-2204,captured_0010X,A3SX,DS,What is the ball's velocity at 0.3s in m/s? ,1.2,-1.2 m/s
-2205,captured_0010X,A3SX,DS,What is the ball's velocoty at 0.6s in m/s? ,1.0,-1.0 m/s
-2206,captured_0010X,A3SX,DS,What is that ball's acceleration at 0.3s in m/s^2? ,2.0,-1.0 m/s^2
-2207,captured_0010X,A3SX,DS,What is that ball's acceleration at 0.6s in m/s^2? ,2.0,-1.0 m/s^2
-2208,captured_0013,A3MC,DS,What is the height of the cup in cm? ,12.5,12.5 cm
-2209,captured_0013,A3MC,DS,What is the length of the pen in cm? ,12.5,12.5 cm
-2210,captured_0013,A3MC,DS,What is the diameter of the cookie in cm? ,4.5,4.5 cm
-2211,captured_0013,A3MC,DS,What is the width of the note book in cm? ,15.0,15.0 cm
-2212,captured_0013,A3MC,DS,What is the width of the desk in cm? ,85.0,85 cm
 2213,captured_0013,A3MC,DS,What is the length of the slope in cm?,25.2,25.2 cm
 2214,captured_0013,A3MC,DS,What is the diameter of the ball in cm? ,2.5,2.5 cm
 2215,captured_0013,A3MC,DD,What is the velolicty of the ball at 1.5s in cm/s? ,45.0,45 cm/s
-2216,captured_0013s,A3MS,DS,What is the height of the cup in cm? ,12.5,12.5 cm
-2217,captured_0013s,A3MS,DS,What is the length of the pen in cm? ,15.0,15.0 cm
-2218,captured_0013s,A3MS,DS,What is the diameter of the cookie in cm? ,3.5,3.5 cm
-2219,captured_0013s,A3MS,DS,What is the width of the note book in cm? ,15.0,15.0 cm
-2220,captured_0013s,A3MS,DS,What is the width of the desk in cm? ,85.0,85 cm
-2221,captured_0013s,A3MS,DS,What is the length of the slope in cm?,25.2,25.2 cm
-2222,captured_0013s,A3MS,DS,What is the diameter of the ball in cm? ,2.5,2.5 cm
-2223,captured_0013s,A3MS,DD,What is the velolicty of the ball at 1.5s in cm/s? ,45.0,45 cm/s
-2224,captured_0013x,A3MX,DS,What is the height of the cup in cm? ,12.5,12.5 cm
-2225,captured_0013x,A3MX,DS,What is the length of the pen in cm? ,15.0,15.0 cm
-2226,captured_0013x,A3MX,DS,What is the diameter of the cookie in cm? ,4.5,4.5 cm
-2227,captured_0013x,A3MX,DS,What is the width of the note book in cm? ,15.0,15.0 cm
-2228,captured_0013x,A3MX,DS,What is the width of the desk in cm? ,85.0,85 cm
-2229,captured_0013x,A3MX,DS,What is the length of the slope in cm?,25.2,25.2 cm
-2230,captured_0013x,A3MX,DS,What is the diameter of the ball in cm? ,2.5,2.5 cm
-2231,captured_0013x,A3MX,DD,What is the velolicty of the ball at 1.5s in cm/s? ,45.0,45 cm/s
 2240,captured_0014,A3MC,DS,What is the length of the slope in cm? ,100.0,100 cm
 2241,captured_0014,A3MC,DS,What is the width of the slope in cm? ,1.2,1.2 cm
 2262,captured_0014x,A3MX,DS,What is the length of the slope in cm? ,10.5,10.5 cm
 2263,captured_0014x,A3MX,DS,What is the width of the slope in cm? ,12.5,12.5 cm
 2292,captured_0018,A3MC,DS,What is the height of the left person in cm?,120.0,120 cm
 2293,captured_0018,A3MC,DS,What is the height of the right person in cm?,120.0,120 cm
-2294,captured_0018,A3MC,DS,What is the distance between the two people in cm?,100.0,100 cm
 2295,captured_0018,A3MC,DS,What is the length of the box in cm?,120.0,120 cm
 2296,captured_0018,A3MC,DS,What is the width of the box in cm?,120.0,120 cm
-2297,captured_0018,A3MC,DS,What is the diameter of the soccer ball in cm?,22.0,22 cm
 2298,captured_0018,A3MC,DS,What is the diameter of the tennis ball in cm?,6.5,6.5 cm
 2299,captured_0018,A3MC,DS,What is the height of the yellow toy in cm?,15.0,15 cm
 2300,captured_0018,A3MC,DS,What is the shoe length of the left person in cm?,25.0,25 cm
 2301,captured_0018,A3MC,DD,What is the velocity of the box at 3.4s in cm/s?,0.0,0 cm/s
-2302,captured_0018,A3MC,DD,What is the velocity of the soccer ball at 3.4s in cm/s?,12.5,12.5 cm/s
 2303,captured_0018,A3MC,DD,What is the velocity of the tennis ball at 3.4s in cm/s?,12.5,12.5 cm/s
 2304,captured_0018,A3MC,DD,What is the velocity of the pineapple toy at 3.4s in cm/s?,12.5,12.5 cm/s
 2305,captured_0018,A3MC,DS,What is the distance between the box and the soccer ball in cm at 3.0s?,100.0,100 cm
@@ -580,102 +433,22 @@ id,video_id,video_type,inference_type,question,parsed_value,raw_response
 2308,captured_0018,A3MC,DS,What is the distance between the tennis ball and the soccer ball in cm at 3.0s?,100.0,100 cm
 2309,captured_0018,A3MC,DS,What is the distance between the pineapple toy and the soccer ball in cm at 3.0s?,100.0,100 cm
 2310,captured_0018,A3MC,DS,What is the distance between the pineapple toy and the tennis ball in cm at 3.0s?,100.0,100 cm
-2311,captured_0018s,A3MS,DS,What is the height of the left person in cm?,120.0,120 cm
-2312,captured_0018s,A3MS,DS,What is the height of the right person in cm?,150.0,150 cm
-2313,captured_0018s,A3MS,DS,What is the distance between the two people in cm?,100.0,100 cm
-2314,captured_0018s,A3MS,DS,What is the length of the box in cm?,100.0,100 cm
-2315,captured_0018s,A3MS,DS,What is the width of the box in cm?,100.0,100 cm
-2316,captured_0018s,A3MS,DS,What is the diameter of the soccer ball in cm?,22.0,22 cm
-2317,captured_0018s,A3MS,DS,What is the diameter of the tennis ball in cm?,6.5,6.5 cm
-2318,captured_0018s,A3MS,DS,What is the height of the yellow toy in cm?,15.0,15 cm
-2319,captured_0018s,A3MS,DS,What is the shoe length of the left person in cm?,25.0,25 cm
-2320,captured_0018s,A3MS,DD,What is the velocity of the box at 3.4s in cm/s?,0.0,0 cm/s
-2321,captured_0018s,A3MS,DD,What is the velocity of the soccer ball at 3.4s in cm/s?,0.0,0.0 cm/s
-2322,captured_0018s,A3MS,DD,What is the velocity of the tennis ball at 3.4s in cm/s?,12.5,12.5 cm/s
-2323,captured_0018s,A3MS,DD,What is the velocity of the pineapple toy at 3.4s in cm/s?,12.5,12.5 cm/s
-2324,captured_0018s,A3MS,DS,What is the distance between the box and the soccer ball in cm at 3.0s?,100.0,100 cm
-2325,captured_0018s,A3MS,DS,What is the distance between the box and the pineapple toy in cm at 3.0s?,100.0,100 cm
-2326,captured_0018s,A3MS,DS,What is the distance between the box and the tennis ball in cm at 3.0s?,100.0,100 cm
-2327,captured_0018s,A3MS,DS,What is the distance between the tennis ball and the soccer ball in cm at 3.0s?,100.0,100 cm
-2328,captured_0018s,A3MS,DS,What is the distance between the pineapple toy and the soccer ball in cm at 3.0s?,100.0,100 cm
-2329,captured_0018s,A3MS,DS,What is the distance between the pineapple toy and the tennis ball in cm at 3.0s?,100.0,100 cm
-2330,captured_0018x,A3MX,DS,What is the height of the left person in cm?,150.0,150 cm
-2331,captured_0018x,A3MX,DS,What is the height of the right person in cm?,150.0,150 cm
-2332,captured_0018x,A3MX,DS,What is the distance between the two people in cm?,100.0,100 cm
-2333,captured_0018x,A3MX,DS,What is the length of the box in cm?,100.0,100 cm
-2334,captured_0018x,A3MX,DS,What is the width of the box in cm?,100.0,100 cm
-2335,captured_0018x,A3MX,DS,What is the diameter of the soccer ball in cm?,22.0,22 cm
-2336,captured_0018x,A3MX,DS,What is the diameter of the tennis ball in cm?,6.5,6.5 cm
 2337,captured_0018x,A3MX,DS,What is the height of the yellow toy in cm?,15.0,15 cm
-2338,captured_0018x,A3MX,DS,What is the shoe length of the left person in cm?,25.0,25 cm
-2339,captured_0018x,A3MX,DD,What is the velocity of the box at 3.4s in cm/s?,0.0,0 cm/s
-2340,captured_0018x,A3MX,DD,What is the velocity of the soccer ball at 3.4s in cm/s?,0.0,0.0 cm/s
-2341,captured_0018x,A3MX,DD,What is the velocity of the tennis ball at 3.4s in cm/s?,12.5,12.5 cm/s
 2342,captured_0018x,A3MX,DD,What is the velocity of the pineapple toy at 3.4s in cm/s?,12.5,12.5 cm/s
-2343,captured_0018x,A3MX,DS,What is the distance between the box and the soccer ball in cm at 3.0s?,100.0,100 cm
 2344,captured_0018x,A3MX,DS,What is the distance between the box and the pineapple toy in cm at 3.0s?,100.0,100 cm
-2345,captured_0018x,A3MX,DS,What is the distance between the box and the tennis ball in cm at 3.0s?,100.0,100 cm
-2346,captured_0018x,A3MX,DS,What is the distance between the tennis ball and the soccer ball in cm at 3.0s?,100.0,100 cm
 2347,captured_0018x,A3MX,DS,What is the distance between the pineapple toy and the soccer ball in cm at 3.0s?,100.0,100 cm
 2348,captured_0018x,A3MX,DS,What is the distance between the pineapple toy and the tennis ball in cm at 3.0s?,100.0,100 cm
 2349,captured_0020,A3MC,DS,What is the height of the yellow toy in cm?,12.5,12.5 cm
-2350,captured_0020,A3MC,DS,What is the height of the white jar in cm?,12.5,12.5 cm
-2351,captured_0020,A3MC,DS,What is the diameter of the white jar in cm?,12.5,12.5 cm
-2352,captured_0020,A3MC,DS,What is the distance between two people in cm?,158.0,158 cm
 2353,captured_0020,A3MC,DD,What is the velocity of the yellow toy at 0.60s in cm/s?,12.5,12.5 cm/s
-2354,captured_0020,A3MC,DD,What is the velocity of the white jar at 0.60s in cm/s?,12.5,12.5 cm/s
 2355,captured_0020,A3MC,DS,What is the displacement of the yellow toy from 0.60s to 0.80s in cm?,12.5,12.5 cm
-2356,captured_0020,A3MC,DS,What is the displacement of the white jar from 0.60s to 0.80s in cm?,12.5,12.5 cm
 2357,captured_0020s,A3MS,DS,What is the height of the yellow toy in cm?,12.5,12.5 cm
-2358,captured_0020s,A3MS,DS,What is the height of the white jar in cm?,12.5,12.5 cm
-2359,captured_0020s,A3MS,DS,What is the diameter of the white jar in cm?,12.5,12.5 cm
-2360,captured_0020s,A3MS,DS,What is the distance between two people in cm?,158.0,158 cm
 2361,captured_0020s,A3MS,DD,What is the velocity of the yellow toy at 0.60s in cm/s?,12.5,12.5 cm/s
-2362,captured_0020s,A3MS,DD,What is the velocity of the white jar at 0.60s in cm/s?,12.5,12.5 cm/s
 2363,captured_0020s,A3MS,DS,What is the displacement of the yellow toy from 0.60s to 0.80s in cm?,12.5,12.5 cm
-2364,captured_0020s,A3MS,DS,What is the displacement of the white jar from 0.60s to 0.80s in cm?,12.5,12.5 cm
 2365,captured_0020x,A3MX,DS,What is the height of the yellow toy in cm?,12.5,12.5 cm
-2366,captured_0020x,A3MX,DS,What is the height of the white jar in cm?,12.5,12.5 cm
-2367,captured_0020x,A3MX,DS,What is the diameter of the white jar in cm?,12.5,12.5 cm
-2368,captured_0020x,A3MX,DS,What is the distance between two people in cm?,175.0,175 cm
 2369,captured_0020x,A3MX,DD,What is the velocity of the yellow toy at 0.60s in cm/s?,12.5,12.5 cm/s
-2370,captured_0020x,A3MX,DD,What is the velocity of the white jar at 0.60s in cm/s?,12.5,12.5 cm/s
 2371,captured_0020x,A3MX,DS,What is the displacement of the yellow toy from 0.60s to 0.80s in cm?,12.5,12.5 cm
-2372,captured_0020x,A3MX,DS,What is the displacement of the white jar from 0.60s to 0.80s in cm?,12.5,12.5 cm
-2433,captured_0024,A3SC,DD,What is the velocity of the book at 1.0s in cm/s?,28.0,28.0 cm/s
-2434,captured_0024,A3SC,DD,What is the velocity of the book at 1.2s in cm/s?,32.8,32.8 cm/s
-2435,captured_0024,A3SC,DS,What is the length of the book in cm?,25.0,25 cm
-2436,captured_0024,A3SC,DS,What is the width of the book in cm?,22.5,22.5 cm
-2437,captured_0024,A3SC,DS,What is the height of the book in cm?,15.0,15.0 cm
-2438,captured_0024,A3SC,DS,What is the length of the slope in cm?,27.3,27.3 cm
-2439,captured_0024,A3SC,DS,What is the width of the slope in cm?,27.4,27.4 cm
-2440,captured_0024,A3SC,DS,What is the length of the table in cm?,46.0,46 cm
-2441,captured_0024,A3SC,DS,What is the width of the table in cm?,45.0,45 cm
-2442,captured_0024,A3SC,DS,What is the distance travelled by the book in cm?,28.0,28 cm
-2443,captured_0024s,A3SS,DD,What is the velocity of the book at 1.0s in cm/s?,28.0,28.0 cm/s
-2444,captured_0024s,A3SS,DD,What is the velocity of the book at 1.2s in cm/s?,34.3,34.3 cm/s
-2445,captured_0024s,A3SS,DS,What is the length of the book in cm?,25.0,25 cm
-2446,captured_0024s,A3SS,DS,What is the width of the book in cm?,25.0,25 cm
-2447,captured_0024s,A3SS,DS,What is the height of the book in cm?,15.2,15.2 cm
-2448,captured_0024s,A3SS,DS,What is the length of the slope in cm?,32.5,32.5 cm
-2449,captured_0024s,A3SS,DS,What is the width of the slope in cm?,32.5,32.5 cm
-2450,captured_0024s,A3SS,DS,What is the length of the table in cm?,47.0,47 cm
-2451,captured_0024s,A3SS,DS,What is the width of the table in cm?,55.0,55 cm
-2452,captured_0024s,A3SS,DS,What is the distance travelled by the book in cm?,28.0,28 cm
-2453,captured_0024x,A3SX,DD,What is the velocity of the book at 1.0s in cm/s?,28.0,28.0 cm/s
-2454,captured_0024x,A3SX,DD,What is the velocity of the book at 1.2s in cm/s?,34.3,34.3 cm/s
-2455,captured_0024x,A3SX,DS,What is the length of the book in cm?,25.0,25 cm
-2456,captured_0024x,A3SX,DS,What is the width of the book in cm?,25.0,25 cm
-2457,captured_0024x,A3SX,DS,What is the height of the book in cm?,15.2,15.2 cm
-2458,captured_0024x,A3SX,DS,What is the length of the slope in cm?,32.5,32.5 cm
-2459,captured_0024x,A3SX,DS,What is the width of the slope in cm?,32.5,32.5 cm
-2460,captured_0024x,A3SX,DS,What is the length of the table in cm?,50.0,50 cm
-2461,captured_0024x,A3SX,DS,What is the width of the table in cm?,50.0,50 cm
-2462,captured_0024x,A3SX,DS,What is the distance travelled by the book in cm?,28.0,28 cm
 2464,captured_0027,S3SC,SD,What is the velocity of the red ball at 0.6s in cm/s?,15.5,15.5 cm/s
-2467,captured_0027s,S3SS,SD,What is the velocity of the red ball at 0.2s in cm/s?,12.5,12.5 cm/s
 2468,captured_0027s,S3SS,SD,What is the velocity of the red ball at 0.6s in cm/s?,1.55,1.55 cm/s
-2469,captured_0027s,S3SS,SD,What is the acceleration of the red ball at 0.2s in cm/s^2?,2.0,0.0 cm/s^2
 2470,captured_0027x,S3SX,SD,What is the velocity of the red ball at 0.2s in cm/s?,15.0,15.0 cm/s
 2471,captured_0027x,S3SX,SD,What is the velocity of the red ball at 0.6s in cm/s?,12.5,12.5 cm/s
 2472,captured_0027x,S3SX,SD,What is the acceleration of the red ball at 0.2s in cm/s^2?,2.0,0.0 cm/s^2
@@ -731,30 +504,8 @@ id,video_id,video_type,inference_type,question,parsed_value,raw_response
 2766,captured_0041,V3SC,DS,What is the distance from the soccer ball to the person at 1.5s in meters? ,1.5,1.5 m
 2769,captured_0041s,V3SS,DS,What is the distance from the soccer ball to the person at 1.5s in meters? ,0.47,0.47 m
 2772,captured_0041x,V3SX,DS,What is the distance from the soccer ball to the person at 1.5s in meters? ,2.544,2.5440 m
-2806,captured_0053,V3MC,DS,What is the width of the book in cm?,23.5,23.5 cm
-2807,captured_0053,V3MC,DS,What is the length of the book in cm?,25.0,25 cm
-2808,captured_0053,V3MC,DS,What is the diameter of the rim of the white cup in cm? ,10.5,10.5 cm
-2809,captured_0053,V3MC,DS,What is the diameter of the basketball in cm?,24.5,24.5 cm
 2810,captured_0053,V3MC,DS,What is the height of the trashbin in cm?,35.0,35 cm
-2811,captured_0053,V3MC,DS,What is the diatance between the white cup and the basketball in meters?,0.409,0.4090 m
-2812,captured_0053,V3MC,DS,What is the diatance between the white cup and the book in meters?,0.434,0.434 m
 2813,captured_0053,V3MC,DS,What is the displacement of the trashbin between 0.4s and 1.4s in meters?,0.9962,0.9962 m
-2814,captured_0053s,V3MS,DS,What is the width of the book in cm?,23.5,23.5 cm
-2815,captured_0053s,V3MS,DS,What is the length of the book in cm?,25.5,25.5 cm
-2816,captured_0053s,V3MS,DS,What is the diameter of the rim of the white cup in cm? ,10.5,10.5 cm
-2817,captured_0053s,V3MS,DS,What is the diameter of the basketball in cm?,24.0,24.0 cm
-2818,captured_0053s,V3MS,DS,What is the height of the trashbin in cm?,35.0,35 cm
-2819,captured_0053s,V3MS,DS,What is the diatance between the white cup and the basketball in meters?,0.409,0.4090 m
-2820,captured_0053s,V3MS,DS,What is the diatance between the white cup and the book in meters?,0.504,0.504 m
-2821,captured_0053s,V3MS,DS,What is the displacement of the trashbin between 0.4s and 1.4s in meters?,0.9962,0.9962 m
-2822,captured_0053x,V3MX,DS,What is the width of the book in cm?,25.5,25.5 cm
-2823,captured_0053x,V3MX,DS,What is the length of the book in cm?,25.5,25.5 cm
-2824,captured_0053x,V3MX,DS,What is the diameter of the rim of the white cup in cm? ,10.5,10.5 cm
-2825,captured_0053x,V3MX,DS,What is the diameter of the basketball in cm?,24.1,24.1 cm
-2826,captured_0053x,V3MX,DS,What is the height of the trashbin in cm?,35.0,35 cm
-2827,captured_0053x,V3MX,DS,What is the diatance between the white cup and the basketball in meters?,0.409,0.4090 m
-2828,captured_0053x,V3MX,DS,What is the diatance between the white cup and the book in meters?,0.514,0.5140 m
-2829,captured_0053x,V3MX,DS,What is the displacement of the trashbin between 0.4s and 1.4s in meters?,0.9962,0.9962 m
 2843,captured_0054as,V3MS,DS,What is the soccer ball's displacement between 1.0s and 1.4s in meters? ,0.33,0.33 m
 2844,captured_0054as,V3MS,DS,What is the soccer ball's diameter in cm? ,22.0,22 cm
 2847,captured_0054as,V3MS,DD,What is the soccer ball's velocity at 0.5s in m/s? ,0.0,0.0 m/s
