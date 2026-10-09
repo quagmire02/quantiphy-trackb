@@ -30,6 +30,9 @@ SETTINGS = {
                                # "blend" = geometric mean of both (motion priors only, else "prior")
     "f_fallback_moge": True,   # prior calibration impossible -> use MoGe-2's focal length
     "min_f_over_w": 0.3,       # calibrated f below this (field of view > 118 deg) is implausible -> MoGe-2 f
+    "min_f_sensitivity": 0.0,  # |d log(prior) / d log f| below this: the prior barely fixes f -> MoGe-2 f
+    "max_f_disagreement": 0.0,  # motion prior: calibrated f vs (bias-corrected) MoGe-2 f apart by more
+                                # than this factor -> the calibration broke, use MoGe-2 f (0 = off)
 }
 
 _NUM = r"\d*\.?\d+"
@@ -271,7 +274,18 @@ def calibrate_f(rec: dict, ref: Object3D, width: int, height: int, duration: flo
     if not len(sign_change):
         raise SolveError("no focal length reproduces the prior")
     i = sign_change[0]
-    return float(brentq(lambda f: np.log(predicted(f) / prior_si), grid[i], grid[i + 1], xtol=1e-3))
+    f = float(brentq(lambda f: np.log(predicted(f) / prior_si), grid[i], grid[i + 1], xtol=1e-3))
+    # How strongly the prior pins f down: d log(predicted) / d log(f) at the solution. A size prior
+    # gives -1; a speed mostly toward the camera gives ~0 (the radial part comes from the stated
+    # distances, not from f), and then a small measurement error becomes a large error in f.
+    h = 1.1
+    try:
+        sens = (np.log(predicted(f * h)) - np.log(predicted(f / h))) / (2 * np.log(h))
+    except (SolveError, FloatingPointError, ValueError):
+        sens = float("nan")
+    if abs(sens) < SETTINGS["min_f_sensitivity"]:
+        raise SolveError(f"focal length poorly determined by the prior (sensitivity {sens:.2f})")
+    return f
 
 
 def solve_3d(rec: dict, feats: dict[str, np.ndarray], keys: tuple[str, list[str]], depth_text, fps: float,
@@ -317,6 +331,10 @@ def solve_3d(rec: dict, feats: dict[str, np.ndarray], keys: tuple[str, list[str]
             if (SETTINGS["f_fallback_moge"] and usable_moge and f / width < SETTINGS["min_f_over_w"]
                     and moge_f / width >= SETTINGS["min_f_over_w"]):
                 f, f_source = moge_f, "moge"  # no real camera here is that wide: the calibration is broken
+            elif (SETTINGS["f_fallback_moge"] and usable_moge and SETTINGS["max_f_disagreement"] > 0
+                  and rec["ref_quantity"] not in SIZE_QUANTITIES
+                  and max(f / moge_f, moge_f / f) > SETTINGS["max_f_disagreement"]):
+                f, f_source = moge_f, "moge"  # a noisy speed/acceleration calibration far from MoGe-2's
             elif SETTINGS["f_source"] == "blend" and usable_moge and rec["ref_quantity"] not in SIZE_QUANTITIES:
                 f, f_source = float(np.sqrt(f * moge_f)), "blend"
         except SolveError:

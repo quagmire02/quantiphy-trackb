@@ -1,8 +1,16 @@
-"""Minimal local Qwen3-VL wrapper for a 6 GB Turing GPU.
+"""Local Qwen3-VL wrapper, configurable so the same pipeline runs a 4B model on a 6 GB card and a
+bigger one (8B / 32B) on a larger GPU.
 
-The language model is quantized to 4-bit NF4 at load time; the vision encoder and lm_head stay
-fp16 (pre-quantized community checkpoints break on the vision tower with transformers 5.x).
+Environment (all optional):
+  QUANTIPHY_VLM            model id (default Qwen/Qwen3-VL-4B-Instruct), e.g. Qwen/Qwen3-VL-8B-Instruct
+  QUANTIPHY_VLM_4BIT       1 (default) = language model in 4-bit NF4; 0 = full fp16 (big GPUs)
+  QUANTIPHY_VLM_QUANT_VISION  1 = also quantize the vision encoder (lets 8B fit in 6 GB; default 0)
+  QUANTIPHY_VLM_MAX_GPU_GB    cap GPU memory and offload the rest to CPU RAM (slow; default: no cap)
+
+Default (4B): the language model is quantized to 4-bit NF4 at load time; the vision encoder and
+lm_head stay fp16 (pre-quantized community checkpoints break on the vision tower with transformers 5.x).
 """
+import os
 import time
 
 import numpy as np
@@ -10,18 +18,36 @@ import torch
 from transformers import AutoModelForImageTextToText, AutoProcessor, BitsAndBytesConfig
 from transformers.video_utils import VideoMetadata
 
+DEFAULT_VLM = "Qwen/Qwen3-VL-4B-Instruct"
+
+
+def vlm_id() -> str:
+    return os.environ.get("QUANTIPHY_VLM", DEFAULT_VLM)
+
+
+def vlm_short_name(model_id: str | None = None) -> str:
+    """'Qwen/Qwen3-VL-8B-Instruct' -> 'Qwen3-VL-8B' (used in prediction file names)."""
+    return (model_id or vlm_id()).split("/")[-1].replace("-Instruct", "").replace("-bnb-4bit", "")
+
 
 class QwenVL:
-    def __init__(self, model_id: str, dtype=torch.float16):
-        self.model_id = model_id
-        self.processor = AutoProcessor.from_pretrained(model_id)
-        quant = BitsAndBytesConfig(
-            load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_use_double_quant=True,
-            bnb_4bit_compute_dtype=dtype, llm_int8_skip_modules=["visual", "lm_head"],
-        )
+    def __init__(self, model_id: str | None = None, dtype=torch.float16):
+        self.model_id = model_id or vlm_id()
+        self.processor = AutoProcessor.from_pretrained(self.model_id)
+        kwargs = {}
+        if os.environ.get("QUANTIPHY_VLM_4BIT", "1") == "1":
+            skip = ["lm_head"] + ([] if os.environ.get("QUANTIPHY_VLM_QUANT_VISION") == "1" else ["visual"])
+            kwargs["quantization_config"] = BitsAndBytesConfig(
+                load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_use_double_quant=True,
+                bnb_4bit_compute_dtype=dtype, llm_int8_skip_modules=skip,
+                llm_int8_enable_fp32_cpu_offload="QUANTIPHY_VLM_MAX_GPU_GB" in os.environ)
+        if "QUANTIPHY_VLM_MAX_GPU_GB" in os.environ:
+            kwargs["device_map"] = "auto"
+            kwargs["max_memory"] = {0: f"{os.environ['QUANTIPHY_VLM_MAX_GPU_GB']}GiB", "cpu": "24GiB"}
+        else:
+            kwargs["device_map"] = "cuda:0"
         self.model = AutoModelForImageTextToText.from_pretrained(
-            model_id, dtype=dtype, quantization_config=quant, device_map="cuda:0", attn_implementation="sdpa",
-        ).eval()
+            self.model_id, dtype=dtype, attn_implementation="sdpa", **kwargs).eval()
 
     @torch.inference_mode()
     def chat(self, messages: list[dict], images: list | None = None, max_new_tokens: int = 256) -> str:

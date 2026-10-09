@@ -12,6 +12,8 @@ Items the solver can't handle fall back to a VLM baseline prediction file.
 """
 import argparse
 import json
+import os
+import re
 import sys
 import time
 from pathlib import Path
@@ -27,6 +29,7 @@ from pipeline.data import load_split  # noqa: E402
 from pipeline.geometry import F  # noqa: E402
 from pipeline.guards import apply_guards, check_targets  # noqa: E402
 from pipeline.parse import (finalize_prior, finalize_question, prior_description, prior_messages,  # noqa: E402
+                            question_overrides,
                             prior_object, question_messages)
 from pipeline.scoring import RESULTS, mra, official_score, quick_report, write_predictions  # noqa: E402
 from pipeline.solver import SolveError, solve  # noqa: E402
@@ -36,7 +39,7 @@ from pipeline.video import read_frames  # noqa: E402
 TRACK_LONGEST = 1024  # tracking/grounding resolution (longest side, px)
 MAX_TRACK_FRAMES = 96  # longer clips are tracked on a strided subset
 GROUND_SWEEP_FRAMES = 12  # frames searched for an object not found at the key frame / quarter points
-VLM_ID = "Qwen/Qwen3-VL-4B-Instruct"
+VLM_ID = os.environ.get("QUANTIPHY_VLM", "Qwen/Qwen3-VL-4B-Instruct")  # see pipeline/vlm.py
 COLORS = [(255, 60, 60), (60, 200, 60), (60, 120, 255), (255, 200, 0), (255, 0, 255), (0, 220, 220)]
 
 
@@ -92,7 +95,7 @@ def load_parsed(df, cache: Path) -> dict:
     for row in df.itertuples():
         p, q = priors.get(row.video_id), questions.get(row.id)
         if p and q:
-            out[row.id] = {**p, **q, "ok": p["prior_ok"] and q["question_ok"]}
+            out[row.id] = {**p, **q, "ok": p["prior_ok"] and q["question_ok"], **question_overrides(row.question)}
     return out
 
 
@@ -356,6 +359,50 @@ def load_moge_f(cache: Path, vid: str) -> float | None:
     return float(np.median(fs)) if fs else None
 
 
+# MoGe-2's focal length is biased per kind of footage (test, size-prior clips: ~0.96x on original lab
+# clips, ~1.2x with the background removed, ~0.6x on simulations). Correction factors are measured
+# label-free on the test split (stage_mogecal) and applied to every split.
+MOGE_CORR_PATH = RESULTS / "cache" / "moge_f_correction.json"
+MOGE_CORR_MIN_CLIPS = 5
+SIZE_PRIORS = {"length", "width", "height", "diameter", "thickness", "size"}
+
+
+def footage_group(row) -> str:
+    """(video source, variant): 'captured/seg', 'simulation/orig', ..."""
+    vid = str(row.video_id)
+    var = "seg" if re.search(r"(_segmented|\d[a-z]?s)$", vid) else ("x" if re.search(r"\d[a-z]?x$", vid) else "orig")
+    return f"{row.video_source}/{var}"
+
+
+def stage_mogecal(df, parsed, cache: Path):
+    """Per footage group: median of MoGe f / prior-calibrated f over clips whose prior is a size (the
+    reliable calibration). Writes MOGE_CORR_PATH; groups with too few clips are left uncorrected."""
+    import pipeline.solver3d as s3
+    d3 = df[df["video_type"].str[1] == "3"]
+    MOGE_CORR_PATH.unlink(missing_ok=True)  # measure against uncorrected MoGe
+    sol = _solve_rows(d3, parsed, cache).merge(d3, on="id")
+    ratios: dict[str, list[float]] = {}
+    for vid, g in sol.groupby("video_id"):
+        refq = next((parsed[i]["ref_quantity"] for i in g["id"] if i in parsed), None)
+        cal = g.loc[g.get("f_source", pd.Series(dtype=object)) == "prior", "f_px"].median() if "f_px" in g else np.nan
+        mf = load_moge_f(cache, vid)
+        if refq in SIZE_PRIORS and mf and np.isfinite(cal) and cal > 0:
+            ratios.setdefault(footage_group(g.iloc[0]), []).append(mf / cal)
+    corr = {k: float(np.median(v)) for k, v in ratios.items() if len(v) >= MOGE_CORR_MIN_CLIPS}
+    MOGE_CORR_PATH.write_text(json.dumps({"factors": corr, "n": {k: len(v) for k, v in ratios.items()},
+                                          "min_f_sensitivity": s3.SETTINGS["min_f_sensitivity"]}, indent=1))
+    print("MoGe focal-length correction (MoGe / calibrated):", {k: round(v, 3) for k, v in corr.items()})
+
+
+def _corrected_moge_f(cache: Path, row, corr: dict[str, float]) -> float | None:
+    mf = load_moge_f(cache, row.video_id)
+    return mf / corr.get(footage_group(row), 1.0) if mf else mf
+
+
+def moge_corrections() -> dict[str, float]:
+    return json.loads(MOGE_CORR_PATH.read_text())["factors"] if MOGE_CORR_PATH.exists() else {}
+
+
 # ---------------------------------------------------------------- stage: solve
 CLIP_GUARD = r"person height in clip|vehicle size in clip|faster than free fall"
 
@@ -390,6 +437,7 @@ def stage_solve(df, parsed, cache: Path) -> pd.DataFrame:
 
 
 def _solve_rows(df, parsed, cache: Path) -> pd.DataFrame:
+    corr = moge_corrections()
     rows = []
     for row in df.itertuples():
         rec = parsed.get(row.id)
@@ -410,7 +458,7 @@ def _solve_rows(df, parsed, cache: Path) -> pd.DataFrame:
             if str(row.video_type)[1] == "3":
                 h, w = json.loads((cache / "ground" / f"{row.video_id}.json").read_text())["shape"]
                 out = solve_3d(rec, feats, (ref, tgts), row.depth_info, float(row.fps), n_frames, w, h,
-                               moge=load_moge(cache, row.video_id), moge_f=load_moge_f(cache, row.video_id))
+                               moge=load_moge(cache, row.video_id), moge_f=_corrected_moge_f(cache, row, corr))
             else:
                 out = solve(rec, feats[ref], [feats[k] for k in tgts], float(row.fps), n_frames)
             if not np.isfinite(out["value"]) or out["value"] <= 0:
@@ -467,6 +515,10 @@ def main():
         stage_track(df, parsed, cache)
     if "geom" in stages:
         stage_geom(df, cache)
+    if "mogecal" in stages:  # label-free; measured on test, applied to every split
+        if args.split != "test":
+            sys.exit("mogecal runs on the test split (its factors are applied to every split)")
+        stage_mogecal(df, parsed, cache)
     if "solve" not in stages:
         return
 

@@ -14,6 +14,9 @@ SIZE_QUANTITIES = {"length", "width", "height", "diameter", "radius", "thickness
 # Tunable measurement choices (swept in experiments/solver_sweep.py).
 SETTINGS = {
     "width": "bbox",          # "bbox" = horizontal extent, "minor" = short principal axis
+    "diameter": "minor",      # "eq" = equal-area circle, "minor" = short principal axis (blur stretches
+                              # only the long one), "bbox_min" = shorter bbox side, "bbox_mean" = mean bbox side
+                              # (validation: eq 61.3 -> minor 62.6 avg; diameter items MRA 0.55 -> 0.69)
     "smooth_s": 0.25,         # Savitzky-Golay window (s) for path length / mean speed
     "mean_speed": "auto",     # "path" = smoothed path length / time, "chord" = displacement / time,
                               # "auto" = chord when the path is nearly straight
@@ -240,6 +243,12 @@ def target_accel(tr: Track, pix: Track, tw, a: float, b: float) -> float:
     return tr.accel_at(a) if _is_instant(tw) else tr.accel_window(a, b)
 
 
+def _diameter(f: np.ndarray) -> np.ndarray:
+    w, h = f[:, F["x2"]] - f[:, F["x1"]], f[:, F["y2"]] - f[:, F["y1"]]
+    return {"eq": f[:, F["eq_diam"]], "minor": f[:, F["minor"]], "bbox_min": np.minimum(w, h),
+            "bbox_mean": (w + h) / 2}[SETTINGS["diameter"]]
+
+
 def size_series(feats: np.ndarray, quantity: str) -> tuple[np.ndarray, np.ndarray]:
     """(frame indices, per-frame pixel size) over frames where the object is fully in view
     (all present frames if it always touches the border)."""
@@ -253,7 +262,7 @@ def size_series(feats: np.ndarray, quantity: str) -> tuple[np.ndarray, np.ndarra
         "length": f[:, F["major"]], "size": f[:, F["major"]], "thickness": f[:, F["minor"]],
         "width": f[:, F["minor"]] if SETTINGS["width"] == "minor" else f[:, F["x2"]] - f[:, F["x1"]],
         "height": f[:, F["y2"]] - f[:, F["y1"]],
-        "diameter": f[:, F["eq_diam"]], "radius": f[:, F["eq_diam"]] / 2,
+        "diameter": _diameter(f), "radius": _diameter(f) / 2,
     }[quantity]
     return np.flatnonzero(use), vals
 
@@ -305,10 +314,29 @@ def meters_per_pixel(rec: dict, ref: np.ndarray, fps: float, duration: float) ->
     return prior_si / px, px
 
 
+def _axis_track(tr: Track, component: str | None) -> Track:
+    """Only the horizontal (image x) or vertical (image y) part of a 2D motion."""
+    if component not in ("horizontal", "vertical"):
+        return tr
+    k = 0 if component == "horizontal" else 1
+    return Track(tr.t, tr.pts[:, k:k + 1], tr.fps)
+
+
 def target_pixels(rec: dict, feats: list[np.ndarray], fps: float, duration: float) -> float:
     q, tw = rec["target_quantity"], _resolve(rec["target_time"], duration)
+    comp = rec.get("component")
     if q in SIZE_QUANTITIES:
         return pixel_size(feats[0], q)
+    if q == "distance" and comp in ("horizontal", "vertical") and len(feats) == 2:
+        k = 0 if comp == "horizontal" else 1
+        ta, tb = Track.from_feats(feats[0], fps), Track.from_feats(feats[1], fps)
+        if tw is not None:
+            return float(abs(ta.position_at(tw[0])[k] - tb.position_at(tw[0])[k]))
+        common = (feats[0][:, F["present"]] == 1) & (feats[1][:, F["present"]] == 1)
+        if not common.any():
+            raise SolveError("objects never visible together")
+        c = [F["cx"], F["cy"]][k]
+        return float(np.median(np.abs(feats[0][common][:, c] - feats[1][common][:, c])))
     if q == "distance":
         if len(feats) != 2:
             raise SolveError("distance needs two objects")
@@ -322,6 +350,8 @@ def target_pixels(rec: dict, feats: list[np.ndarray], fps: float, duration: floa
         return float(np.median(np.hypot(*d.T)))
     tr = Track.from_feats(feats[0], fps)
     a, b = tw if tw else (float(tr.t[0]), float(tr.t[-1]))
+    if q in ("speed", "displacement"):
+        tr = _axis_track(tr, comp)
     if q == "speed":
         return tr.velocity_at(a) if _is_instant(tw) else tr.mean_speed(a, b)
     if q == "acceleration":

@@ -42,14 +42,15 @@ def main():
     ap.add_argument("--split", default="test", choices=["validation", "test"])
     ap.add_argument("--solutions", required=True, help="measure_2d.py solutions CSV (id, value)")
     ap.add_argument("--fallback", required=True, help="VLM prediction file name in results/<split>_predictions")
-    ap.add_argument("--last-resort", default=None, help="prediction file used if both are missing "
-                    "(default: floor_unit_median for test, floor_unit_median_lovo for validation)")
+    ap.add_argument("--last-resort", default="self", help="'self' (default): median of our own answers per "
+                    "unit, no labels; or a prediction file name (the old floor_unit_median used validation labels)")
+    ap.add_argument("--correct", action="store_true", help="apply results/cache/answer_correction.json")
     ap.add_argument("--name", required=True)
     args = ap.parse_args()
 
     df = load_split(args.split)
     preds = RESULTS / f"{args.split}_predictions"
-    last = args.last_resort or ("floor_unit_median" if args.split == "test" else "floor_unit_median_lovo")
+    last = args.last_resort
     # VLM answers: prefer the raw reply log, which keeps every item ever answered (the prediction CSV
     # only holds the items unsolved in the latest run). Replies are re-parsed with the current parser,
     # then converted when they use a different unit than asked ("1.5795 m" for a cm question).
@@ -71,9 +72,9 @@ def main():
         vlm = fb["parsed_value"].astype(float)
     n_conv = int((~np.isclose(vlm.values, fb["parsed_value"].values, equal_nan=True)).sum())
     print(f"VLM answers changed by re-parsing / unit conversion: {n_conv}")
-    sources = [("measure", load_values(Path(args.solutions), "value")),
-               ("vlm", vlm),
-               ("median", load_values(preds / f"{last}.csv", "parsed_value"))]
+    sources = [("measure", load_values(Path(args.solutions), "value")), ("vlm", vlm)]
+    if args.last_resort != "self":
+        sources.append(("median", load_values(preds / f"{last}.csv", "parsed_value")))
 
     value = np.full(len(df), np.nan)
     source = np.full(len(df), "", dtype=object)
@@ -81,6 +82,27 @@ def main():
         cand = df["id"].map(series).values
         take = (source == "") & usable(cand)
         value[take], source[take] = cand[take], name
+    if args.last_resort == "self":
+        # Label-free last resort: the median of our own answers in this split for the same requested
+        # unit (no validation labels involved), else the median of all our answers.
+        units = df["question"].map(question_unit).fillna("?").values
+        own = pd.Series(value).groupby(units).median()
+        fill = pd.Series(units).map(own).fillna(np.nanmedian(value)).values
+        take = (source == "") & usable(fill)
+        value[take], source[take] = fill[take], "median"
+
+    # Score-optimal answer correction (experiments/calibrate_answers.py): one multiplier per group of
+    # answer source x quantity kind [x 2D/3D], kept only if it won leave-one-video-out validation.
+    corr_path = RESULTS / "cache" / "answer_correction.json"
+    if args.correct and corr_path.exists():
+        from experiments.calibrate_answers import kind_of
+        c = json.loads(corr_path.read_text())
+        kinds = df["question"].map(kind_of).values
+        for i in range(len(df)):
+            src = "measure" if source[i] == "measure" else "guess"
+            g = f"{src}/{kinds[i]}" + (f"/{df['video_type'].iloc[i][1]}D" if c["with_dim"] else "")
+            value[i] *= c["factors"].get(g, 1.0)
+        print(f"applied answer correction ({c['groups']}): {c['factors']}")
 
     # Validate before anything gets uploaded.
     problems = []

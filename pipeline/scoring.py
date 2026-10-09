@@ -4,15 +4,19 @@ Every experiment writes results/<split>_predictions/<name>.csv. Scoring validati
 re-runs QuantiPhy/evaluator.py over the whole folder, so all experiments land in one
 comparison table (results/val_mra/all_model_results.csv).
 """
+import os
 import subprocess
 import sys
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
 from pipeline.data import ROOT, VAL_CSV
 
-RESULTS = ROOT / "results"
+# QUANTIPHY_RESULTS: a separate results tree (caches, predictions, submissions), e.g. for a run with a
+# bigger VLM that must not overwrite the 4B caches.
+RESULTS = Path(os.environ["QUANTIPHY_RESULTS"]) if os.environ.get("QUANTIPHY_RESULTS") else ROOT / "results"
 EVALUATOR = ROOT / "QuantiPhy" / "evaluator.py"
 THETAS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95]  # same as evaluator.py
 

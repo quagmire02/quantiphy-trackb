@@ -10,6 +10,7 @@ Example:
 """
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -28,7 +29,7 @@ from pipeline.vlm import QwenVL  # noqa: E402
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--split", default="validation", choices=["validation", "test"])
-    ap.add_argument("--model", default="Qwen/Qwen3-VL-4B-Instruct")
+    ap.add_argument("--model", default=os.environ.get("QUANTIPHY_VLM", "Qwen/Qwen3-VL-4B-Instruct"))
     ap.add_argument("--mode", default="video", choices=["video", "no_video"])
     # 16 frames @ 640px: ~4.5 GiB peak, ~4.6 s/question on RTX 2060 (32 frames spills past 6 GB -> 4x slower)
     ap.add_argument("--max-frames", type=int, default=16)

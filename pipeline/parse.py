@@ -172,6 +172,25 @@ def finalize_prior(reply: str, prior: str) -> dict:
     return rec
 
 
+_COMPONENT = re.compile(r"\b(horizontal|vertical)\w*\b(?:\s*\([^)]*\))?\s*(?:\w+\s+){0,2}?"
+                        r"(velocity|speed|displacement|distance)|\b(velocity|speed|displacement)\b[^?]*\b(horizontal|vertical)\w*\b", re.I)
+
+
+def question_overrides(question: str) -> dict:
+    """Meaning the generic parse misses, by rule on the question text (applied at load time):
+    'horizontal speed / vertical displacement' -> only that image axis of the motion (2D);
+    'wingspan' -> the long axis of the mask, whatever dimension word the question uses."""
+    out = {}
+    m = _COMPONENT.search(str(question))
+    # Only one object's own motion: "horizontal distance between two cars" means along the ground,
+    # not along the image x axis.
+    if m and not re.search(r"\bbetween\b|\bfrom\b.*\bto\b", str(question), re.I):
+        out["component"] = (m.group(1) or m.group(4)).lower()
+    if re.search(r"wing\s*span", str(question), re.I):
+        out["target_quantity"] = "length"
+    return out
+
+
 def finalize_question(reply: str, question: str) -> dict:
     js = _json(reply)
     targets = [str(t).strip() for t in js.get("targets") or [] if str(t).strip()][:2]
