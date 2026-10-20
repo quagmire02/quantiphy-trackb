@@ -130,6 +130,38 @@ def ground(vlm, frame: np.ndarray, obj: str, every: bool = False) -> dict:
     return {"boxes": boxes, "reply": reply}
 
 
+def simple_phrase(phrase: str) -> str:
+    """Plain noun phrase a small model grounds more easily: drop location clauses and parentheses,
+    fix common typos ('bycicle on the upper left conrner' -> 'bicycle')."""
+    p = re.sub(r"\([^)]*\)", " ", phrase.lower().split("#")[0])
+    words = p.split()
+    for i, w in enumerate(words):
+        if w in _PREPOSITIONS and i > 0:
+            words = words[:i]
+            break
+    fixes = {"bycicle": "bicycle", "bicyle": "bicycle", "ballon": "balloon", "soccor": "soccer", "chess": "chess piece"}
+    return " ".join(fixes.get(w, w) for w in words).strip()
+
+
+def ground_tiled(vlm, frame: np.ndarray, phrase: str, zoom: float = 2.0) -> dict:
+    """Ground on 2x2 overlapping tiles, each upscaled `zoom` times, so a small object covers more of
+    the VLM's view. Returns the first tile hit (box mapped back to frame pixels), else no boxes."""
+    import cv2
+    H, W = frame.shape[:2]
+    th, tw = int(H * 0.6), int(W * 0.6)
+    for y0 in (0, H - th):
+        for x0 in (0, W - tw):
+            tile = cv2.resize(frame[y0:y0 + th, x0:x0 + tw], (int(tw * zoom), int(th * zoom)),
+                              interpolation=cv2.INTER_CUBIC)
+            g = ground(vlm, tile, phrase)
+            for b in g["boxes"]:
+                box = [b[0] / zoom + x0, b[1] / zoom + y0, b[2] / zoom + x0, b[3] / zoom + y0]
+                # a box hugging the tile edge is probably a cut-off object: let another tile take it
+                if box[2] - box[0] < 0.9 * tw and box[3] - box[1] < 0.9 * th:
+                    return {"boxes": [[round(v, 1) for v in box]], "reply": g["reply"], "tile": [x0, y0]}
+    return {"boxes": [], "reply": ""}
+
+
 def _words(phrase: str) -> set[str]:
     return set(phrase.lower().split("#")[0].split()) - {"the", "of", "a", "an"}
 

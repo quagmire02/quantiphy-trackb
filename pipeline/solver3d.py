@@ -31,6 +31,19 @@ SETTINGS = {
     "f_fallback_moge": True,   # prior calibration impossible -> use MoGe-2's focal length
     "min_f_over_w": 0.3,       # calibrated f below this (field of view > 118 deg) is implausible -> MoGe-2 f
     "min_f_sensitivity": 0.0,  # |d log(prior) / d log f| below this: the prior barely fixes f -> MoGe-2 f
+    "equal_depth_fallback": True,  # no stated or transferred distance -> the clip's median stated distance
+    # Known camera (all "lab" clips come from one rig): f is the most likely value given BOTH the camera
+    # (tight: sd of log f) and the prior's measurement (looser: motion blur inflates a moving reference
+    # ball by ~6%, motion toward the camera barely constrains f). FOV estimated on validation lab clips.
+    "loom": "raw",             # (test 2026-10-10: gated made val S3 -1.7 and variant agreement worse)
+                               # < 2 timed distances: "gated" = apparent-size depth only for a clear, smooth
+                               # size change (else constant); "raw" = old behaviour (1 timed: always raw size)
+    "loom_min_change": 0.08,   # smoothed change of log size needed (~8%)
+    "loom_snr": 4.0,           # ... and this many times the residual sd (wing flaps, gait)
+    "lab_fov_deg": 84.0,       # horizontal field of view of the lab camera (None = not used); validation:
+                               # GT-implied 86 deg (clips 84-90), lab-item score flat over 82-86 deg
+    "cam_sig_log_f": 0.05,
+    "prior_sig_log": 0.20,
     "max_f_disagreement": 0.0,  # motion prior: calibrated f vs (bias-corrected) MoGe-2 f apart by more
                                 # than this factor -> the calibration broke, use MoGe-2 f (0 = off)
 }
@@ -143,9 +156,48 @@ class Object3D:
             raise SolveError(f"object not tracked near its distance timestamp t={t0:.2f}s")
         return i
 
+    def _smoothed_log_size(self):
+        """(times, smoothed log apparent size at every tracked frame) when the object's size changes
+        clearly and smoothly over the clip (motion toward / away from the camera), else None.
+        Uses frames where the object is fully inside the image; a local quadratic fit (+-0.5 s) per
+        frame smooths mask jitter; the change must exceed max(LOOM_MIN_CHANGE, LOOM_SNR x residual sd)."""
+        inner = self.feats[self.present, F["touches_border"]] == 0
+        t, ls = self.t[inner], np.log(np.maximum(self.scale[inner], 1e-6))
+        if len(np.unique(t)) < 3 or np.ptp(t) < 0.2:
+            return None
+        sm = np.empty(len(t))
+        for i, t0 in enumerate(t):
+            sel = np.abs(t - t0) <= 0.5
+            if sel.sum() < 3:
+                sel = np.argsort(np.abs(t - t0))[:3]
+            x = t[sel] - t0
+            sm[i] = np.polyval(np.polyfit(x, ls[sel], min(2, len(np.unique(x)) - 1)), 0.0)
+        resid = ls - sm
+        sd = 1.4826 * float(np.median(np.abs(resid - np.median(resid))))
+        if np.ptp(sm) < max(SETTINGS["loom_min_change"], SETTINGS["loom_snr"] * sd):
+            return None
+        return t, sm
+
     def distances(self) -> np.ndarray:
         """Euclidean camera distance at every tracked frame."""
         timed = sorted((a["t"], a["d"]) for a in self.anchors if a["t"] is not None)
+        if SETTINGS["loom"] == "gated" and len(timed) < 2:
+            # < 2 timed distances: follow the apparent size only when it changes clearly and smoothly
+            # (range ~ 1 / size), anchored at the timed distance (or the mean untimed one); else constant.
+            loom = self._smoothed_log_size()
+            if loom is None:
+                d0 = timed[0][1] if timed else float(np.median([a["d"] for a in self.anchors]))
+                return np.full(len(self.t), float(d0))
+            ts, sm = loom
+            size = np.exp(np.interp(self.t, ts, sm))
+            if timed:
+                t0, d0 = timed[0]
+                est = d0 * float(np.exp(np.interp(t0, ts, sm))) / size
+            else:
+                est = float(np.mean([a["d"] for a in self.anchors])) * float(np.exp(np.median(sm))) / size
+            if self.motion and any(a.get("derived") for a in self.anchors) and est.max() / est.min() > 2.0:
+                return np.full(len(self.t), float(timed[0][1] if timed else np.median(est)))
+            return est
         if not timed:  # static distance
             return np.full(len(self.t), float(np.median([a["d"] for a in self.anchors])))
         if len(timed) >= 2 and SETTINGS["depth_interp"] == "linear":
@@ -288,12 +340,32 @@ def calibrate_f(rec: dict, ref: Object3D, width: int, height: int, duration: flo
     return f
 
 
+def map_f(rec: dict, ref: Object3D, width: int, height: int, duration: float, f_cam: float) -> float:
+    """Focal length maximising N(log f; log f_cam, cam_sig) x N(log(prior measured / prior); 0, prior_sig):
+    a known camera, unless the prior pins f down much more tightly. f_cam if the prior never evaluates."""
+    prior_si = abs(to_si(rec["prior_value"], rec["prior_unit"]))
+    tw = _resolve(rec["ref_time"], duration)
+    lf = np.linspace(np.log(f_cam / 3), np.log(f_cam * 3), 161)
+    cost = np.full(len(lf), np.inf)
+    for i, x in enumerate(lf):
+        try:
+            q = quantity_3d(rec["ref_quantity"], tw, [ref], Camera(width, height, float(np.exp(x))), duration,
+                            target=False)
+        except (SolveError, FloatingPointError, ValueError):
+            continue
+        if q > 0 and np.isfinite(q):
+            cost[i] = ((x - np.log(f_cam)) / SETTINGS["cam_sig_log_f"]) ** 2 \
+                + (np.log(q / prior_si) / SETTINGS["prior_sig_log"]) ** 2
+    return float(np.exp(lf[int(np.argmin(cost))])) if np.isfinite(cost).any() else float(f_cam)
+
+
 def solve_3d(rec: dict, feats: dict[str, np.ndarray], keys: tuple[str, list[str]], depth_text, fps: float,
              n_frames: int, width: int, height: int, moge: dict[int, dict[str, float]] | None = None,
-             moge_f: float | None = None) -> dict:
+             moge_f: float | None = None, known_fov_deg: float | None = None) -> dict:
     """feats: every tracked object of the clip (key -> per-frame features); moge: frame -> {key: MoGe
     distance} (optional) used to give objects without a stated distance one via transfer_anchors();
-    moge_f: MoGe-2's focal length (px of the tracking frames), an alternative to calibrating f."""
+    moge_f: MoGe-2's focal length (px of the tracking frames), an alternative to calibrating f;
+    known_fov_deg: the camera's horizontal field of view when known (lab rig): f = map_f(...)."""
     duration = (n_frames - 1) / fps
     entries = parse_depth(depth_text)
     if not entries:
@@ -311,6 +383,12 @@ def solve_3d(rec: dict, feats: dict[str, np.ndarray], keys: tuple[str, list[str]
         anchors = match_depth(entries, k)
         if not anchors and moge and SETTINGS["moge_transfer"]:
             anchors = transfer_anchors(k, anchored, moge, fps)
+        if not anchors and SETTINGS["equal_depth_fallback"]:
+            # Last resort: assume the object is as far as the clip's stated objects typically are
+            # (objects in one short clip are mostly at similar depth; within 25% for ~73% of pairs on
+            # this data). Static, so depth noise can't invent motion.
+            anchors = [{"name": "clip-median", "tokens": set(), "t": None, "derived": True,
+                        "d": float(np.median([e["d"] for e in entries]))}]
         return Object3D(feats[k], anchors, fps, motion=quantity not in SIZE_QUANTITIES)
 
     def from_prior() -> tuple[float, Object3D]:
@@ -323,7 +401,18 @@ def solve_3d(rec: dict, feats: dict[str, np.ndarray], keys: tuple[str, list[str]
 
     usable_moge = moge_f is not None and np.isfinite(moge_f) and moge_f > 0
     ref, f_source = None, "prior"
-    if SETTINGS["f_source"] == "moge" and usable_moge:
+    if known_fov_deg:
+        f_cam = (width / 2) / np.tan(np.radians(known_fov_deg) / 2)
+        try:
+            if rec["ref_quantity"] == "acceleration":
+                tw = _resolve(rec["ref_time"], duration)
+                a, b = tw if tw else (0.0, duration)
+                Track.from_feats(feats[ref_key], fps).check_accelerating(*accel_check_window(tw, a, b))
+            ref = make(ref_key, rec["ref_quantity"])
+            f, f_source = map_f(rec, ref, width, height, duration, f_cam), "camera+prior"
+        except SolveError:  # the prior can't be measured: the camera alone sets the scale
+            f, f_source = f_cam, "camera"
+    elif SETTINGS["f_source"] == "moge" and usable_moge:
         f, f_source = moge_f, "moge"
     else:
         try:

@@ -31,6 +31,10 @@ SETTINGS = {
     "segment_resid_frac": 0.015,  # ...or within this fraction of the phase's extent (large motions)
     "segment_noise_k": 4.0,    # ...or within this many times the track's own noise level
     "segment_min_inliers": 0.9,  # ...for at least this share of the phase's points (glitches allowed)
+    "velocity_ici": False,     # speed at t: adaptive window (intersection of confidence intervals);
+                               # test 2026-10-10: val +0.2 (noise) but variant agreement 0.121 -> 0.138: off
+    "ici_half_s": (0.12, 0.17, 0.25, 0.35, 0.5),  # candidate half-widths (s), narrow to wide
+    "ici_gamma": 2.0,          # windows agree when their velocities overlap within gamma standard errors
     "target_accel_segment": "3d",   # target acceleration over the constant-acceleration phase: True (2D+3D), "3d", False
                                     # (validation: 3D targets S3 66.7 -> 68.8; 2D targets and 3D calibration got worse)
 }
@@ -73,8 +77,54 @@ class Track:
         return np.stack([np.polyfit(tt, self.pts[sel, i], deg) for i in range(self.pts.shape[1])])  # (D, deg+1)
 
     def velocity_at(self, t0: float) -> float:
+        if SETTINGS["velocity_ici"]:
+            return self._ici_velocity(t0)
         coef = self.local_fit(t0, max(0.2, 3 / self.fps))
         return float(np.linalg.norm(coef[:, -2]))
+
+    def _noise(self) -> float:
+        """White-noise level of the track per coordinate (robust, from second differences)."""
+        if len(self.t) < 4:
+            return 0.0
+        return float(np.median(np.linalg.norm(np.diff(self.pts, 2, axis=0), axis=1)) / 2.9)
+
+    def _ici_velocity(self, t0: float) -> float:
+        """Speed at t0 with the fit half-width chosen by intersection of confidence intervals: the widest
+        window whose velocity agrees (within ICI_GAMMA standard errors, per coordinate) with every
+        narrower one. Smooth motion keeps a wide, low-noise window; a start, stop or bounce near t0
+        keeps the window narrow instead of averaging across it."""
+        noise = self._noise()
+        lo = hi = None
+        best, prev_n = None, -1
+        for half in SETTINGS["ici_half_s"]:
+            sel = np.abs(self.t - t0) <= half
+            if sel.sum() < 5:  # at least the 5 nearest samples
+                sel = np.zeros(len(self.t), bool)
+                sel[np.argsort(np.abs(self.t - t0))[:min(5, len(self.t))]] = True
+            n = int(sel.sum())
+            if n == prev_n:
+                continue
+            prev_n = n
+            x, P = self.t[sel] - t0, self.pts[sel]
+            deg = min(2, len(np.unique(x)) - 1)
+            if deg < 1:
+                continue
+            X = np.vander(x, deg + 1)
+            coef, *_ = np.linalg.lstsq(X, P, rcond=None)
+            dof = max(n - deg - 1, 0) * P.shape[1]
+            rss = float(((P - X @ coef) ** 2).sum())
+            sigma = max(np.sqrt(rss / dof) if dof else 0.0, noise, 1e-9)
+            se = sigma * float(np.sqrt(abs(np.linalg.pinv(X.T @ X)[deg - 1, deg - 1])))
+            v = coef[deg - 1]
+            a, b = v - SETTINGS["ici_gamma"] * se, v + SETTINGS["ici_gamma"] * se
+            lo = a if lo is None else np.maximum(lo, a)
+            hi = b if hi is None else np.minimum(hi, b)
+            if np.any(lo > hi):
+                break
+            best = v
+        if best is None:
+            raise SolveError(f"not enough tracked frames near t={t0:.2f}s")
+        return float(np.linalg.norm(best))
 
     def accel_at(self, t0: float) -> float:
         coef = self.local_fit(t0, max(SETTINGS["accel_half_s"], 5 / self.fps))

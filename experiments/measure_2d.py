@@ -27,6 +27,7 @@ from tqdm import tqdm
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from pipeline.data import load_split  # noqa: E402
 from pipeline.geometry import F  # noqa: E402
+from pipeline.refine import apply_refined  # noqa: E402
 from pipeline.guards import apply_guards, check_targets  # noqa: E402
 from pipeline.parse import (finalize_prior, finalize_question, prior_description, prior_messages,  # noqa: E402
                             question_overrides,
@@ -34,6 +35,7 @@ from pipeline.parse import (finalize_prior, finalize_question, prior_description
 from pipeline.scoring import RESULTS, mra, official_score, quick_report, write_predictions  # noqa: E402
 from pipeline.solver import SolveError, solve  # noqa: E402
 from pipeline.solver3d import solve_3d  # noqa: E402
+import pipeline.solver3d as s3  # noqa: E402
 from pipeline.video import read_frames  # noqa: E402
 
 TRACK_LONGEST = 1024  # tracking/grounding resolution (longest side, px)
@@ -254,11 +256,97 @@ def stage_refix(df, parsed, cache: Path, vlm):
         obj = {**obj, "phrase": obj.get("phrase", rec["ref_object"].lower()), "refixed": bool(hit)}
         if hit:
             obj.update({"frame": hit["frame"], "boxes": [hit["box"]], "motion_region": hit["region"]})
-            for p in [tpath, cache / "moge" / f"{vid}.json", cache / "overlays" / f"{vid}.jpg"]:
+            for p in [tpath, cache / "moge" / f"{vid}.json", cache / "overlays" / f"{vid}.jpg", cache / "refine" / f"{vid}.json"]:
                 p.unlink(missing_ok=True)
         ground_json["objects"][ref] = obj
         gpath.write_text(json.dumps(ground_json))
         tqdm.write(f"  refix {vid}: reference {ref!r} {'re-grounded on moving region' if hit else 'no moving match'}")
+
+
+# ---------------------------------------------------------------- stage: refine (object sizes)
+REFINE_SIZES = True  # solve with refined sizes when refine/<video>.json exists (pipeline/refine.py)
+
+
+def stage_refine(df, parsed, cache: Path):
+    """Re-cut small objects' masks at native resolution on a few frames (pipeline/refine.py)."""
+    from pipeline.refine import MAX_TRACK_PX, pick_frames, read_selected, refine_object
+    from pipeline.solver3d import parse_depth
+    from pipeline.track import Sam2Tracker
+    tracker = Sam2Tracker()
+    out_dir = cache / "refine"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for vid, items in tqdm(list(df.groupby("video_id")), desc="refine"):
+        path, tpath = out_dir / f"{vid}.json", cache / "tracks" / f"{vid}.npz"
+        if path.exists() or not tpath.exists():
+            continue
+        try:
+            feats = dict(np.load(tpath))
+            if not feats:
+                path.write_text("{}")
+                continue
+            cap = cv2.VideoCapture(items["video_path"].iloc[0])
+            W, H = cap.get(cv2.CAP_PROP_FRAME_WIDTH), cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+            cap.release()
+            s_track = min(1.0, TRACK_LONGEST / max(W, H))  # read_frames only downscales
+            fps = float(items["fps"].iloc[0])
+            prefer = [int(round(e["t"] * fps)) for e in parse_depth(items["depth_info"].iloc[0]) if e["t"] is not None] \
+                if str(items["video_type"].iloc[0])[1] == "3" else []
+            plan = {}
+            for key, f in feats.items():
+                pres = f[:, F["present"]] == 1
+                if pres.any() and np.median(np.maximum(f[pres, F["x2"]] - f[pres, F["x1"]],
+                                                       f[pres, F["y2"]] - f[pres, F["y1"]])) <= MAX_TRACK_PX:
+                    plan[key] = pick_frames(f, prefer)
+            native = read_selected(items["video_path"].iloc[0], {fi for fs in plan.values() for fi in fs})
+            res = {k: refine_object(tracker, native, feats[k], fs, s_track) for k, fs in plan.items()}
+            path.write_text(json.dumps({k: v for k, v in res.items() if v}))
+        except Exception as e:  # one bad clip must not stop a long run
+            tqdm.write(f"  REFINE ERROR {vid}: {type(e).__name__}: {e}")
+
+
+def load_refined(cache: Path, vid: str) -> dict:
+    p = cache / "refine" / f"{vid}.json"
+    return json.loads(p.read_text()) if REFINE_SIZES and p.exists() else {}
+
+
+# ---------------------------------------------------------------- stage: findmissing
+def stage_findmissing(df, parsed, cache: Path, vlm):
+    """Objects the normal grounding never found: retry with 2x-zoomed image tiles, first with the
+    phrase, then with a plain noun (pipeline/ground.py: ground_tiled, simple_phrase), on the key
+    frame and the quarter points. Found objects are added and the clip is re-tracked."""
+    from pipeline.ground import ground_tiled, simple_phrase
+    for vid, items in tqdm(list(df.groupby("video_id")), desc="findmissing"):
+        gpath = cache / "ground" / f"{vid}.json"
+        if not gpath.exists():
+            continue
+        g = json.loads(gpath.read_text())
+        missing = [b for b, o in g["objects"].items()
+                   if not o.get("boxes") and not o.get("conflict") and not o.get("tiled_tried")]
+        if not missing:
+            continue
+        frames = read_frames(items["video_path"].iloc[0], TRACK_LONGEST)
+        n = len(frames)
+        added = []
+        for base in missing:
+            o = g["objects"][base]
+            phrase = o.get("phrase", base)
+            o["tiled_tried"] = True
+            for p in dict.fromkeys([phrase, simple_phrase(phrase)]):
+                if not p:
+                    continue
+                for f in dict.fromkeys([o.get("frame") or n // 2, n // 2, n // 4, 3 * n // 4]):
+                    hit = ground_tiled(vlm, frames[f], p)
+                    if hit["boxes"]:
+                        o.update({"frame": f, "boxes": hit["boxes"], "found_by": f"tiles:{p}"})
+                        added.append(base)
+                        break
+                if base in added:
+                    break
+        gpath.write_text(json.dumps(g))
+        if added:
+            for p in [cache / "tracks" / f"{vid}.npz", cache / "moge" / f"{vid}.json", cache / "overlays" / f"{vid}.jpg", cache / "refine" / f"{vid}.json"]:
+                p.unlink(missing_ok=True)
+            tqdm.write(f"  findmissing {vid}: found {added}")
 
 
 # ---------------------------------------------------------------- stage: anchors (3D only)
@@ -304,7 +392,7 @@ def stage_anchors(df, parsed, cache: Path, vlm):
         g["anchors_done"] = True
         gpath.write_text(json.dumps(g))
         if added:
-            for p in [cache / "tracks" / f"{vid}.npz", cache / "moge" / f"{vid}.json", cache / "overlays" / f"{vid}.jpg"]:
+            for p in [cache / "tracks" / f"{vid}.npz", cache / "moge" / f"{vid}.json", cache / "overlays" / f"{vid}.jpg", cache / "refine" / f"{vid}.json"]:
                 p.unlink(missing_ok=True)
             tqdm.write(f"  anchors {vid}: added {added}")
 
@@ -448,7 +536,7 @@ def _solve_rows(df, parsed, cache: Path) -> pd.DataFrame:
             tpath = cache / "tracks" / f"{row.video_id}.npz"
             if not tpath.exists():
                 raise SolveError("not tracked")
-            feats = dict(np.load(tpath))
+            feats = apply_refined(dict(np.load(tpath)), load_refined(cache, row.video_id))
             ref, tgts = object_keys(rec)
             missing = [k for k in [ref] + tgts if k not in feats]
             if missing:
@@ -458,7 +546,8 @@ def _solve_rows(df, parsed, cache: Path) -> pd.DataFrame:
             if str(row.video_type)[1] == "3":
                 h, w = json.loads((cache / "ground" / f"{row.video_id}.json").read_text())["shape"]
                 out = solve_3d(rec, feats, (ref, tgts), row.depth_info, float(row.fps), n_frames, w, h,
-                               moge=load_moge(cache, row.video_id), moge_f=_corrected_moge_f(cache, row, corr))
+                               moge=load_moge(cache, row.video_id), moge_f=_corrected_moge_f(cache, row, corr),
+                               known_fov_deg=s3.SETTINGS["lab_fov_deg"] if row.video_source == "lab" else None)
             else:
                 out = solve(rec, feats[ref], [feats[k] for k in tgts], float(row.fps), n_frames)
             if not np.isfinite(out["value"]) or out["value"] <= 0:
@@ -499,6 +588,13 @@ def main():
     parsed = load_parsed(df, cache)
     if "track" in stages:
         stage_track(df, parsed, cache)
+    if "findmissing" in stages:  # needs grounding; re-tracks what it changes
+        from pipeline.vlm import QwenVL
+        vlm = QwenVL(VLM_ID)
+        stage_findmissing(df, parsed, cache, vlm)
+        del vlm
+        torch.cuda.empty_cache()
+        stage_track(df, parsed, cache)
     if "anchors" in stages:  # needs grounding; re-tracks what it changes
         from pipeline.vlm import QwenVL
         vlm = QwenVL(VLM_ID)
@@ -513,6 +609,8 @@ def main():
         del vlm
         torch.cuda.empty_cache()
         stage_track(df, parsed, cache)
+    if "refine" in stages:  # needs tracks (run after anything that re-tracks)
+        stage_refine(df, parsed, cache)
     if "geom" in stages:
         stage_geom(df, cache)
     if "mogecal" in stages:  # label-free; measured on test, applied to every split

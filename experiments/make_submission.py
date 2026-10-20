@@ -125,11 +125,14 @@ def main():
     if args.split == "test":
         tpl = pd.read_csv(DATA / "template" / "quantiphy_submission_template.csv")
         norm = lambda s: s.astype(str).str.strip().values
+        # Rows must line up by position and video. Question wording may differ: the organisers fixed
+        # typos in the dataset (2026-10-09) without re-issuing the upload template.
         aligned = (len(tpl) == len(df) and (norm(tpl["video_id"]) == norm(df["video_id"])).all()
-                   and (norm(tpl["question"]) == norm(df["question"])).all()
                    and (tpl["id"].values == df["id"].values + 1).all())
         if not aligned:
             sys.exit("NOT WRITTEN: template rows do not line up with the test parquet")
+        reworded = int((norm(tpl["question"]) != norm(df["question"])).sum())
+        print(f"template rows whose question wording differs from the dataset: {reworded} (expected 60)")
         tpl["parsed_value"] = value
         tpl.to_csv(out_dir / f"{args.name}.csv", index=False)
         print(f"wrote upload file {out_dir / f'{args.name}.csv'}: {len(tpl)} rows, columns {list(tpl.columns)}")
