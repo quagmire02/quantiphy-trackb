@@ -8,3 +8,6 @@ __pycache__/
 .venv/
 
 HANDOVER.md
+
+data_synth/
+adapters/

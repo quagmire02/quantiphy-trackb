@@ -40,7 +40,8 @@ def main():
     ap.add_argument("--name", default=None)
     args = ap.parse_args()
 
-    short = args.model.split("/")[-1].replace("-Instruct", "").replace("-bnb-4bit", "")
+    from pipeline.vlm import vlm_short_name
+    short = vlm_short_name(args.model)  # includes a LoRA adapter name when QUANTIPHY_VLM_ADAPTER is set
     name = args.name or (f"{short}_{args.mode}" + (f"_f{args.max_frames}_px{args.longest}" if args.mode == "video" else ""))
     df = load_split(args.split)
     if args.unsolved_from:

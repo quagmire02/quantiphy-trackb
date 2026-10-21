@@ -6,6 +6,7 @@ Environment (all optional):
   QUANTIPHY_VLM_4BIT       1 (default) = language model in 4-bit NF4; 0 = full fp16 (big GPUs)
   QUANTIPHY_VLM_QUANT_VISION  1 = also quantize the vision encoder (lets 8B fit in 6 GB; default 0)
   QUANTIPHY_VLM_MAX_GPU_GB    cap GPU memory and offload the rest to CPU RAM (slow; default: no cap)
+  QUANTIPHY_VLM_ADAPTER    a LoRA adapter folder (experiments/synth/train_lora.py) loaded on top of the model
 
 Default (4B): the language model is quantized to 4-bit NF4 at load time; the vision encoder and
 lm_head stay fp16 (pre-quantized community checkpoints break on the vision tower with transformers 5.x).
@@ -26,8 +27,11 @@ def vlm_id() -> str:
 
 
 def vlm_short_name(model_id: str | None = None) -> str:
-    """'Qwen/Qwen3-VL-8B-Instruct' -> 'Qwen3-VL-8B' (used in prediction file names)."""
-    return (model_id or vlm_id()).split("/")[-1].replace("-Instruct", "").replace("-bnb-4bit", "")
+    """'Qwen/Qwen3-VL-8B-Instruct' -> 'Qwen3-VL-8B' (used in prediction file names); with an adapter
+    'Qwen3-VL-8B+<adapter folder name>', so its answers never mix with the base model's."""
+    name = (model_id or vlm_id()).split("/")[-1].replace("-Instruct", "").replace("-bnb-4bit", "")
+    adapter = os.environ.get("QUANTIPHY_VLM_ADAPTER")
+    return f"{name}+{os.path.basename(os.path.normpath(adapter))}" if adapter else name
 
 
 class QwenVL:
@@ -48,6 +52,9 @@ class QwenVL:
             kwargs["device_map"] = "cuda:0"
         self.model = AutoModelForImageTextToText.from_pretrained(
             self.model_id, dtype=dtype, attn_implementation="sdpa", **kwargs).eval()
+        if os.environ.get("QUANTIPHY_VLM_ADAPTER"):
+            from peft import PeftModel
+            self.model = PeftModel.from_pretrained(self.model, os.environ["QUANTIPHY_VLM_ADAPTER"]).eval()
 
     @torch.inference_mode()
     def chat(self, messages: list[dict], images: list | None = None, max_new_tokens: int = 256) -> str:
