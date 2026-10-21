@@ -1,0 +1,45 @@
+id,video_id,video_type,inference_type,question,parsed_value,raw_response
+2161,internet_0004,S2MC,SS,What is the length of the wood block in cm?,10.0,10.0 cm
+2162,internet_0004,S2MC,SS,What is the thickness of the wood block in cm?,1.5,1.5 cm
+2163,internet_0004,S2MC,SD,What is the average velocity of the pencil tip moving on the block in cm/s?,0.5,0.5 cm/s
+2164,internet_0004,S2MC,SD,What is the average velocity of the saw cutting the block in cm/s?,1.2,1.2 cm/s
+2165,internet_0005,V2MC,DS,What is the distance between the two black road signs in meters?,10.0,10.0 m
+2168,internet_0005,V2MC,DS,What is the side length of the floor tiles in meters?,1.5,1.5 m
+2200,internet_0013,V2MC,DS,What is the width of the straight-through lane in meters?,4.5,4.5 m
+2201,internet_0013,V2MC,DS,What is the width of the roundabout lane in meters?,8.5,8.5 m
+2202,internet_0013,V2MC,DS,What is the diameter of the center island planter in meters?,15.0,15.0 m
+2203,internet_0013,V2MC,DD,What is the speed of the white car in the roundabout at 3.0s in m/s?,4.2,4.2 m/s
+2204,internet_0013,V2MC,DD,What is the speed of the bicycle on the upper left corner at 3.0s in m/s?,1.8,1.8 m/s
+2205,internet_0013,V2MC,DS,What is the distance between the two black cars in the round about at 1.0s in meters?,12.5,12.5 m
+2232,internet_0019,A2MC,DS,What is the distance between the passer and the receiver at 0.00s in meters?,3.5,3.5 m
+2151,internet_0001,S2SC,SS,What is the length of the black car in meters?,4.5,4.5 m
+2152,internet_0001,S2SC,SS,What is the width of the black car in meters?,2.1,2.1 m
+2153,internet_0001,S2SC,SD,What is the average speed of the black car in m/s?,18.3,18.3 m/s
+144,simulation_0089,S2MX,SS,What is the horizontal distance(XY-plane) between the big bird and the small bird at 0.5 s in meters?,0.0,0.0 m
+403,simulation_0163,S2MC,SS,What is the height of the ball return opening in meters?,0.42,0.42 m
+513,simulation_0196,V2MS,DS,What is the diameter of the plunge tube in meters?,0.0012,0.0012 m
+514,simulation_0196,V2MS,DS,What is the width of the droplet in meters?,0.00012,0.00012 m
+515,simulation_0196,V2MS,DS,What is the horizontal width of the “skynova” text on the bottle in meters?,0.012,0.012 m
+516,simulation_0196,V2MS,DS,What is the vertical height of the “skynova” lettering on the bottle in meters?,0.032,0.032 m
+500,simulation_0193,V2MC,DD,What is the average orbital speed of the model of Io in m/s?,1.254,1.254 m/s
+501,simulation_0193,V2MC,DD,What is the average orbital speed of the model of Europa in m/s?,0.836,0.836 m/s
+502,simulation_0193,V2MC,DD,What is the average orbital speed of the model of Ganymede in m/s?,0.836,0.836 m/s
+506,simulation_0193,V2MC,DS,What is the orbital diameter of the Io model?,1.254,1.254 m
+507,simulation_0193,V2MC,DS,What is the orbital diameter of the Europa model?,1.254,1.254 m
+508,simulation_0193,V2MC,DS,What is the orbital diameter of the Ganymede model?,1.254,1.254 m
+1098,simulation_0009,V3MC,DS,What is the height of the cabin floor above the ground in meters?,3.2,3.2 m
+1128,simulation_0015,S3MC,SS,What is the clear height from the floor to the underside of the open roof frame (lattice) in meters?,12.5,12.5 m
+1129,simulation_0015,S3MC,SS,What is the vertical depth (thickness) of the open roof frame (top edge to bottom edge) in meters?,3.21,3.21 m
+1130,simulation_0015,S3MC,SD,What is the average speed of the bird in m/s?,0.0,0.0 m/s
+1344,simulation_0060,A3MC,DS,What is the width of the lane in meters?,3.5,3.5 m
+1353,simulation_0060,A3MC,DS,What is the width of the purple car in meters?,0.0,"There is no purple car visible in the video frames provided. Therefore, the width cannot be determined.
+
+0.0 m"
+1354,simulation_0060,A3MC,DS,What is the height of three stacked trash bags in meters?,0.3,0.3 m
+1550,simulation_0300,A3SX,DS,What is the width (from the left wheel to the right wheel) of the car in meters?,1.85,1.85 m
+1551,simulation_0300,A3SX,DS,What is the height of the car in meters?,1.5,1.5 m
+1832,simulation_0034_segmented,S3MX,SS,What is the eagle’s wingspan (the distance from the tip of one wing to the tip of the other when fully spread) in meters?,1.85,1.85 m
+2716,captured_0034as,S3MS,SS,What is the height of the pencil bag in cm?,3.5,3.5 cm
+2717,captured_0034as,S3MS,SS,What is the length of the pencil bag in cm?,4.8,4.8 cm
+3049,captured_0061,V3MC,DS,What is the distance between the soccer ball and the basketball at 2.0s in meters?,1.5,1.50 m
+3051,captured_0061,V3MC,DS,What is the distance between the soccer ball and the floor at 2.0s in meters?,0.0,0.0 m
