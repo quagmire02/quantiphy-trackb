@@ -104,11 +104,14 @@ def background(rng):
             for y in range(horizon, H_PX, step // 2):
                 cv2.line(img, (0, y), (W_PX, y), (90, 90, 90), 1)
         if kind == "clutter":
+            # background shapes muted toward the background colour and blurred, so they never look like a
+            # named object (a saturated blue rectangle would make "the blue block" ambiguous)
             for _ in range(rng.randint(3, 8)):
-                c = tuple(float(v) * 0.6 + 60 for v in rng.choice(list(COLORS.values())))
                 x, y = rng.randrange(W_PX), rng.randrange(H_PX)
+                local = img[min(y, H_PX - 1), min(x, W_PX - 1)].copy()
+                c = tuple(0.25 * float(v) + 0.75 * float(b) for v, b in zip(rng.choice(list(COLORS.values())), local))
                 cv2.rectangle(img, (x, y), (x + rng.randint(20, 120), y + rng.randint(10, 60)), c, -1)
-            img = cv2.GaussianBlur(img, (0, 0), 2.0)
+            img = cv2.GaussianBlur(img, (0, 0), 3.0)
     return np.clip(img, 0, 255)
 
 
