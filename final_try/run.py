@@ -51,8 +51,10 @@ def assemble(df, candidates):
     value = pd.Series(np.nan, index=df.id, dtype=float)
     source = pd.Series('', index=df.id, dtype=object)
     for name, candidate in candidates:
-        candidate = candidate.reindex(df.id)
+        candidate = pd.to_numeric(candidate.reindex(df.id), errors='coerce').astype(float)
         use = ~positive(value) & positive(candidate)
+        if not use.any():
+            continue
         value.loc[use], source.loc[use] = candidate.loc[use], name
     return value, source
 
@@ -71,6 +73,20 @@ def measurement_weak(frame):
     return weak
 
 
+def budget_ids(df, historical, count):
+    """Balanced categories among v17 fallback questions; no labels used."""
+    pools = []
+    for category in ['S2', 'D2', 'S3', 'D3']:
+        mask = df.category.eq(category).values & ~historical.source.str.contains('-measure', regex=False).values
+        pools.append(list(df.loc[mask, 'id']))
+    chosen = []
+    while any(pools) and len(chosen) < count:
+        for pool in pools:
+            if pool and len(chosen) < count:
+                chosen.append(int(pool.pop(0)))
+    return chosen
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--primary-model', help='32B Hugging Face model folder or ID')
@@ -83,12 +99,16 @@ def main():
     ap.add_argument('--output', type=Path, default=HERE / 'outputs' / 'guided1')
     ap.add_argument('--four-bit', choices=['0', '1'], default='1')
     ap.add_argument('--ground-adapter', action='store_true', help='Experimental: also use secondary adapter for grounding')
+    ap.add_argument('--max-new-items', type=int, default=0,
+                    help='Deadline mode: work on at most N v17 fallback questions; preserve all other v17 answers. 0 = full fresh run.')
     args = ap.parse_args()
     args.output = args.output.resolve()
     if not args.output.is_relative_to(HERE / 'outputs'):
         ap.error('--output must be inside final_try/outputs')
     if args.offline and args.split != 'test':
         ap.error('Supplied artifacts cover test only')
+    if args.max_new_items < 0 or (args.max_new_items and (args.split != 'test' or args.offline)):
+        ap.error('--max-new-items requires live test inference and a positive count')
     if not args.offline and (not args.primary_model or not args.secondary_model):
         ap.error('Set --primary-model and --secondary-model (and --secondary-adapter for unmerged LoRA)')
     # Only load input metadata here; preflight additionally checks video availability.
@@ -178,10 +198,16 @@ def main():
         saved = pd.read_csv(INPUTS / 'v16_sources.csv').set_index('id').reindex(ids)
         secondary_direct = saved.parsed_value.where(saved.source.eq('vlm'))
     else:
-        phase('primary', 'measure', args.primary_model)
+        active = pd.Series(True, index=ids)
+        if args.max_new_items:
+            selected = budget_ids(df, old, args.max_new_items)
+            active = pd.Series(ids.isin(selected), index=ids)
+            (args.output / 'active_ids.json').write_text(json.dumps(selected))
+            print(f'Deadline mode: {len(selected)} fallback questions; other v17 predictions retained.', flush=True)
+        phase('primary', 'measure', args.primary_model, selected=list(ids[active]) if args.max_new_items else None)
         primary = read_values(cache('primary') / 'measure_solutions.csv', ids)
         primary_table = pd.read_csv(cache('primary') / 'measure_solutions.csv').set_index('id').reindex(ids)
-        weak = measurement_weak(primary_table)
+        weak = measurement_weak(primary_table) & active
         pending = ids[weak]
         phase('secondary', 'measure', args.secondary_ground_model or args.secondary_model,
               args.secondary_adapter if args.ground_adapter else None, selected=pending)
@@ -189,12 +215,12 @@ def main():
         secondary = fresh_secondary
         phase('primary_assisted', 'measure', args.primary_model, selected=ids[weak], proposals=cache('secondary'))
         assisted = read_values(cache('primary_assisted') / 'measure_solutions.csv', ids).where(weak)
-        pending = ids[~positive(primary) & ~positive(secondary)]
+        pending = ids[active & ~positive(primary) & ~positive(secondary)]
         phase('primary', 'direct', args.primary_model, selected=pending)
         primary_direct = direct_values(cache('primary') / 'direct.jsonl', df)
         # Every failed measurement is a weak case worth a trained direct opinion.
         # Collect paired answers; choosing 4B for every 2D fallback is an explicit ablation.
-        pending = ids[~positive(primary) & ~positive(secondary)]
+        pending = ids[active & ~positive(primary) & ~positive(secondary)]
         phase('secondary_direct', 'direct', args.secondary_model, args.secondary_adapter, selected=pending)
         secondary_direct = direct_values(cache('secondary_direct') / 'direct.jsonl', df)
         # The 4B may guide 32B only on the SAME question and only for weak/conflicting cases.
@@ -228,6 +254,9 @@ def main():
             # Explicit historical comparison, separate from independent inference candidates.
             # It inherits v17's provenance; do not describe it as rule-verified.
             options_list.append(('candidate_v17_union', [('historical-v17-measure', protected)] + guided_candidates + [('historical-v17-fallback', baseline)]))
+        if args.max_new_items:
+            # Explicitly retain the baseline OUTSIDE the selected inference scope.
+            options_list = [(name, options + [('historical-v17-unprocessed', baseline.where(~active))]) for name, options in options_list]
     diagnostic = df[['id', 'video_id', 'question', 'category']].copy()
     for label, series in [('32b_measure', primary), ('4b_measure', secondary),
                           ('32b_direct', primary_direct), ('4b_direct', secondary_direct)]:

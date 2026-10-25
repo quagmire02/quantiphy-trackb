@@ -109,8 +109,9 @@ def main():
         weak = base.source.str.contains('direct|prior-estimate|fallback', case=False, regex=True)
         primary_path = args.base_dir / 'primary/cache' / args.split / 'measure_solutions.csv'
         if primary_path.exists():
-            table = pd.read_csv(primary_path).set_index('id').reindex(df.id)
-            weak |= measurement_weak(table)
+            attempted = pd.read_csv(primary_path).set_index('id')
+            table = attempted.reindex(df.id)
+            weak |= measurement_weak(table) & pd.Series(df.id.isin(attempted.index).values, index=table.index)
         def length_question(question):
             unit = question_unit(question)
             return bool(unit and unit_factor(unit)[1] == 0)

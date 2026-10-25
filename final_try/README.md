@@ -5,6 +5,8 @@ v17. Original scripts, caches and results are untouched. Each new inference ques
 has its own parsing, grounding, tracks and calibration. The historical baseline is
 also available as an explicitly separate comparison candidate.
 See [FINDINGS.md](FINDINGS.md) for the evidence and realistic scope of improvement.
+For the two exact commands using an already working model environment and a
+one-day budget, see [RUN_TODAY.md](RUN_TODAY.md).
 
 ## Run on the other PC
 

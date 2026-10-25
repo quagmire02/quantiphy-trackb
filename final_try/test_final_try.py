@@ -15,10 +15,43 @@ import pandas as pd
 from pipeline.ground import parse_boxes
 from pipeline.parse import finalize_question
 from repairs import camera_distance, direct_value
-from run import assemble, positive, read_values, measurement_weak
+from run import assemble, positive, read_values, measurement_weak, budget_ids
 
 
 class Contracts(unittest.TestCase):
+    def test_budget_selects_only_fallbacks_with_balanced_categories(self):
+        df = pd.DataFrame({'id': [0,1,2,3,4,5,6,7], 'category': ['S2','S2','D2','D2','S3','S3','D3','D3']})
+        historical = pd.DataFrame({'source': ['0:32B-measure','vlm','vlm','median','vlm','vlm','vlm','vlm']})
+        self.assertEqual(budget_ids(df, historical, 4), [1,2,4,6])
+        self.assertEqual(budget_ids(df, historical, 100), [1,2,4,6,3,5,7])
+
+    def test_deadline_run_produces_full_csv_and_preserves_unprocessed_rows(self):
+        from run import main, HERE
+        from pipeline.data import load_split
+        try:
+            df = load_split('test')
+        except FileNotFoundError:
+            self.skipTest('Test metadata/videos not downloaded yet')
+        old = pd.read_csv(HERE/'inputs/v17_sources.csv').set_index('id')
+        selected = budget_ids(df, old, 4)
+        def fake_worker(cmd, env, **kwargs):
+            tree = Path(env['QUANTIPHY_RESULTS']) / 'cache/test'
+            tree.mkdir(parents=True, exist_ok=True)
+            subset = json.loads(Path(cmd[cmd.index('--ids')+1]).read_text())
+            if cmd[cmd.index('--phase')+1] == 'measure':
+                pd.DataFrame({'id': subset, 'value': [2.]*len(subset), 'reason': ['']*len(subset)}).to_csv(tree/'measure_solutions.csv', index=False)
+        with tempfile.TemporaryDirectory(prefix='budget_contract_', dir=HERE/'outputs') as tmp:
+            with patch.object(sys, 'argv', ['run.py','--primary-model','mock/32B','--secondary-model','mock/4B',
+                                           '--max-new-items','4','--output',tmp]), patch('run.subprocess.run', side_effect=fake_worker):
+                main()
+            result = pd.read_csv(Path(tmp)/'candidate_guided_sources.csv').set_index('id')
+            untouched = ~df.id.isin(selected).values
+            np.testing.assert_allclose(result.parsed_value.values[untouched], old.parsed_value.values[untouched], rtol=1e-12)
+            self.assertTrue((result.loc[selected,'parsed_value'] == 2.).all())
+            upload = pd.read_csv(Path(tmp)/'candidate_guided.csv')
+            self.assertEqual(len(upload),3289)
+            np.testing.assert_array_equal(upload.id.values,df.id.values+1)
+
     def test_question_string_is_one_target_and_prose_json(self):
         q = finalize_question('Example: {"x": 1} Result: {"targets":"red ball","target_quantity":"velocity"}', 'What is its velocity in m/s?')
         self.assertEqual(q['targets'], ['red ball'])
