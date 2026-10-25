@@ -156,3 +156,11 @@ historical union. The offline replay and v17 union retain historical provenance.
 
 No setting here guarantees 74% MRA. The baseline is 62.9% according to the supplied
 leaderboard result; improved scores require a real model run and evaluation.
+
+## Additional endpoint experiment
+
+After the guided run, `python final_try/run_endpoint_rescue.py --model /models/32B`
+tries independent full-frame/crop endpoint readings on weak 2D size/gap questions.
+It writes `final_try/outputs/endpoints1/candidate_endpoints.csv`, preserving base
+answers on abstention. See [ENDPOINT_EXPERIMENT.md](ENDPOINT_EXPERIMENT.md) for
+the acceptance gates, scope, smoke-test command and remaining perception gaps.
