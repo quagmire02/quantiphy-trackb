@@ -1,7 +1,9 @@
 # Final try
 
-This folder is an isolated snapshot of the existing measurement pipeline, with a
-portable two-model runner. Original scripts, caches and results are untouched.
+This folder contains a **32B-led, 4B-assisted** measurement attempt intended to beat
+v17. Original scripts, caches and results are untouched. Each new inference question
+has its own parsing, grounding, tracks and calibration. The historical baseline is
+also available as an explicitly separate comparison candidate.
 See [FINDINGS.md](FINDINGS.md) for the evidence and realistic scope of improvement.
 
 ## Run on the other PC
@@ -59,32 +61,47 @@ The full command runs the test split. To run validation, append
 
 ## What runs
 
-1. Fresh 32B parse, grounding, tracking, missing-object recovery, depth and solving.
-   Its focal correction is recalculated without labels from the current test run.
-2. Base 4B measurement rescue only for clips containing questions that neither
-   the fresh 32B nor the saved 4B measurements solve. Whole clips are included to
-   preserve reference calibration and clip-level guards.
-3. Direct answers from both models for questions still without measurements.
-   The QLoRA adapter applies to the 4B direct answers by default. The existing
-   training code teaches this exact video-to-number task, not boxes or JSON parsing.
-4. Submission assembly, explicit source records, and ID/video/question checks.
+1. The 32B receives the current question, its prior and its distance information.
+   It locates that question's reference and target objects together, then performs
+   a second image-grounded check of the proposed boxes. SAM tracks them and the
+   existing solvers calculate the answer.
+2. Failed measurements and suspicious successes trigger the 4B helper. Signals
+   include tiny masks, frequent image-border contact, and transferred/MoGe depth.
+   These are diagnostic triggers, not calibrated confidence scores.
+3. The base 4B proposes its own boxes/tracks and measurement. The 32B remeasures
+   the weak question using those boxes as explicitly unverified proposals. It
+   checks them against the image and may correct or reject them.
+4. Questions still needing direct answers receive independent 32B and trained
+   4B answers. The trained adapter retains its original video-to-number prompt;
+   the 32B gets a prior/units/time/identity checklist and a larger reasoning budget.
+5. When the two direct answers differ by more than 2x, or 32B returns no usable
+   answer, the 32B rechecks the video with both same-question estimates marked as
+   hypotheses. No label or claimed ground-truth value is supplied.
+6. Output policies compare the 32B-led control, the assisted candidate, trained
+   4B preference on 2D fallbacks, and a separate historical v17 union.
 
-All generated files are below `final_try/outputs/attempt1/`:
+New inference never pools other test predictions into a median, uses other questions
+to identify a reference, or recalibrates focal length from other test questions.
+The final emergency estimate uses only the same question's prior, requested unit
+and video duration, and is labelled `same-question-prior-estimate` in source files.
+
+All generated files are below `final_try/outputs/guided1/`:
 
 | File | Meaning |
 |---|---|
-| `candidate_preserved.csv` | Retain all 2,857 measured v17 answers; rescue its fallback items. Start with this candidate. |
-| `candidate_fresh.csv` | Prefer freshly computed 32B measurements, then 4B measurements and direct answers. More changes and more regression risk. |
-| `candidate_trained_2d.csv` | Preserve v17 measurements; prefer trained 4B direct answers for remaining 2D questions, 32B for 3D. Explicit experimental ablation. |
+| `candidate_guided.csv` | Prefer verified 32B remeasurement with 4B box help on weak cases, then normal measurements; use 32B-reviewed direct answers for conflicting guesses. Main improvement experiment. |
+| `candidate_32b_led.csv` | New 32B measurements, 4B measurement rescue, then primary-first direct answers. Control for the assisted policy. |
+| `candidate_trained_2d.csv` | New measurements; prefer trained 4B direct answers on remaining 2D questions. Experimental ablation. |
+| `candidate_v17_union.csv` | Historical comparison: preserve v17 measured answers and improve its fallback items with the guided pipeline. Inherits v17's old cross-question provenance; not represented as rule-verified. |
 | `*_sources.csv` | Source per answer, category, baseline value and changed flag. Do not upload these. |
 | `diagnostics.csv` | Both model measurements/direct answers and their measurement ratio. |
 | `manifest.json` | Arguments plus code and input-metadata fingerprints. |
-| `primary/`, `secondary/`, `secondary_direct/` | Separate caches; model memory is freed between worker processes. |
+| `primary/`, `secondary/`, `primary_assisted/`, `secondary_direct/`, `primary_review/` | Separate caches, with `cache/<split>/items/<question_id>/` holding question-local semantic artifacts. |
 
 Validation runs write source/diagnostic files and print category macro-MRA, rather
 than writing a test upload template. No validation labels enter test answer routing.
-The `trained_2d` choice needs a paired validation ablation; it is not an established
-improvement. Existing validation videos overlap test and have been used for past
+The guided and `trained_2d` choices need paired validation ablations; neither is an
+established improvement. Existing validation videos overlap test and have been used for past
 development. Treat this as a sanity check, not an independent estimate.
 
 Rerun the identical command to resume. A different configuration or source code
@@ -92,10 +109,10 @@ requires a different output, e.g. `--output final_try/outputs/attempt2`. Keep mo
 folders immutable during an attempt; weight contents are not hashed. Partial
 per-video failures remain visible in solution reasons and may use fallback answers.
 
-`--primary-cache /path/to/old/32b/cache/test` can reuse prior/question text replies.
-The runner copies it, re-finalizes question replies, and rebuilds video-dependent
-artifacts so changed object keys cannot silently reuse stale tracks. This is **not**
-a shortcut that trusts old grounding or tracks. Do not point it at the 4B cache.
+Old video-level semantic caches are not imported into the new question-local run.
+Existing model weights may be reused in memory between questions; prompts, masks,
+reference choices and tracking states are separate. This is more expensive than
+the previous shared-video run. Downloaded weights and per-question caches resume.
 
 ## CPU-only verification
 
@@ -109,15 +126,18 @@ Offline mode needs test metadata but no videos, weights, CUDA or MoGe package.
 It reproduces v17 numeric predictions from the bundled artifacts. Six camera-distance
 questions can be answered from their supplied distance annotations; those answers
 already equal v17. This replay is a verified baseline, not a new score improvement.
-Tests cover parsing, unit dimensions, routing by ID, protecting existing measurements,
-and the full orchestrator with simulated workers. **Real GPU inference has not been
+The offline `candidate_preserved.csv` is historical replay only; it is not the main
+new candidate. Tests cover parsing, units, question isolation, helper proposal IDs,
+box verification, conflict handling and the full orchestrator with simulated workers.
+**Real GPU inference has not been
 run for this snapshot.** Setup/dependency installation and GPU weight loading need
 verification on the model PC. Dependencies mirror the local working environment;
 MoGe is pinned to its installed Git revision.
 
 ## Changes to the copied pipeline
 
-- Explicit 0..1000 grounding-coordinate instructions, range checks, and named-coordinate support.
+- Joint reference/target localization within one question, a second image-grounded
+  verification pass, explicit 0..1000 coordinates and range checks.
 - JSON extraction tolerates surrounding text; a string target stays one object.
 - Common quantity aliases normalize to solver vocabulary. An explicit second
   endpoint such as `distance from the desk` is retained.
@@ -125,8 +145,14 @@ MoGe is pinned to its installed Git revision.
   ambiguous explanations abstain. Zero answers trigger rescue rather than fabricated numbers.
 - Camera-distance requests use supplied metadata only within annotated times;
   no camera object is segmented and no depth extrapolation is invented.
-- Existing tracking, physical solvers and plausibility guards are retained.
-  Baseline inputs contain no validation labels. Last-resort medians use predictions only.
+- Existing tracking, physical solvers and plausibility guards operate within each
+  question. Unresolved distinct objects can no longer silently share one box.
+- 4B proposals and same-question answers guide a second 32B attempt on weak cases.
+  Baseline inputs contain no validation labels. No new across-prediction median is used.
+
+See [RULE_AUDIT.md](RULE_AUDIT.md) for the inherited behavior, the 19 historical
+median answers, and the distinction between question-local candidates and the
+historical union. The offline replay and v17 union retain historical provenance.
 
 No setting here guarantees 74% MRA. The baseline is 62.9% according to the supplied
 leaderboard result; improved scores require a real model run and evaluation.

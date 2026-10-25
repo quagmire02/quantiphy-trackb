@@ -72,3 +72,30 @@ def camera_distance(row, parsed):
             return None
         value = ds[0]
     return from_si(value, question_unit(question))
+
+
+def prior_scale_fallback(row):
+    """Explicit last-resort guess from this question's prior and video duration only."""
+    from pipeline.parse import first_prior, prior_description, prior_quantity
+    from pipeline.units import parse_prior_value, to_si
+    value, unit = parse_prior_value(first_prior(row.prior))
+    if value is None or not np.isfinite(value) or value <= 0:
+        return None
+    quantity = prior_quantity(prior_description(row.prior))
+    power = {'speed': 1, 'acceleration': 2}.get(quantity, 0)
+    target = question_unit(row.question)
+    if not target:
+        return None
+    target_power = unit_factor(target)[1]
+    scale = to_si(value, unit)
+    if power != target_power:
+        import cv2
+        cap = cv2.VideoCapture(row.video_path)
+        frames, fps = cap.get(cv2.CAP_PROP_FRAME_COUNT), cap.get(cv2.CAP_PROP_FPS)
+        cap.release()
+        if frames <= 1 or fps <= 0:
+            return None
+        duration = (frames-1) / fps
+        scale *= duration ** (power-target_power)
+    result = from_si(scale, target)
+    return float(result) if np.isfinite(result) and result > 0 else None

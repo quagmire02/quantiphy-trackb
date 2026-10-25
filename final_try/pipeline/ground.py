@@ -147,6 +147,13 @@ def ground(vlm, frame: np.ndarray, obj: str, every: bool = False) -> dict:
     prompt = (PROMPT_ALL if every else PROMPT).format(obj=obj)
     messages = [{"role": "user", "content": [{"type": "image"}, {"type": "text", "text": prompt}]}]
     reply = vlm.chat(messages, images=[Image.fromarray(frame)], max_new_tokens=256)
+    if hasattr(vlm, 'row') and parse_boxes(reply):
+        # Context-wrapped recovery calls also verify against the same image/question.
+        verify = (prompt + '\nUnverified candidate boxes: ' + json.dumps(parse_boxes(reply))
+                  + '\nCheck identity and full silhouette in the image. Correct the coordinates, '
+                    'or output [] if the requested object is not visible. Return the requested JSON only.')
+        messages = [{'role': 'user', 'content': [{'type': 'image'}, {'type': 'text', 'text': verify}]}]
+        reply = vlm.chat(messages, images=[Image.fromarray(frame)], max_new_tokens=256)
     boxes = []
     for x1, y1, x2, y2 in parse_boxes(reply):
         x1, x2 = sorted((x1, x2))
@@ -222,11 +229,11 @@ def resolve_conflicts(vlm, frames: np.ndarray, objects: dict) -> dict:
                 if len(cands) >= 2:
                     break
             if len(cands) <= 1:
-                # Only one such object anywhere: both phrases describe it ("horse at the back" =
-                # "brown horse") and may share the box.
+                # A missed second object is not proof these distinct phrases are the same.
                 for k in (a, b):
-                    objects[k]["conflict"] = {"with": b if k == a else a, "resolved": True,
-                                              "same_object": True, "candidates": cands}
+                    objects[k]["conflict"] = {"with": b if k == a else a, "resolved": False,
+                                              "candidates": cands}
+                    objects[k]['boxes'] = []
                 continue
             phrases = {k: objects[k].get("phrase", k) for k in (a, b)}
             picks = {k: pick_by_modifier(phrases[k], cands) or pick_by_colour(phrases[k], cands, frames[fi])

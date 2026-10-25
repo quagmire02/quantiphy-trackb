@@ -4,7 +4,6 @@ import hashlib
 import json
 import os
 from pathlib import Path
-import shutil
 import subprocess
 import sys
 
@@ -58,6 +57,20 @@ def assemble(df, candidates):
     return value, source
 
 
+def measurement_weak(frame):
+    """Triggers for an independent helper; these are not calibrated confidence scores."""
+    weak = ~positive(frame.value)
+    if 'f_source' in frame:
+        weak |= frame.f_source.fillna('').str.contains('moge', case=False)
+    if 'moge_used' in frame:
+        weak |= frame.moge_used.fillna(False).astype(str).str.lower().isin(['true', '1', '1.0'])
+    if 'min_mask_short_px' in frame:
+        weak |= frame.min_mask_short_px.le(6)
+    if 'max_border_fraction' in frame:
+        weak |= frame.max_border_fraction.gt(.5)
+    return weak
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--primary-model', help='32B Hugging Face model folder or ID')
@@ -67,8 +80,7 @@ def main():
     ap.add_argument('--split', choices=['test', 'validation'], default='test')
     ap.add_argument('--offline', action='store_true', help='Audit/replay supplied test predictions without models')
     ap.add_argument('--preflight', action='store_true', help='Validate configuration and data; do not load models')
-    ap.add_argument('--output', type=Path, default=HERE / 'outputs' / 'attempt1')
-    ap.add_argument('--primary-cache', type=Path, help='Optional compatible 32B cache containing parse and video artifacts')
+    ap.add_argument('--output', type=Path, default=HERE / 'outputs' / 'guided1')
     ap.add_argument('--four-bit', choices=['0', '1'], default='1')
     ap.add_argument('--ground-adapter', action='store_true', help='Experimental: also use secondary adapter for grounding')
     args = ap.parse_args()
@@ -92,7 +104,8 @@ def main():
     if ids.duplicated().any():
         raise ValueError('Dataset IDs are not unique')
     digest = hashlib.sha256(df[['id', 'video_id', 'question', 'prior', 'depth_info']].fillna('').to_json().encode()).hexdigest()
-    code_digest = hashlib.sha256(b''.join(p.read_bytes() for p in sorted(HERE.rglob('*.py')) if 'outputs' not in p.parts)).hexdigest()
+    code_files = sorted(list(HERE.glob('*.py')) + list((HERE / 'pipeline').glob('*.py')))
+    code_digest = hashlib.sha256(b''.join(p.read_bytes() for p in code_files)).hexdigest()
     config = {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items() if k != 'preflight'}
     config.update(dataset_sha256=digest, code_sha256=code_digest)
     print(f'{args.split}: {len(df)} questions, {df.video_id.nunique()} videos; dataset {digest[:12]}', flush=True)
@@ -119,27 +132,29 @@ def main():
     def cache(name):
         return args.output / name / 'cache' / args.split
 
-    def phase(name, kind, model, adapter=None, selected=None):
+    def phase(name, kind, model, adapter=None, selected=None, hints=None, proposals=None):
         tree = args.output / name
         env = os.environ.copy()
         for key in ('QUANTIPHY_VLM_ADAPTER', 'QUANTIPHY_VLM_QUANT_VISION', 'QUANTIPHY_VLM_MAX_GPU_GB'):
             env.pop(key, None)
         env.update(QUANTIPHY_RESULTS=str(tree), QUANTIPHY_VLM=model,
-                   QUANTIPHY_VLM_4BIT=args.four_bit, PYTHONUNBUFFERED='1')
+                   QUANTIPHY_VLM_4BIT=args.four_bit, PYTHONUNBUFFERED='1',
+                   QUANTIPHY_GUIDED='1' if name.startswith('primary') else '0')
         if adapter:
             env['QUANTIPHY_VLM_ADAPTER'] = adapter
         tree.mkdir(parents=True, exist_ok=True)
-        # Keep supplied label-free focal calibration inside the isolated result tree.
         (tree / 'cache').mkdir(exist_ok=True)
-        correction = tree / 'cache/moge_f_correction.json'
-        if not correction.exists():
-            primary_correction = args.output / 'primary/cache/moge_f_correction.json'
-            shutil.copyfile(primary_correction if primary_correction.exists() else INPUTS / 'moge_f_correction.json', correction)
         cmd = [sys.executable, str(HERE / 'worker.py'), '--phase', kind, '--split', args.split]
         if selected is not None:
             path = tree / f'{kind}_ids.json'
             path.write_text(json.dumps([int(i) for i in selected]))
             cmd += ['--ids', str(path)]
+        if hints is not None:
+            path = tree / 'same_question_hypotheses.json'
+            path.write_text(json.dumps(hints, allow_nan=False))
+            cmd += ['--hints', str(path)]
+        if proposals is not None:
+            cmd += ['--proposal-cache', str(proposals)]
         print(f'Running {name}/{kind}: {model}; selected={len(selected) if selected is not None else "all"}', flush=True)
         subprocess.run(cmd, env=env, cwd=ROOT, check=True)
 
@@ -154,7 +169,8 @@ def main():
             raise ValueError('Saved baseline questions do not match dataset; refusing to reuse stale predictions')
         baseline = old.parsed_value
         protected = baseline.where(old.source.str.contains('-measure', regex=False))
-        saved_secondary = read_values(INPUTS / '4b_measure.csv', ids)
+        if args.offline:
+            saved_secondary = read_values(INPUTS / '4b_measure.csv', ids)
     if args.offline:
         primary = read_values(INPUTS / '32b_measure.csv', ids)
         secondary = saved_secondary
@@ -162,32 +178,17 @@ def main():
         saved = pd.read_csv(INPUTS / 'v16_sources.csv').set_index('id').reindex(ids)
         secondary_direct = saved.parsed_value.where(saved.source.eq('vlm'))
     else:
-        if args.primary_cache:
-            dest = cache('primary')
-            if not dest.exists():
-                required = ['parse_prior.jsonl', 'parse_question.jsonl', 'ground', 'tracks']
-                if not all((args.primary_cache / p).exists() for p in required):
-                    raise ValueError('--primary-cache must contain parse_prior, parse_question, ground and tracks')
-                shutil.copytree(args.primary_cache, dest)
-                # Re-finalize copied text replies with this parser; old files are never modified.
-                from pipeline.parse import finalize_question
-                records = {r['id']: r for r in map(json.loads, (dest / 'parse_question.jsonl').read_text().splitlines())}
-                with (dest / 'parse_question.jsonl').open('w') as fh:
-                    for row in df.itertuples():
-                        if row.id in records:
-                            fh.write(json.dumps({'id': row.id, **finalize_question(records[row.id]['question_raw'], row.question)}) + '\n')
-                # Parse changes can introduce object keys absent from old grounding/tracking.
-                # Rebuild dependent copies rather than silently treating them as complete.
-                for folder in ('ground', 'tracks', 'moge', 'refine', 'overlays'):
-                    shutil.rmtree(dest / folder, ignore_errors=True)
         phase('primary', 'measure', args.primary_model)
         primary = read_values(cache('primary') / 'measure_solutions.csv', ids)
-        # Existing 4B measurements already rescue 256 losses; spend new 4B work where both fail.
-        pending = ids[~positive(primary) & ~positive(saved_secondary)]
+        primary_table = pd.read_csv(cache('primary') / 'measure_solutions.csv').set_index('id').reindex(ids)
+        weak = measurement_weak(primary_table)
+        pending = ids[weak]
         phase('secondary', 'measure', args.secondary_ground_model or args.secondary_model,
               args.secondary_adapter if args.ground_adapter else None, selected=pending)
         fresh_secondary = read_values(cache('secondary') / 'measure_solutions.csv', ids)
-        secondary = saved_secondary.where(positive(saved_secondary), fresh_secondary)
+        secondary = fresh_secondary
+        phase('primary_assisted', 'measure', args.primary_model, selected=ids[weak], proposals=cache('secondary'))
+        assisted = read_values(cache('primary_assisted') / 'measure_solutions.csv', ids).where(weak)
         pending = ids[~positive(primary) & ~positive(secondary)]
         phase('primary', 'direct', args.primary_model, selected=pending)
         primary_direct = direct_values(cache('primary') / 'direct.jsonl', df)
@@ -196,6 +197,13 @@ def main():
         pending = ids[~positive(primary) & ~positive(secondary)]
         phase('secondary_direct', 'direct', args.secondary_model, args.secondary_adapter, selected=pending)
         secondary_direct = direct_values(cache('secondary_direct') / 'direct.jsonl', df)
+        # The 4B may guide 32B only on the SAME question and only for weak/conflicting cases.
+        disagree = positive(primary_direct) & positive(secondary_direct) & ((primary_direct / secondary_direct > 2) | (secondary_direct / primary_direct > 2))
+        review_ids = ids[(~positive(primary_direct) & positive(secondary_direct)) | disagree]
+        hypotheses = {str(int(i)): {'32B': float(primary_direct[i]) if positive(pd.Series([primary_direct[i]])).iloc[0] else None,
+                                   '4B': float(secondary_direct[i])} for i in review_ids}
+        phase('primary_review', 'direct', args.primary_model, selected=review_ids, hints=hypotheses)
+        reviewed = direct_values(cache('primary_review') / 'direct.jsonl', df)
     metadata = pd.Series(np.nan, index=ids, dtype=float)
     from repairs import camera_distance
     parse_path = INPUTS / '32b_parse_question.jsonl' if args.offline else cache('primary') / 'parse_question.jsonl'
@@ -205,30 +213,41 @@ def main():
         if value is not None:
             metadata[row.id] = value
     candidates = [('metadata-camera-distance', metadata), ('32B-measure', primary), ('4B-measure', secondary),
-                  ('32B-direct', primary_direct), ('4B-direct', secondary_direct), ('v17-fallback', baseline)]
+                  ('32B-direct', primary_direct), ('4B-direct', secondary_direct)]
     two_d = pd.Series(df.category.str.endswith('2').values, index=ids)
     trained_2d = [('metadata-camera-distance', metadata), ('32B-measure', primary), ('4B-measure', secondary),
                   ('trained-4B-direct-2D', secondary_direct.where(two_d)),
-                  ('32B-direct', primary_direct), ('4B-direct', secondary_direct), ('v17-fallback', baseline)]
-    options_list = [('candidate_fresh', candidates), ('candidate_preserved', [('v17-measure', protected)] + candidates)]
-    if not args.offline:
-        options_list.append(('candidate_trained_2d', [('v17-measure', protected)] + trained_2d))
+                  ('32B-direct', primary_direct), ('4B-direct', secondary_direct)]
+    if args.offline:
+        candidates += [('v17-fallback', baseline)]
+        options_list = [('candidate_fresh', candidates), ('candidate_preserved', [('v17-measure', protected)] + candidates)]
+    else:
+        guided_candidates = candidates[:1] + [('32B-measure-with-4B-box-help', assisted)] + candidates[1:3] + [('32B-reviewed-with-4B-hypothesis', reviewed)] + candidates[3:]
+        options_list = [('candidate_32b_led', candidates), ('candidate_guided', guided_candidates), ('candidate_trained_2d', trained_2d)]
+        if args.split == 'test':
+            # Explicit historical comparison, separate from independent inference candidates.
+            # It inherits v17's provenance; do not describe it as rule-verified.
+            options_list.append(('candidate_v17_union', [('historical-v17-measure', protected)] + guided_candidates + [('historical-v17-fallback', baseline)]))
     diagnostic = df[['id', 'video_id', 'question', 'category']].copy()
     for label, series in [('32b_measure', primary), ('4b_measure', secondary),
                           ('32b_direct', primary_direct), ('4b_direct', secondary_direct)]:
         diagnostic[label] = series.values
     diagnostic['measurement_ratio_32b_to_4b'] = primary.values / secondary.values
     diagnostic['metadata_camera_distance'] = metadata.values
+    if not args.offline:
+        diagnostic['32b_reviewed'] = reviewed.values
+        diagnostic['32b_assisted_measure'] = assisted.values
+        diagnostic['helper_triggered'] = weak.values
     diagnostic.to_csv(args.output / 'diagnostics.csv', index=False)
     for name, options in options_list:
         values, sources = assemble(df, options)
-        # Label-free emergency median from own predictions, grouped by requested unit.
-        from pipeline.units import question_unit
-        units = df.question.map(question_unit).fillna('?').set_axis(ids)
-        own = values.groupby(units).median()
-        fill = units.map(own).fillna(values.median())
-        use = ~positive(values) & positive(fill)
-        values.loc[use], sources.loc[use] = fill.loc[use], 'self-median'
+        if not args.offline:
+            # Last resort depends exclusively on this item's prior and clip duration.
+            from repairs import prior_scale_fallback
+            for row in df.loc[~positive(values).values].itertuples():
+                value = prior_scale_fallback(row)
+                if value is not None:
+                    values.loc[row.id], sources.loc[row.id] = value, 'same-question-prior-estimate'
         if not positive(values).all():
             raise ValueError('Incomplete predictions; no submission written')
         frame = df[['id', 'video_id', 'question', 'category']].copy()
@@ -247,7 +266,7 @@ def main():
             from pipeline.scoring import quick_report
             quick_report(df, values.values, name)
         print(name, '\n', pd.crosstab(df.category, sources.values).to_string(), flush=True)
-    print(f'Wrote {args.output}; candidate_preserved retains every v17 measured answer.')
+    print(f'Wrote {args.output}; offline replay only.' if args.offline else f'Wrote {args.output}; new candidates use independent question scopes; historical v17 union is separate.')
 
 
 if __name__ == '__main__':

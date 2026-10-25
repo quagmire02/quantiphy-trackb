@@ -12,6 +12,7 @@ sys.path.insert(0, str(ROOT))
 from pipeline.parse import finalize_question
 from pipeline.official import parse_number
 from pipeline.scoring import mra
+from pipeline.units import question_unit, reply_to_unit
 
 
 def main():
@@ -45,6 +46,17 @@ def main():
     for r in badraw[:15]:
         emit((r['id'], repr(r.get('reply'))))
     emit('All raw reply values: ' + str(pd.Series([r.get('value') for r in raw.values()]).describe().to_dict()))
+    old = pd.read_csv(inputs / 'v17_sources.csv')
+    med = old.source.str.contains('median')
+    primary = b.value.where(bv).copy()
+    for i in primary.index[~bv]:
+        reply = raw.get(int(i), {}).get('reply', '')
+        value = reply_to_unit(parse_number(reply), reply, question_unit(df.loc[i, 'question']))
+        if np.isfinite(value) and value > 0:
+            primary[i] = value
+    units = df.question.map(question_unit).fillna('?')
+    fill = units.map(primary.groupby(units).median()).fillna(primary.median())
+    emit(f'\nv17 median rows: {med.sum()}; reproduce from the 32B run own positive predictions per unit: {np.isclose(fill[med], old.loc[med, "parsed_value"]).sum()}/{med.sum()}')
     both = av & bv
     emit('\nMeasurements that differ by >2x:')
     emit(pd.crosstab(df.category[both], (abs(np.log(b.value[both] / a.value[both])) > np.log(2))).to_string())

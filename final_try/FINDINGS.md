@@ -1,7 +1,8 @@
 # Findings and recommendation
 
-The best next step is to improve localization and measurement accuracy, while
-using the trained 4B as a selective direct-answer specialist. A larger model alone
+The next experiment keeps 32B as the main model and uses 4B proposals and answers
+to guide new 32B attempts on weak cases. Improving localization and measurement
+accuracy remains essential. A larger model alone
 does not fix the visual measurement bottleneck. The saved files support the
 coverage diagnosis below, but do not establish that another routing heuristic
 will reach 74% MRA.
@@ -69,13 +70,15 @@ with a confidently wrong physical calculation.
 
 ## Recommended sequence
 
-1. **Establish a reproducible baseline.** The bundled offline run reproduces v17
-   exactly; source records and template IDs are checked. Preserve its measurements
-   while testing rescue on the 432 jointly failed items.
-2. **Run paired direct predictions on the unresolved measurements.** Use the trained
-   4B adapter for its trained task. Compare the existing primary-first policy with
-   trained-4B-first on 2D fallbacks. The runner writes both choices. Do not route
-   by model self-confidence or select answers using test/overlap labels.
+1. **Use v17 as the benchmark to beat.** Offline reproduction verifies alignment;
+   it is not the score improvement. The new guided candidate can change successful
+   but suspicious measurements. The historical union separately tests improvements
+   restricted to v17 fallbacks and retains its old provenance.
+2. **Make 4B an active helper.** On failed or suspicious 32B measurements, get 4B
+   box proposals, then let 32B visually verify and correct them. On unresolved
+   questions, collect paired direct answers; disagreements trigger 32B review of
+   the same question. Compare this with primary-first and trained-4B-first on 2D.
+   Do not route using self-reported confidence or test/overlap labels.
 3. **Invest in grounding supervision.** The current QLoRA training freezes the
    vision encoder and supervises only numeric video answers. It does not teach
    target boxes, object identity or segmentation. A dedicated detector/grounder or
@@ -97,16 +100,23 @@ The small, previously used labelled overlap contains 128 matched questions from
 that mismatch is a useful warning against using overlap gains as a forecast.
 On jointly measured overlap items, 32B is similar or better in all categories;
 there is no support there for blindly replacing all successful 2D measurements
-with 4B. The safe candidate therefore retains v17 measured answers.
+with 4B. The guided candidate instead asks 32B to verify helper evidence on weak
+cases; it can still regress, which is why control and historical policies are exported.
 
 ## Scope of this delivery
 
-The implementation supplies isolated inference orchestration, selective rescue,
-parser/unit/metadata repairs, source diagnostics, a protected baseline candidate,
-and a trained-2D routing ablation. CPU contracts and offline replay are verified.
+The implementation supplies question-local inference, joint object grounding and
+verification, active 4B box assistance, 32B review of conflicting direct estimates,
+parser/unit/metadata repairs, diagnostics, a historical union and control candidates.
+CPU contracts and offline replay are verified.
 It does not include a newly trained detector, region endpoint solver, model weights,
 or a measured improvement toward 74%. Those claims would require additional evidence.
 
 The official score definition is documented on the
 [QuantiPhy competition page](https://quantiphy.stanford.edu/competition/).
 All run-specific counts above come from the bundled inputs and `audit.py`.
+
+The first package copied shared-video behavior from the original pipeline. The
+subsequent rule audit found an explicit per-question independence requirement.
+New inference scopes were changed accordingly; the historical union is kept as
+an explicitly labelled comparison. See [RULE_AUDIT.md](RULE_AUDIT.md).

@@ -15,7 +15,7 @@ import pandas as pd
 from pipeline.ground import parse_boxes
 from pipeline.parse import finalize_question
 from repairs import camera_distance, direct_value
-from run import assemble, positive, read_values
+from run import assemble, positive, read_values, measurement_weak
 
 
 class Contracts(unittest.TestCase):
@@ -111,11 +111,119 @@ class Contracts(unittest.TestCase):
             self.assertLess(len(by['secondary', 'measure'][0]), len(df))
             self.assertIsNone(by['secondary', 'measure'][1])
             self.assertEqual(by['secondary_direct', 'direct'][1], 'mock_adapter')
-            result = pd.read_csv(out / 'candidate_fresh_sources.csv')
+            result = pd.read_csv(out / 'candidate_32b_led_sources.csv')
             self.assertTrue(positive(result.parsed_value).all())
             self.assertEqual(set(result.source), {'32B-measure', '4B-direct'})
+            guided = pd.read_csv(out / 'candidate_guided_sources.csv')
+            self.assertEqual(set(guided.source), {'32B-measure', '32B-reviewed-with-4B-hypothesis'})
+            # No saved-answer fallback or pooled test prediction median can enter live output.
+            self.assertFalse(guided.source.str.contains('median|v17', regex=True).any())
+            hints = json.loads((out / 'primary_review/same_question_hypotheses.json').read_text())
+            self.assertTrue(all(x['32B'] is None and x['4B'] == 3 for x in hints.values()))
+            self.assertEqual(set(map(int, hints)), set(by['primary_review', 'direct'][0]))
         finally:
             shutil.rmtree(out)
+
+    def test_question_scopes_do_not_share_video_semantics(self):
+        from guided import scopes, context, ContextVLM, ground_one
+        frame = pd.DataFrame({'id': [1, 2], 'video_id': ['same', 'same'],
+                              'question': ['width of red ball?', 'SECRET OTHER QUESTION'],
+                              'prior': ['red ball height=2m', 'SECRET OTHER PRIOR'], 'depth_info': ['', '']})
+        items = list(scopes(frame, Path('/tmp/question_scopes')))
+        self.assertEqual([len(x[0]) for x in items], [1, 1])
+        self.assertNotEqual(items[0][1], items[1][1])
+        row = next(items[0][0].itertuples())
+        before = context(row)
+        frame.loc[1, 'prior'] = 'CHANGED OTHER PRIOR'
+        self.assertEqual(before, context(next(list(scopes(frame, Path('/tmp/question_scopes')))[0][0].itertuples())))
+        self.assertNotIn('SECRET', before)
+        with self.assertRaisesRegex(ValueError, 'exactly one'):
+            ground_one(None, frame, {}, Path('/tmp/not_written'), None)
+
+    def test_joint_grounding_requires_exact_ids_and_valid_boxes(self):
+        from guided import decode_objects
+        reply = '[{"object_id":"o0","boxes":[[1,2,30,40]]},{"object_id":"unrequested","boxes":[[0,0,100,100]]}]'
+        self.assertEqual(decode_objects(reply, {'o0': 'red ball'}), {'o0': [[1.,2.,30.,40.]]})
+        self.assertEqual(decode_objects('[{"object_id":"o0","boxes":[[0,0,2000,10]]}]', {'o0': 'ball'}), {'o0': []})
+
+    def test_unresolved_distinct_object_conflict_cannot_share_a_box(self):
+        import pipeline.ground as grounding
+        objects = {'red ball': {'phrase': 'red ball', 'frame': 0, 'boxes': [[0, 0, 50, 50]]},
+                   'blue ball': {'phrase': 'blue ball', 'frame': 0, 'boxes': [[0, 0, 50, 50]]}}
+        with patch.object(grounding, 'ground', return_value={'boxes': [[0, 0, 50, 50]]}):
+            result = grounding.resolve_conflicts(None, np.zeros((4, 60, 60, 3), dtype=np.uint8), objects)
+        self.assertTrue(all(not x['boxes'] and not x['conflict']['resolved'] for x in result.values()))
+
+    def test_helper_triggers_include_suspicious_successes(self):
+        frame = pd.DataFrame({'value': [2., 2., 2., 2., np.nan],
+                              'min_mask_short_px': [30., 4., 30., 30., np.nan],
+                              'max_border_fraction': [0., 0., .8, 0., np.nan],
+                              'moge_used': [False, False, False, True, False]})
+        self.assertEqual(list(measurement_weak(frame)), [False, True, True, True, True])
+
+    def test_joint_grounding_uses_helper_only_for_same_question_and_verifies(self):
+        from guided import ground_one
+        class FakeVLM:
+            def __init__(self):
+                self.messages = []
+            def chat(self, messages, **kwargs):
+                self.messages.append(messages)
+                return '[{"object_id":"o0","boxes":[[100,100,200,200]]},{"object_id":"o1","boxes":[[600,600,800,800]]}]'
+        row = pd.DataFrame({'id': [1], 'video_id': ['v'], 'question': ['width of blue ball in cm?'],
+                            'prior': ['red ball diameter=2cm'], 'depth_info': [''], 'video_path': ['unused'], 'fps': [24.]})
+        from run import HERE
+        (HERE / 'outputs').mkdir(exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix='ground_contract_', dir=HERE / 'outputs') as tmp:
+            root = Path(tmp)
+            proposal = root / 'helper/items/1/ground/v.json'
+            proposal.parent.mkdir(parents=True)
+            proposal.write_text(json.dumps({'question_id': 1, 'shape': [100, 100], 'objects': {'red ball': {'phrase': 'red ball', 'frame': 0, 'boxes': [[10, 10, 20, 20]]}}}))
+            engine = SimpleNamespace(TRACK_LONGEST=1024, GROUND_SWEEP_FRAMES=2,
+                                     read_frames=lambda *args: np.zeros((2, 100, 100, 3), dtype=np.uint8),
+                                     key_frames=lambda *args: {'red ball': (0, 'red ball'), 'blue ball': (0, 'blue ball')},
+                                     object_keys=lambda rec: ('red ball', ['blue ball']))
+            model = FakeVLM()
+            ground_one(engine, row, {1: {'ok': True}}, root / 'item', model, root / 'helper')
+            self.assertEqual(len(model.messages), 2)
+            self.assertIn('Unverified 4B', model.messages[0][0]['content'][1]['text'])
+            self.assertIn('Check these candidate boxes', model.messages[1][0]['content'][1]['text'])
+            result = json.loads((root / 'item/ground/v.json').read_text())
+            self.assertEqual(result['question_id'], 1)
+            self.assertEqual(result['objects']['blue ball']['boxes'], [[60., 60., 80., 80.]])
+            proposal.write_text(json.dumps({'question_id': 999, 'shape': [100, 100], 'objects': {}}))
+            with self.assertRaisesRegex(ValueError, 'another question'):
+                ground_one(engine, row, {1: {'ok': True}}, root / 'newitem', model, root / 'helper')
+
+    def test_real_worker_never_passes_two_questions_to_a_measurement_stage(self):
+        import worker
+        import engine
+        from run import HERE
+        frame = pd.DataFrame({'id': [11, 12], 'video_id': ['shared_video', 'shared_video'],
+                              'question': ['length in m?', 'speed in m/s?'],
+                              'prior': ['ball length=1m', 'car speed=2m/s'],
+                              'depth_info': ['', ''], 'video_type': ['S2MC', 'V2MC'], 'video_path': ['unused', 'unused']})
+        calls = []
+        def observe(one, *args, **kwargs):
+            self.assertEqual(len(one), 1)
+            calls.append(int(one.id.iloc[0]))
+        def solve(one, *args):
+            observe(one)
+            return pd.DataFrame({'id': one.id, 'value': [2.], 'reason': ['']})
+        with tempfile.TemporaryDirectory(prefix='worker_contract_', dir=HERE / 'outputs') as tmp:
+            with patch.object(sys, 'argv', ['worker.py', '--phase', 'measure', '--split', 'test', '--stages', 'parse,ground,solve']), \
+                 patch('pipeline.data.load_split', return_value=frame), patch('pipeline.scoring.RESULTS', Path(tmp)), \
+                 patch('pipeline.vlm.QwenVL'), patch.object(engine, 'stage_parse', side_effect=observe), \
+                 patch('guided.ground_one', side_effect=lambda eng, one, *a: observe(one)), \
+                 patch.object(engine, 'load_parsed', return_value={}), patch.object(engine, 'stage_solve', side_effect=solve), \
+                 patch.object(engine, 'load_jsonl', return_value={}), patch.object(engine, 'moge_corrections'), \
+                 patch.object(engine, 'MOGE_CORR_PATH'):
+                worker.main()
+            self.assertEqual(calls.count(11), 3)
+            self.assertEqual(calls.count(12), 3)
+            result = pd.read_csv(Path(tmp) / 'cache/test/measure_solutions.csv')
+            self.assertEqual(list(result.id), [11, 12])
+            self.assertTrue((Path(tmp) / 'cache/test/items/11').exists())
+            self.assertTrue((Path(tmp) / 'cache/test/items/12').exists())
 
 
 if __name__ == '__main__':
