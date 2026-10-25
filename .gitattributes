@@ -1,1 +1,2 @@
 * text=auto eol=lf
+run_artifacts/gcloud_synth4b/adapter/*.safetensors filter=lfs diff=lfs merge=lfs -text

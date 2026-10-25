@@ -1,0 +1,14 @@
+{
+ "model": "Qwen/Qwen3-VL-4B-Instruct",
+ "data": "data_synth",
+ "out": "adapters/synth_qwen3-vl-4b",
+ "epochs": 1.0,
+ "lr": 0.0001,
+ "rank": 16,
+ "accum": 8,
+ "max_items": 0,
+ "holdout": 0.03,
+ "frames": 16,
+ "longest": 448,
+ "seed": 0
+}

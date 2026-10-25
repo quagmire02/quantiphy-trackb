@@ -1,0 +1,10 @@
+VLM answers changed by re-parsing / unit conversion: 2
+col_0     measure  median  vlm   All
+category                            
+D2            963       1  199  1163
+D3            826       0  143   969
+S2            453       0  126   579
+S3            547       0   31   578
+All          2789       1  499  3289
+template rows whose question wording differs from the dataset: 60 (expected 60)
+wrote upload file results_synth4b/submissions/submission_v16_synth4b.csv: 3289 rows, columns ['id', 'video_id', 'video_source', 'video_type', 'fps', 'inference_type', 'question', 'ground_truth_prior', 'depth_info', 'parsed_value']
