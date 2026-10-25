@@ -1,0 +1,85 @@
+Coverage (valid = finite and positive; test IDs are zero based):
+category                      D2   D3   S2   S3
+row_0
+4B failed -> 32B failed      177  122  115   18
+4B failed -> 32B measured     23   21   11   13
+4B measured -> 32B failed     89   73   65   29
+4B measured -> 32B measured  874  753  388  518
+
+32B failure reasons by category:
+category                                                  D2  D3  S2  S3
+reason
+guard:  m/s is faster than free fall allows                8   0   0   0
+guard: 104 m/s is faster than free fall allows             8   0   0   0
+guard: 248 m/s is faster than free fall allows             5   0   0   0
+guard: e+03 m/s is faster than free fall allows           10   0   0   0
+guard: implausible person height in clip                  24  14   0   0
+guard: implausible vehicle height                          2  13   0   3
+guard: implausible vehicle size in clip                    5  18  10   1
+guard: implausible vehicle width                          17  20   9   6
+no constant-acceleration phase in the reference's track   27   0   0   0
+non-positive result                                        4   0   0   0
+not grounded:                                            100  94  81  33
+object not tracked near its distance timestamp t=s         0  10   0   0
+only 1 tracked frames in s                                 0   1   0   0
+parse failed/unsupported                                   2  12   4   0
+reference barely moves; motion prior unusable              2   0   7   0
+region, not an object                                     40  12  66   4
+target asked about motion but its track is static         12   0   3   0
+unsupported 3D target quantity 'path_diameter'             0   1   0   0
+
+Question cache: 3289 records; invalid 14
+distance    14
+Invalid question examples:
+(1952, 'What is the spacing in meters between the markings on the pool wall?', {'id': 1952, 'targets': ['markings on the pool wall'], 'target_quantity': 'distance', 'target_time': None, 'target_unit': 'meters', 'question_raw': '{"targets": ["markings on the pool wall"], "target_quantity": "distance", "target_time": null}', 'question_ok': False})
+(1956, 'What is the spacing in meters between the markings on the pool wall?', {'id': 1956, 'targets': ['markings on the pool wall'], 'target_quantity': 'distance', 'target_time': None, 'target_unit': 'meters', 'question_raw': '{"targets": ["markings on the pool wall"], "target_quantity": "distance", "target_time": null}', 'question_ok': False})
+(2160, "What is the basketball's initial distance from the desk in cm? ", {'id': 2160, 'targets': ['basketball'], 'target_quantity': 'distance', 'target_time': [0.0, 0.0], 'target_unit': 'cm', 'question_raw': '{"targets": ["basketball"], "target_quantity": "distance", "target_time": [0, 0]}', 'question_ok': False})
+(2164, "What is the basketball's  distance from the camera at 1.2s in meters? ", {'id': 2164, 'targets': ['basketball'], 'target_quantity': 'distance', 'target_time': [1.2, 1.2], 'target_unit': 'meters', 'question_raw': '{"targets": ["basketball"], "target_quantity": "distance", "target_time": [1.2, 1.2]}', 'question_ok': False})
+(2165, "What is the basketball's initial distance from the desk in cm? ", {'id': 2165, 'targets': ['basketball'], 'target_quantity': 'distance', 'target_time': [0.0, 0.0], 'target_unit': 'cm', 'question_raw': '{"targets": ["basketball"], "target_quantity": "distance", "target_time": [0, 0]}', 'question_ok': False})
+(2169, "What is the basketball's  distance from the camera at 1.2s in meters? ", {'id': 2169, 'targets': ['basketball'], 'target_quantity': 'distance', 'target_time': [1.2, 1.2], 'target_unit': 'meters', 'question_raw': '{"targets": ["basketball"], "target_quantity": "distance", "target_time": [1.2, 1.2]}', 'question_ok': False})
+(2170, "What is the basketball's initial distance from the desk in cm? ", {'id': 2170, 'targets': ['basketball'], 'target_quantity': 'distance', 'target_time': [0.0, 0.0], 'target_unit': 'cm', 'question_raw': '{"targets": ["basketball"], "target_quantity": "distance", "target_time": [0, 0]}', 'question_ok': False})
+(2174, "What is the basketball's  distance from the camera at 1.2s in meters? ", {'id': 2174, 'targets': ['basketball'], 'target_quantity': 'distance', 'target_time': [1.2, 1.2], 'target_unit': 'meters', 'question_raw': '{"targets": ["basketball"], "target_quantity": "distance", "target_time": [1.2, 1.2]}', 'question_ok': False})
+(2175, "What is the basketball's initial distance from the floor in cm? ", {'id': 2175, 'targets': ['basketball'], 'target_quantity': 'distance', 'target_time': [0.0, 0.0], 'target_unit': 'cm', 'question_raw': '{"targets": ["basketball"], "target_quantity": "distance", "target_time": [0, 0]}', 'question_ok': False})
+(2179, "What is the basketball's  distance from the camera at 1.8s in meters? ", {'id': 2179, 'targets': ['basketball'], 'target_quantity': 'distance', 'target_time': [1.8, 1.8], 'target_unit': 'meters', 'question_raw': '{"targets": ["basketball"], "target_quantity": "distance", "target_time": [1.8, 1.8]}', 'question_ok': False})
+(2180, "What is the basketball's initial distance from the floor in cm? ", {'id': 2180, 'targets': ['basketball'], 'target_quantity': 'distance', 'target_time': [0.0, 0.0], 'target_unit': 'cm', 'question_raw': '{"targets": ["basketball"], "target_quantity": "distance", "target_time": [0, 0]}', 'question_ok': False})
+(2184, "What is the basketball's  distance from the camera at 1.8s in meters? ", {'id': 2184, 'targets': ['basketball'], 'target_quantity': 'distance', 'target_time': [1.8, 1.8], 'target_unit': 'meters', 'question_raw': '{"targets": ["basketball"], "target_quantity": "distance", "target_time": [1.8, 1.8]}', 'question_ok': False})
+(2185, "What is the basketball's initial distance from the floor in cm? ", {'id': 2185, 'targets': ['basketball'], 'target_quantity': 'distance', 'target_time': [0.0, 0.0], 'target_unit': 'cm', 'question_raw': '{"targets": ["basketball"], "target_quantity": "distance", "target_time": [0, 0]}', 'question_ok': False})
+(2189, "What is the basketball's  distance from the camera at 1.8s in meters? ", {'id': 2189, 'targets': ['basketball'], 'target_quantity': 'distance', 'target_time': [1.8, 1.8], 'target_unit': 'meters', 'question_raw': '{"targets": ["basketball"], "target_quantity": "distance", "target_time": [1.8, 1.8]}', 'question_ok': False})
+
+Direct cache: 688 records; unusable replies 81; 32B failures with NO raw record 0
+Unusable raw replies (first 15):
+(37, "'0.0 m/s'")
+(42, "'0.0 m/s'")
+(51, "'0.0 m/s²'")
+(245, "'0.00 m'")
+(312, "'0.0 m/s'")
+(349, "'0.0 m/s²'")
+(351, "'0.0 m/s²'")
+(534, "'0.0 m'")
+(541, "'0.0 m'")
+(556, "'0.0 m'")
+(658, "'0.0 m/s'")
+(659, "'0.0 m/s²'")
+(661, "'0.0 m/s²'")
+(663, "'0.0 m/s²'")
+(675, "'0.0 m/s²'")
+All raw reply values: {'count': 688.0, 'mean': 10.95043023255814, 'std': 68.10037816232023, 'min': 0.0, '25%': 0.51575, '50%': 1.96, '75%': 4.8, 'max': 1200.0}
+
+Measurements that differ by >2x:
+value     False  True
+category
+D2          854     20
+D3          707     46
+S2          367     21
+S3          493     25
+
+Development-only labelled overlap: 128 items / 24 videos; correlated and previously used for development.
+v16: {'S2': 65.38, 'D2': 67.69, 'S3': 67.75, 'D3': 57.22}, macro=64.51
+v17: {'S2': 69.23, 'D2': 77.31, 'S3': 69.0, 'D3': 60.83}, macro=69.09
+4B measurement: {'S2': 51.15, 'D2': 58.85, 'S3': 63.75, 'D3': 49.44}, macro=55.80
+32B measurement: {'S2': 51.92, 'D2': 71.15, 'S3': 63.5, 'D3': 52.78}, macro=59.84
+Paired overlap where both measured:
+S2 n=19: 4B=70.00, 32B=71.05
+D2 n=20: 4B=76.50, 32B=92.50
+S3 n=34: 4B=73.24, 32B=73.24
+D3 n=30: 4B=59.33, 32B=63.33

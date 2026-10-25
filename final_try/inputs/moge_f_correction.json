@@ -1,0 +1,17 @@
+{
+ "factors": {
+  "lab/orig": 0.9608473424293227,
+  "lab/seg": 1.1983231552968534,
+  "lab/x": 1.1021360422621567,
+  "simulation/orig": 0.5985205812499185,
+  "segmentation/seg": 0.5192467880454512
+ },
+ "n": {
+  "lab/orig": 15,
+  "lab/seg": 16,
+  "lab/x": 16,
+  "simulation/orig": 30,
+  "segmentation/seg": 15
+ },
+ "min_f_sensitivity": 0.0
+}

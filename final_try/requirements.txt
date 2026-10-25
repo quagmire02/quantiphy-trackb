@@ -1,0 +1,16 @@
+# Versions exercised by the existing WSL environment; install torch separately (setup.sh).
+transformers==5.17.0
+numpy==2.4.6
+pandas==3.0.6
+scipy==1.17.1
+accelerate==1.15.0
+bitsandbytes==0.50.2
+pyarrow==25.0.1
+opencv-python-headless==5.0.0.93
+peft>=0.17,<1
+qwen-vl-utils>=0.0.14
+av
+pillow
+tqdm
+matplotlib
+git+https://github.com/microsoft/MoGe.git@74fbce054ebed49800de42d0ad0e83495065719a
