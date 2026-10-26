@@ -1,0 +1,11 @@
+{
+ "factors": {
+  "simulation/orig": 0.5782469673769569,
+  "segmentation/seg": 0.5194836455395364
+ },
+ "n": {
+  "simulation/orig": 30,
+  "segmentation/seg": 15
+ },
+ "min_f_sensitivity": 0.0
+}

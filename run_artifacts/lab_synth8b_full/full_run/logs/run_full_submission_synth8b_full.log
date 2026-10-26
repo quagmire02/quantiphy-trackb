@@ -1,0 +1,2734 @@
+
+
+
+
+[transformers] `memory_attention_rope_theta` is deprecated and will be removed in v5.0. Use `rope_parameters['rope_theta']` instead.
+
+
+
+  captured_0013: 49/49 frames, 7 objects, 2 key frames, 12s, peak 0.57 GiB
+
+
+  captured_0021x: 49/49 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  captured_0027s: 49/49 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  captured_0034as: 49/49 frames, 4 objects, 2 key frames, 6s, peak 0.45 GiB
+
+
+  captured_0041x: 49/49 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  captured_0061: 49/49 frames, 4 objects, 3 key frames, 7s, peak 0.45 GiB
+
+
+  internet_0001: 31/31 frames, 2 objects, 1 key frames, 5s, peak 0.43 GiB
+
+
+  internet_0005: 91/178 frames, 6 objects, 1 key frames, 13s, peak 0.69 GiB
+
+
+  internet_0013: 96/279 frames, 8 objects, 5 key frames, 30s, peak 0.57 GiB
+
+
+  internet_0019: 40/40 frames, 4 objects, 3 key frames, 6s, peak 0.44 GiB
+
+
+  internet_0027: 78/78 frames, 6 objects, 4 key frames, 16s, peak 0.48 GiB
+
+
+  simulation_0009: 66/66 frames, 6 objects, 1 key frames, 12s, peak 0.62 GiB
+
+
+  simulation_0015: 51/100 frames, 8 objects, 1 key frames, 9s, peak 0.62 GiB
+
+
+  simulation_0034_segmented: 72/72 frames, 3 objects, 2 key frames, 7s, peak 0.48 GiB
+
+
+  simulation_0060: 72/72 frames, 10 objects, 3 key frames, 23s, peak 0.70 GiB
+
+
+  simulation_0089: 30/30 frames, 2 objects, 1 key frames, 2s, peak 0.43 GiB
+
+
+  simulation_0098_segmented: 73/73 frames, 2 objects, 1 key frames, 5s, peak 0.48 GiB
+
+
+  simulation_0163: 51/51 frames, 3 objects, 2 key frames, 5s, peak 0.45 GiB
+
+
+  simulation_0170_segmented: 80/80 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0171: 80/80 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0193: 52/100 frames, 3 objects, 3 key frames, 10s, peak 0.40 GiB
+
+
+  simulation_0196: 50/50 frames, 5 objects, 1 key frames, 6s, peak 0.54 GiB
+
+
+  simulation_0300: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+
+
+  findmissing simulation_0009: found ['end outer pier']
+
+
+
+
+  simulation_0009: 66/66 frames, 7 objects, 1 key frames, 13s, peak 0.65 GiB
+
+
+
+
+  anchors captured_0013: added ['slope near']
+
+
+  anchors simulation_0009: added ['stairs']
+
+
+  anchors simulation_0015: added ['the pedestal of the central  sculpture and']
+
+
+  anchors simulation_0060: added ['bike']
+
+
+
+
+  captured_0013: 49/49 frames, 8 objects, 3 key frames, 14s, peak 0.57 GiB
+
+
+  simulation_0009: 66/66 frames, 8 objects, 1 key frames, 12s, peak 0.68 GiB
+
+
+  simulation_0015: 51/100 frames, 9 objects, 1 key frames, 10s, peak 0.66 GiB
+
+
+  simulation_0060: 72/72 frames, 11 objects, 4 key frames, 26s, peak 0.70 GiB
+
+
+
+
+  refix simulation_0196: reference 'bubble drop in' re-grounded on moving region
+
+
+
+
+  simulation_0196: 50/50 frames, 5 objects, 2 key frames, 10s, peak 0.51 GiB
+
+
+
+
+
+
+
+parse questions:   7%|▋         | 229/3289 [06:14<59:42,  1.17s/it]
+parse questions:   7%|▋         | 233/3289 [06:18<57:30,  1.13s/it]
+parse questions:   9%|▉         | 296/3289 [07:51<59:59,  1.20s/it]
+parse questions:   9%|▉         | 308/3289 [08:04<59:20,  1.19s/it]
+parse questions:  12%|█▏        | 388/3289 [10:05<58:11,  1.20s/it]
+parse questions:  13%|█▎        | 421/3289 [10:50<58:14,  1.22s/it]
+parse questions:  13%|█▎        | 424/3289 [10:54<58:25,  1.22s/it]
+parse questions:  14%|█▍        | 466/3289 [11:55<58:17,  1.24s/it]
+parse questions:  16%|█▌        | 534/3289 [13:40<57:58,  1.26s/it]
+parse questions:  16%|█▋        | 542/3289 [13:51<55:33,  1.21s/it]
+parse questions:  17%|█▋        | 555/3289 [14:12<59:28,  1.31s/it]
+parse questions:  18%|█▊        | 584/3289 [14:58<57:55,  1.28s/it]
+parse questions:  18%|█▊        | 594/3289 [15:10<59:09,  1.32s/it]
+parse questions:  19%|█▊        | 612/3289 [15:36<59:28,  1.33s/it]
+parse questions:  19%|█▉        | 637/3289 [16:08<59:18,  1.34s/it]
+parse questions:  20%|██        | 669/3289 [16:57<59:12,  1.36s/it]
+parse questions:  21%|██▏       | 702/3289 [17:51<59:14,  1.37s/it]
+parse questions:  22%|██▏       | 718/3289 [18:15<58:44,  1.37s/it]
+parse questions:  22%|██▏       | 728/3289 [18:30<58:41,  1.37s/it]
+parse questions:  23%|██▎       | 747/3289 [19:03<59:33,  1.41s/it]
+parse questions:  23%|██▎       | 759/3289 [19:23<57:59,  1.38s/it]
+parse questions:  23%|██▎       | 769/3289 [19:38<59:23,  1.41s/it]
+parse questions:  24%|██▎       | 779/3289 [19:54<58:45,  1.40s/it]
+parse questions:  25%|██▍       | 819/3289 [20:51<58:43,  1.43s/it]
+parse questions:  25%|██▌       | 826/3289 [21:02<59:49,  1.46s/it]
+parse questions:  27%|██▋       | 893/3289 [22:52<59:17,  1.48s/it]
+parse questions:  28%|██▊       | 916/3289 [23:26<57:39,  1.46s/it]
+parse questions:  28%|██▊       | 930/3289 [23:49<58:16,  1.48s/it]
+parse questions:  28%|██▊       | 937/3289 [24:02<57:50,  1.48s/it]
+parse questions:  29%|██▉       | 953/3289 [24:25<59:54,  1.54s/it]
+parse questions:  29%|██▉       | 962/3289 [24:41<58:14,  1.50s/it]
+parse questions:  29%|██▉       | 965/3289 [24:45<56:51,  1.47s/it]
+parse questions:  30%|██▉       | 983/3289 [25:19<59:29,  1.55s/it]
+parse questions:  30%|███       | 987/3289 [25:25<56:20,  1.47s/it]
+parse questions:  30%|███       | 990/3289 [25:30<57:26,  1.50s/it]
+parse questions:  30%|███       | 1000/3289 [25:47<56:57,  1.49s/it]
+parse questions:  31%|███       | 1021/3289 [26:15<58:28,  1.55s/it]
+parse questions:  32%|███▏      | 1044/3289 [26:57<58:51,  1.57s/it]
+parse questions:  32%|███▏      | 1065/3289 [27:27<56:19,  1.52s/it]
+parse questions:  34%|███▎      | 1103/3289 [28:18<56:37,  1.55s/it]
+parse questions:  34%|███▍      | 1120/3289 [28:45<59:33,  1.65s/it]
+parse questions:  34%|███▍      | 1125/3289 [28:55<56:08,  1.56s/it]
+parse questions:  35%|███▍      | 1149/3289 [29:30<59:35,  1.67s/it]
+parse questions:  36%|███▌      | 1168/3289 [29:59<56:10,  1.59s/it]
+parse questions:  36%|███▋      | 1198/3289 [30:44<59:44,  1.71s/it]
+parse questions:  37%|███▋      | 1226/3289 [31:30<54:20,  1.58s/it]
+parse questions:  38%|███▊      | 1249/3289 [32:03<57:21,  1.69s/it]
+parse questions:  39%|███▉      | 1281/3289 [32:51<56:14,  1.68s/it]
+parse questions:  39%|███▉      | 1296/3289 [33:12<53:33,  1.61s/it]
+parse questions:  40%|████      | 1322/3289 [33:47<55:12,  1.68s/it]
+parse questions:  41%|████      | 1348/3289 [34:20<57:10,  1.77s/it]
+parse questions:  42%|████▏     | 1370/3289 [34:57<55:17,  1.73s/it]
+parse questions:  42%|████▏     | 1394/3289 [35:33<57:40,  1.83s/it]
+parse questions:  43%|████▎     | 1416/3289 [36:08<56:21,  1.81s/it]
+parse questions:  44%|████▎     | 1438/3289 [36:43<56:09,  1.82s/it]
+parse questions:  44%|████▍     | 1461/3289 [37:21<57:11,  1.88s/it]
+parse questions:  46%|████▌     | 1506/3289 [38:28<59:55,  2.02s/it]
+parse questions:  46%|████▌     | 1508/3289 [38:31<56:31,  1.90s/it]
+parse questions:  46%|████▋     | 1525/3289 [39:00<55:18,  1.88s/it]
+parse questions:  47%|████▋     | 1549/3289 [39:35<55:13,  1.90s/it]
+parse questions:  48%|████▊     | 1574/3289 [40:12<51:22,  1.80s/it]
+parse questions:  48%|████▊     | 1594/3289 [40:47<58:38,  2.08s/it]
+parse questions:  49%|████▉     | 1617/3289 [41:21<54:15,  1.95s/it]
+parse questions:  50%|████▉     | 1641/3289 [41:55<53:03,  1.93s/it]
+parse questions:  61%|██████    | 2012/3289 [50:54<54:26,  2.56s/it]
+
+ground:   7%|▋         | 37/568 [06:44<53:57,  6.10s/it]
+ground:   8%|▊         | 45/568 [07:38<51:45,  5.94s/it]
+ground:  13%|█▎        | 74/568 [10:52<58:57,  7.16s/it]
+ground:  17%|█▋        | 95/568 [14:31<54:07,  6.86s/it]
+ground:  21%|██        | 119/568 [18:55<58:04,  7.76s/it]
+ground:  21%|██▏       | 122/568 [19:23<57:40,  7.76s/it]
+ground:  29%|██▊       | 163/568 [29:15<58:18,  8.64s/it]
+ground:  29%|██▉       | 166/568 [29:40<57:02,  8.51s/it]
+ground:  34%|███▍      | 192/568 [35:45<56:14,  8.97s/it]
+ground:  37%|███▋      | 211/568 [39:38<56:07,  9.43s/it]
+ground:  39%|███▉      | 222/568 [42:35<49:21,  8.56s/it]
+ground:  43%|████▎     | 244/568 [45:06<59:19, 10.99s/it]
+ground:  52%|█████▏    | 297/568 [1:00:23<58:37, 12.98s/it]
+[transformers] `memory_attention_rope_theta` is deprecated and will be removed in v5.0. Use `rope_parameters['rope_theta']` instead.
+
+
+
+  captured_0001: 49/49 frames, 2 objects, 2 key frames, 4s, peak 0.39 GiB
+
+
+  captured_0002: 49/49 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  captured_0006: 49/49 frames, 2 objects, 2 key frames, 4s, peak 0.39 GiB
+
+
+  captured_0006s: 49/49 frames, 2 objects, 2 key frames, 4s, peak 0.39 GiB
+
+
+  captured_0008: 49/49 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  captured_0008s: 49/49 frames, 1 objects, 1 key frames, 5s, peak 0.39 GiB
+
+
+  captured_0008x: 49/49 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  captured_0009: 49/49 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  captured_0009s: 49/49 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  captured_0009x: 49/49 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  captured_0010: 49/49 frames, 2 objects, 2 key frames, 4s, peak 0.39 GiB
+
+
+  captured_0010X: 49/49 frames, 2 objects, 2 key frames, 4s, peak 0.39 GiB
+
+
+  captured_0010s: 49/49 frames, 2 objects, 2 key frames, 4s, peak 0.39 GiB
+
+
+  captured_0013: 49/49 frames, 7 objects, 2 key frames, 9s, peak 0.56 GiB
+
+
+  captured_0013s: 49/49 frames, 7 objects, 2 key frames, 12s, peak 0.57 GiB
+
+
+  captured_0013x: 49/49 frames, 7 objects, 1 key frames, 8s, peak 0.59 GiB
+
+
+  captured_0014: 49/49 frames, 6 objects, 3 key frames, 9s, peak 0.50 GiB
+
+
+  captured_0014s: 49/49 frames, 7 objects, 2 key frames, 11s, peak 0.56 GiB
+
+
+  captured_0014x: 49/49 frames, 7 objects, 3 key frames, 10s, peak 0.54 GiB
+
+
+  captured_0015: 73/73 frames, 3 objects, 3 key frames, 9s, peak 0.41 GiB
+
+
+  captured_0015s: 73/73 frames, 3 objects, 3 key frames, 9s, peak 0.41 GiB
+
+
+  captured_0015x: 73/73 frames, 3 objects, 3 key frames, 10s, peak 0.41 GiB
+
+
+  captured_0016: 49/49 frames, 4 objects, 2 key frames, 7s, peak 0.50 GiB
+
+
+  captured_0016s: 49/49 frames, 4 objects, 2 key frames, 6s, peak 0.49 GiB
+
+
+  captured_0016x: 49/49 frames, 4 objects, 2 key frames, 6s, peak 0.49 GiB
+
+
+  captured_0018: 49/49 frames, 10 objects, 3 key frames, 16s, peak 0.59 GiB
+
+
+  captured_0018s: 49/49 frames, 8 objects, 3 key frames, 11s, peak 0.56 GiB
+
+
+  captured_0018x: 49/49 frames, 7 objects, 2 key frames, 9s, peak 0.57 GiB
+
+
+  captured_0020: 49/49 frames, 5 objects, 4 key frames, 12s, peak 0.45 GiB
+
+
+  captured_0020s: 49/49 frames, 5 objects, 2 key frames, 7s, peak 0.50 GiB
+
+
+  captured_0020x: 49/49 frames, 5 objects, 3 key frames, 8s, peak 0.49 GiB
+
+
+  captured_0021: 49/49 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  captured_0021s: 49/49 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+track:   6%|▌         | 33/568 [03:46<54:58,  6.17s/it]
+
+  captured_0021x: 49/49 frames, 2 objects, 1 key frames, 6s, peak 0.45 GiB
+
+
+  captured_0022: 49/49 frames, 2 objects, 2 key frames, 4s, peak 0.39 GiB
+
+
+  captured_0022s: 49/49 frames, 2 objects, 2 key frames, 4s, peak 0.39 GiB
+
+
+  captured_0022x: 49/49 frames, 2 objects, 2 key frames, 4s, peak 0.39 GiB
+
+
+  captured_0023: 49/49 frames, 3 objects, 2 key frames, 5s, peak 0.45 GiB
+
+
+  captured_0023s: 49/49 frames, 3 objects, 2 key frames, 5s, peak 0.45 GiB
+
+
+  captured_0023x: 49/49 frames, 3 objects, 2 key frames, 5s, peak 0.45 GiB
+
+
+  captured_0024: 49/49 frames, 3 objects, 1 key frames, 7s, peak 0.49 GiB
+
+
+  captured_0024s: 49/49 frames, 3 objects, 1 key frames, 4s, peak 0.50 GiB
+
+
+  captured_0024x: 49/49 frames, 3 objects, 1 key frames, 4s, peak 0.50 GiB
+
+
+  captured_0027: 49/49 frames, 2 objects, 2 key frames, 4s, peak 0.39 GiB
+
+
+  captured_0027s: 49/49 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  captured_0027x: 49/49 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  captured_0028: 49/49 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  captured_0028s: 49/49 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  captured_0028x: 49/49 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  captured_0029: 49/49 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  captured_0029s: 49/49 frames, 2 objects, 1 key frames, 6s, peak 0.45 GiB
+
+
+  captured_0029x: 49/49 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  captured_0030: 49/49 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  captured_0030s: 49/49 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  captured_0030x: 49/49 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  captured_0031: 49/49 frames, 4 objects, 2 key frames, 6s, peak 0.49 GiB
+
+
+  captured_0031s: 49/49 frames, 3 objects, 1 key frames, 4s, peak 0.49 GiB
+
+
+  captured_0031x: 49/49 frames, 3 objects, 1 key frames, 4s, peak 0.50 GiB
+
+
+  captured_0032: 49/49 frames, 3 objects, 2 key frames, 5s, peak 0.45 GiB
+
+
+  captured_0032s: 49/49 frames, 3 objects, 1 key frames, 7s, peak 0.49 GiB
+
+
+  captured_0032x: 49/49 frames, 3 objects, 1 key frames, 4s, peak 0.50 GiB
+
+
+  captured_0033: 49/49 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  captured_0033s: 49/49 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  captured_0033x: 49/49 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  captured_0034a: 49/49 frames, 4 objects, 2 key frames, 6s, peak 0.45 GiB
+
+
+  captured_0034as: 49/49 frames, 4 objects, 2 key frames, 6s, peak 0.45 GiB
+
+
+  captured_0034ax: 49/49 frames, 4 objects, 2 key frames, 6s, peak 0.45 GiB
+
+
+  captured_0034b: 49/49 frames, 5 objects, 3 key frames, 11s, peak 0.45 GiB
+
+
+  captured_0034bs: 49/49 frames, 5 objects, 2 key frames, 7s, peak 0.49 GiB
+
+
+  captured_0034bx: 49/49 frames, 5 objects, 2 key frames, 7s, peak 0.49 GiB
+
+
+  captured_0035a: 49/49 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  captured_0035as: 49/49 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  captured_0035ax: 49/49 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  captured_0035b: 49/49 frames, 2 objects, 1 key frames, 6s, peak 0.45 GiB
+
+
+  captured_0035bs: 49/49 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  captured_0035bx: 49/49 frames, 2 objects, 2 key frames, 4s, peak 0.39 GiB
+
+
+  captured_0036: 49/49 frames, 2 objects, 2 key frames, 4s, peak 0.39 GiB
+
+
+  captured_0036s: 49/49 frames, 2 objects, 2 key frames, 4s, peak 0.39 GiB
+
+
+  captured_0036x: 49/49 frames, 2 objects, 2 key frames, 4s, peak 0.39 GiB
+
+
+  captured_0037: 49/49 frames, 4 objects, 1 key frames, 5s, peak 0.50 GiB
+
+
+  captured_0037s: 49/49 frames, 4 objects, 1 key frames, 7s, peak 0.50 GiB
+
+
+  captured_0037x: 49/49 frames, 4 objects, 1 key frames, 5s, peak 0.50 GiB
+
+
+  captured_0038: 49/49 frames, 4 objects, 2 key frames, 6s, peak 0.49 GiB
+
+
+  captured_0038s: 49/49 frames, 4 objects, 2 key frames, 6s, peak 0.49 GiB
+
+
+  captured_0038x: 49/49 frames, 4 objects, 2 key frames, 6s, peak 0.49 GiB
+
+
+  captured_0039: 49/49 frames, 4 objects, 1 key frames, 5s, peak 0.50 GiB
+
+
+  captured_0039s: 49/49 frames, 4 objects, 1 key frames, 7s, peak 0.50 GiB
+
+
+  captured_0039x: 49/49 frames, 3 objects, 1 key frames, 4s, peak 0.49 GiB
+
+
+  captured_0040: 49/49 frames, 4 objects, 2 key frames, 6s, peak 0.49 GiB
+
+
+  captured_0040s: 49/49 frames, 4 objects, 2 key frames, 6s, peak 0.49 GiB
+
+
+  captured_0040x: 49/49 frames, 4 objects, 2 key frames, 6s, peak 0.49 GiB
+
+
+  captured_0041: 49/49 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  captured_0041s: 49/49 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  captured_0041x: 49/49 frames, 2 objects, 1 key frames, 5s, peak 0.45 GiB
+
+
+  captured_0047: 49/49 frames, 2 objects, 2 key frames, 4s, peak 0.39 GiB
+
+
+  captured_0047s: 49/49 frames, 2 objects, 2 key frames, 4s, peak 0.39 GiB
+
+
+  captured_0047x: 49/49 frames, 2 objects, 2 key frames, 4s, peak 0.39 GiB
+
+
+  captured_0052: 49/49 frames, 4 objects, 2 key frames, 6s, peak 0.45 GiB
+
+
+  captured_0052s: 49/49 frames, 4 objects, 2 key frames, 6s, peak 0.45 GiB
+
+
+  captured_0052x: 49/49 frames, 4 objects, 2 key frames, 9s, peak 0.45 GiB
+
+
+  captured_0053: 48/48 frames, 3 objects, 1 key frames, 4s, peak 0.49 GiB
+
+
+  captured_0053s: 48/48 frames, 4 objects, 2 key frames, 6s, peak 0.49 GiB
+
+
+  captured_0053x: 48/48 frames, 4 objects, 2 key frames, 6s, peak 0.49 GiB
+
+
+  captured_0054a: 49/49 frames, 4 objects, 2 key frames, 6s, peak 0.45 GiB
+
+
+  captured_0054as: 49/49 frames, 4 objects, 2 key frames, 6s, peak 0.45 GiB
+
+
+  captured_0054ax: 49/49 frames, 5 objects, 4 key frames, 11s, peak 0.45 GiB
+
+
+  captured_0054b: 49/49 frames, 3 objects, 2 key frames, 5s, peak 0.45 GiB
+
+
+  captured_0054bs: 49/49 frames, 4 objects, 3 key frames, 7s, peak 0.45 GiB
+
+
+  captured_0054bx: 49/49 frames, 4 objects, 3 key frames, 7s, peak 0.45 GiB
+
+
+  captured_0061: 49/49 frames, 3 objects, 2 key frames, 5s, peak 0.45 GiB
+
+
+  captured_0061s: 49/49 frames, 2 objects, 2 key frames, 7s, peak 0.39 GiB
+
+
+  captured_0061x: 49/49 frames, 3 objects, 2 key frames, 5s, peak 0.45 GiB
+
+
+  captured_0062: 49/49 frames, 4 objects, 2 key frames, 6s, peak 0.49 GiB
+
+
+  captured_0062s: 49/49 frames, 4 objects, 2 key frames, 6s, peak 0.49 GiB
+
+
+  captured_0062x: 49/49 frames, 4 objects, 2 key frames, 6s, peak 0.49 GiB
+
+
+  internet_0001: 31/31 frames, 2 objects, 1 key frames, 3s, peak 0.43 GiB
+
+
+  internet_0001_segmented: 36/36 frames, 2 objects, 1 key frames, 2s, peak 0.44 GiB
+
+
+  internet_0002: 36/36 frames, 2 objects, 1 key frames, 3s, peak 0.44 GiB
+
+
+  internet_0002_segmented: 44/44 frames, 2 objects, 1 key frames, 4s, peak 0.45 GiB
+
+
+  internet_0003: 37/37 frames, 5 objects, 2 key frames, 5s, peak 0.48 GiB
+
+
+  internet_0003_segmented: 48/48 frames, 5 objects, 2 key frames, 7s, peak 0.50 GiB
+
+
+  internet_0005: 91/178 frames, 6 objects, 1 key frames, 16s, peak 0.69 GiB
+
+
+  internet_0005_segmented: 87/171 frames, 6 objects, 2 key frames, 15s, peak 0.63 GiB
+
+
+  internet_0006: 87/172 frames, 5 objects, 2 key frames, 13s, peak 0.58 GiB
+
+
+  internet_0007: 77/298 frames, 3 objects, 2 key frames, 9s, peak 0.48 GiB
+
+
+  internet_0008: 89/529 frames, 2 objects, 1 key frames, 6s, peak 0.49 GiB
+
+
+  internet_0008_segmented: 81/240 frames, 1 objects, 1 key frames, 7s, peak 0.41 GiB
+
+
+  internet_0009: 58/111 frames, 5 objects, 3 key frames, 11s, peak 0.46 GiB
+
+
+  internet_0010: 49/97 frames, 3 objects, 2 key frames, 5s, peak 0.45 GiB
+
+
+  internet_0010_segmented: 50/97 frames, 3 objects, 3 key frames, 6s, peak 0.40 GiB
+
+track:  23%|██▎       | 131/568 [12:41<56:28,  7.75s/it]
+
+  internet_0011: 55/107 frames, 5 objects, 2 key frames, 10s, peak 0.51 GiB
+
+
+  internet_0012: 55/108 frames, 5 objects, 1 key frames, 7s, peak 0.56 GiB
+
+
+  internet_0013: 95/279 frames, 7 objects, 3 key frames, 20s, peak 0.58 GiB
+
+
+  internet_0014: 99/287 frames, 5 objects, 3 key frames, 19s, peak 0.59 GiB
+
+
+  internet_0015: 75/143 frames, 6 objects, 3 key frames, 14s, peak 0.56 GiB
+
+
+  internet_0016: 91/91 frames, 7 objects, 3 key frames, 22s, peak 0.58 GiB
+
+
+  internet_0017: 28/28 frames, 4 objects, 1 key frames, 3s, peak 0.46 GiB
+
+
+  internet_0017_segmented: 34/34 frames, 4 objects, 2 key frames, 4s, peak 0.47 GiB
+
+
+  internet_0018: 51/51 frames, 6 objects, 3 key frames, 13s, peak 0.50 GiB
+
+
+  internet_0019: 40/40 frames, 5 objects, 3 key frames, 7s, peak 0.48 GiB
+
+
+  internet_0019_segmented: 40/40 frames, 5 objects, 2 key frames, 6s, peak 0.49 GiB
+
+
+  internet_0020: 19/19 frames, 4 objects, 1 key frames, 2s, peak 0.45 GiB
+
+track:  25%|██▌       | 143/568 [14:53<47:11,  6.66s/it]
+
+  internet_0021: 54/107 frames, 2 objects, 1 key frames, 3s, peak 0.46 GiB
+
+
+  internet_0021_segmented: 54/107 frames, 2 objects, 1 key frames, 3s, peak 0.46 GiB
+
+
+  internet_0022: 36/36 frames, 9 objects, 1 key frames, 10s, peak 0.59 GiB
+
+
+  internet_0023: 67/130 frames, 5 objects, 1 key frames, 9s, peak 0.59 GiB
+
+
+  internet_0024: 30/30 frames, 5 objects, 2 key frames, 4s, peak 0.47 GiB
+
+
+  internet_0025: 97/473 frames, 2 objects, 1 key frames, 6s, peak 0.50 GiB
+
+
+  internet_0025_segmented: 77/305 frames, 2 objects, 1 key frames, 5s, peak 0.48 GiB
+
+
+  internet_0026: 29/29 frames, 4 objects, 2 key frames, 4s, peak 0.46 GiB
+
+
+  internet_0026_segmented: 36/36 frames, 3 objects, 2 key frames, 6s, peak 0.44 GiB
+
+
+  internet_0027: 78/78 frames, 6 objects, 4 key frames, 16s, peak 0.48 GiB
+
+
+  internet_0027_segmented: 94/94 frames, 6 objects, 4 key frames, 23s, peak 0.50 GiB
+
+
+  internet_0028: 93/93 frames, 3 objects, 2 key frames, 11s, peak 0.50 GiB
+
+
+  internet_0029: 25/25 frames, 2 objects, 2 key frames, 2s, peak 0.38 GiB
+
+
+  internet_0030: 42/42 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+track:  28%|██▊       | 157/568 [16:44<51:44,  7.55s/it]
+
+  internet_0031: 87/173 frames, 3 objects, 1 key frames, 11s, peak 0.56 GiB
+
+
+  internet_0032: 75/220 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  internet_0033: 47/47 frames, 4 objects, 1 key frames, 5s, peak 0.50 GiB
+
+
+  internet_0034: 60/60 frames, 2 objects, 1 key frames, 4s, peak 0.46 GiB
+
+
+  internet_0035: 36/36 frames, 2 objects, 1 key frames, 2s, peak 0.44 GiB
+
+
+  internet_0036: 69/69 frames, 3 objects, 1 key frames, 6s, peak 0.53 GiB
+
+
+  internet_0037: 83/164 frames, 2 objects, 1 key frames, 7s, peak 0.49 GiB
+
+
+  internet_0038: 15/15 frames, 4 objects, 1 key frames, 4s, peak 0.44 GiB
+
+
+  internet_0039: 72/72 frames, 3 objects, 1 key frames, 6s, peak 0.53 GiB
+
+
+  internet_0040: 28/28 frames, 1 objects, 1 key frames, 1s, peak 0.38 GiB
+
+
+  internet_0041: 52/52 frames, 5 objects, 1 key frames, 6s, peak 0.54 GiB
+
+
+  internet_0042: 44/44 frames, 4 objects, 1 key frames, 6s, peak 0.49 GiB
+
+
+  internet_0043: 61/61 frames, 6 objects, 1 key frames, 9s, peak 0.61 GiB
+
+
+  internet_0044: 73/217 frames, 6 objects, 2 key frames, 15s, peak 0.60 GiB
+
+
+  internet_0045: 45/45 frames, 7 objects, 1 key frames, 7s, peak 0.58 GiB
+
+track:  30%|███       | 172/568 [18:23<57:51,  8.77s/it]
+
+  internet_0046: 51/51 frames, 1 objects, 1 key frames, 2s, peak 0.40 GiB
+
+
+  internet_0047: 30/30 frames, 7 objects, 1 key frames, 5s, peak 0.52 GiB
+
+
+  internet_0048: 57/109 frames, 5 objects, 3 key frames, 13s, peak 0.46 GiB
+
+
+  internet_0049: 95/283 frames, 4 objects, 1 key frames, 11s, peak 0.59 GiB
+
+
+  internet_0050: 94/94 frames, 6 objects, 1 key frames, 14s, peak 0.71 GiB
+
+
+  internet_0051: 50/50 frames, 4 objects, 1 key frames, 5s, peak 0.51 GiB
+
+
+  internet_0052: 56/56 frames, 5 objects, 1 key frames, 7s, peak 0.56 GiB
+
+track:  32%|███▏      | 179/568 [19:25<59:46,  9.22s/it]
+
+  internet_0053: 81/81 frames, 7 objects, 2 key frames, 15s, peak 0.66 GiB
+
+
+  internet_0054: 94/94 frames, 4 objects, 1 key frames, 13s, peak 0.59 GiB
+
+
+  internet_0055: 75/75 frames, 4 objects, 1 key frames, 8s, peak 0.55 GiB
+
+
+  internet_0056: 58/58 frames, 4 objects, 1 key frames, 6s, peak 0.52 GiB
+
+
+  internet_0057: 95/188 frames, 5 objects, 3 key frames, 20s, peak 0.50 GiB
+
+
+  internet_0058: 57/113 frames, 5 objects, 3 key frames, 10s, peak 0.51 GiB
+
+
+  internet_0059: 64/123 frames, 5 objects, 3 key frames, 11s, peak 0.52 GiB
+
+
+  internet_0060: 57/110 frames, 4 objects, 3 key frames, 12s, peak 0.46 GiB
+
+
+  internet_0061: 60/116 frames, 2 objects, 2 key frames, 7s, peak 0.40 GiB
+
+
+  internet_0062: 62/121 frames, 4 objects, 3 key frames, 10s, peak 0.46 GiB
+
+
+  internet_0063: 94/94 frames, 2 objects, 1 key frames, 6s, peak 0.50 GiB
+
+track:  33%|███▎      | 190/568 [21:25<56:56,  9.04s/it]
+
+  internet_0064: 89/170 frames, 4 objects, 4 key frames, 18s, peak 0.41 GiB
+
+
+  internet_0065: 31/31 frames, 2 objects, 2 key frames, 3s, peak 0.38 GiB
+
+track:  34%|███▍      | 192/568 [21:46<57:04,  9.11s/it]
+
+  internet_0066: 51/100 frames, 2 objects, 2 key frames, 4s, peak 0.39 GiB
+
+
+  internet_0067: 12/12 frames, 1 objects, 1 key frames, 0s, peak 0.35 GiB
+
+
+  internet_0068: 51/100 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  internet_0069: 59/114 frames, 1 objects, 1 key frames, 2s, peak 0.40 GiB
+
+
+  internet_0070: 93/185 frames, 2 objects, 2 key frames, 8s, peak 0.42 GiB
+
+
+  internet_0071: 60/60 frames, 4 objects, 2 key frames, 12s, peak 0.52 GiB
+
+
+  internet_0072: 39/39 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  internet_0073: 71/138 frames, 7 objects, 1 key frames, 12s, peak 0.66 GiB
+
+
+  internet_0074: 63/122 frames, 7 objects, 3 key frames, 17s, peak 0.52 GiB
+
+
+  simulation_0007: 74/74 frames, 4 objects, 2 key frames, 9s, peak 0.54 GiB
+
+
+  simulation_0008: 66/66 frames, 5 objects, 1 key frames, 8s, peak 0.58 GiB
+
+track:  36%|███▌      | 203/568 [23:07<59:55,  9.85s/it]
+
+  simulation_0009: 66/66 frames, 5 objects, 1 key frames, 8s, peak 0.58 GiB
+
+
+  simulation_0009_segmented: 66/66 frames, 7 objects, 3 key frames, 17s, peak 0.58 GiB
+
+
+  simulation_0010: 59/59 frames, 5 objects, 2 key frames, 9s, peak 0.52 GiB
+
+
+  simulation_0010_segmented: 59/59 frames, 5 objects, 2 key frames, 9s, peak 0.52 GiB
+
+
+  simulation_0011: 60/60 frames, 4 objects, 2 key frames, 11s, peak 0.52 GiB
+
+
+  simulation_0012: 61/61 frames, 2 objects, 1 key frames, 4s, peak 0.46 GiB
+
+track:  37%|███▋      | 209/568 [24:07<52:45,  8.82s/it]
+
+  simulation_0012_segmented: 61/61 frames, 2 objects, 1 key frames, 4s, peak 0.46 GiB
+
+
+  simulation_0013: 54/54 frames, 2 objects, 2 key frames, 5s, peak 0.40 GiB
+
+
+  simulation_0014: 73/73 frames, 4 objects, 1 key frames, 8s, peak 0.55 GiB
+
+
+  simulation_0015: 52/100 frames, 9 objects, 2 key frames, 16s, peak 0.62 GiB
+
+
+  simulation_0016: 49/97 frames, 4 objects, 1 key frames, 5s, peak 0.50 GiB
+
+
+  simulation_0017: 51/101 frames, 6 objects, 1 key frames, 8s, peak 0.58 GiB
+
+
+  simulation_0017_segmented: 51/101 frames, 6 objects, 1 key frames, 8s, peak 0.58 GiB
+
+
+  simulation_0019: 49/97 frames, 4 objects, 2 key frames, 9s, peak 0.49 GiB
+
+
+  simulation_0019_segmented: 49/97 frames, 4 objects, 1 key frames, 5s, peak 0.50 GiB
+
+
+  simulation_0020: 67/131 frames, 3 objects, 2 key frames, 7s, peak 0.47 GiB
+
+
+  simulation_0021: 89/89 frames, 3 objects, 2 key frames, 9s, peak 0.49 GiB
+
+
+  simulation_0021_segmented: 89/89 frames, 3 objects, 1 key frames, 7s, peak 0.56 GiB
+
+
+  simulation_0022: 75/75 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0022_segmented: 75/75 frames, 2 objects, 1 key frames, 5s, peak 0.48 GiB
+
+
+  simulation_0023: 75/75 frames, 2 objects, 2 key frames, 11s, peak 0.41 GiB
+
+
+  simulation_0023_segmented: 75/75 frames, 2 objects, 2 key frames, 8s, peak 0.41 GiB
+
+
+  simulation_0024: 75/75 frames, 1 objects, 1 key frames, 4s, peak 0.41 GiB
+
+
+  simulation_0024_segmented: 75/75 frames, 2 objects, 1 key frames, 6s, peak 0.48 GiB
+
+
+  simulation_0025: 75/75 frames, 2 objects, 2 key frames, 7s, peak 0.41 GiB
+
+
+  simulation_0025_segmented: 75/75 frames, 2 objects, 1 key frames, 5s, peak 0.48 GiB
+
+
+  simulation_0026: 75/75 frames, 2 objects, 2 key frames, 7s, peak 0.41 GiB
+
+
+  simulation_0026_segmented: 75/75 frames, 2 objects, 2 key frames, 7s, peak 0.41 GiB
+
+
+  simulation_0027: 75/75 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0027_segmented: 75/75 frames, 2 objects, 1 key frames, 5s, peak 0.48 GiB
+
+
+  simulation_0028: 75/75 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0028_segmented: 75/75 frames, 2 objects, 1 key frames, 5s, peak 0.48 GiB
+
+
+  simulation_0029: 75/75 frames, 2 objects, 2 key frames, 7s, peak 0.41 GiB
+
+
+  simulation_0029_segmented: 75/75 frames, 2 objects, 2 key frames, 7s, peak 0.41 GiB
+
+
+  simulation_0030: 75/75 frames, 1 objects, 1 key frames, 6s, peak 0.41 GiB
+
+
+  simulation_0030_segmented: 75/75 frames, 1 objects, 1 key frames, 4s, peak 0.41 GiB
+
+
+  simulation_0031: 75/75 frames, 3 objects, 2 key frames, 8s, peak 0.48 GiB
+
+
+  simulation_0031_segmented: 75/75 frames, 3 objects, 2 key frames, 8s, peak 0.48 GiB
+
+
+  simulation_0032_segmented: 68/130 frames, 3 objects, 3 key frames, 8s, peak 0.40 GiB
+
+
+  simulation_0033: 54/54 frames, 5 objects, 2 key frames, 10s, peak 0.51 GiB
+
+
+  simulation_0034: 72/72 frames, 3 objects, 1 key frames, 6s, peak 0.53 GiB
+
+
+  simulation_0034_segmented: 72/72 frames, 3 objects, 2 key frames, 8s, peak 0.47 GiB
+
+
+  simulation_0035: 72/72 frames, 2 objects, 1 key frames, 5s, peak 0.47 GiB
+
+
+  simulation_0035_segmented: 72/72 frames, 2 objects, 2 key frames, 6s, peak 0.40 GiB
+
+
+  simulation_0036: 72/72 frames, 2 objects, 1 key frames, 5s, peak 0.47 GiB
+
+
+  simulation_0036_segmented: 72/72 frames, 2 objects, 2 key frames, 6s, peak 0.40 GiB
+
+
+  simulation_0037: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.40 GiB
+
+
+  simulation_0037_segmented: 72/72 frames, 2 objects, 1 key frames, 5s, peak 0.47 GiB
+
+
+  simulation_0038_segmented: 75/75 frames, 2 objects, 2 key frames, 7s, peak 0.41 GiB
+
+
+  simulation_0039: 75/75 frames, 3 objects, 3 key frames, 12s, peak 0.41 GiB
+
+
+  simulation_0039_segmented: 75/75 frames, 2 objects, 1 key frames, 5s, peak 0.48 GiB
+
+
+  simulation_0040: 72/72 frames, 2 objects, 2 key frames, 6s, peak 0.40 GiB
+
+
+  simulation_0041: 72/72 frames, 2 objects, 1 key frames, 5s, peak 0.47 GiB
+
+
+  simulation_0041_segmented: 72/72 frames, 2 objects, 1 key frames, 5s, peak 0.47 GiB
+
+
+  simulation_0042: 72/72 frames, 2 objects, 2 key frames, 6s, peak 0.41 GiB
+
+
+  simulation_0043: 72/72 frames, 2 objects, 2 key frames, 10s, peak 0.40 GiB
+
+
+  simulation_0043_segmented: 72/72 frames, 2 objects, 1 key frames, 5s, peak 0.47 GiB
+
+
+  simulation_0044: 72/72 frames, 2 objects, 2 key frames, 6s, peak 0.40 GiB
+
+
+  simulation_0045: 51/99 frames, 5 objects, 2 key frames, 7s, peak 0.51 GiB
+
+
+  simulation_0046: 52/99 frames, 4 objects, 2 key frames, 7s, peak 0.50 GiB
+
+
+  simulation_0047: 52/99 frames, 5 objects, 2 key frames, 10s, peak 0.51 GiB
+
+
+  simulation_0048: 52/99 frames, 4 objects, 2 key frames, 6s, peak 0.45 GiB
+
+
+  simulation_0048_segmented: 52/99 frames, 6 objects, 2 key frames, 8s, peak 0.55 GiB
+
+
+  simulation_0049: 51/99 frames, 4 objects, 2 key frames, 6s, peak 0.50 GiB
+
+
+  simulation_0050: 51/99 frames, 6 objects, 1 key frames, 7s, peak 0.58 GiB
+
+
+  simulation_0052: 91/91 frames, 7 objects, 3 key frames, 24s, peak 0.64 GiB
+
+
+  simulation_0053: 91/91 frames, 4 objects, 2 key frames, 12s, peak 0.49 GiB
+
+
+  simulation_0054: 51/100 frames, 4 objects, 2 key frames, 6s, peak 0.50 GiB
+
+track:  48%|████▊     | 271/568 [31:36<52:40, 10.64s/it]
+
+  simulation_0055: 78/78 frames, 5 objects, 1 key frames, 12s, peak 0.61 GiB
+
+
+  simulation_0056: 62/62 frames, 6 objects, 2 key frames, 10s, peak 0.58 GiB
+
+
+  simulation_0057: 91/91 frames, 3 objects, 1 key frames, 8s, peak 0.57 GiB
+
+
+  simulation_0057_segmented: 91/91 frames, 1 objects, 1 key frames, 4s, peak 0.41 GiB
+
+
+  simulation_0058: 72/72 frames, 10 objects, 2 key frames, 22s, peak 0.76 GiB
+
+
+  simulation_0059: 72/72 frames, 10 objects, 2 key frames, 20s, peak 0.76 GiB
+
+
+  simulation_0060: 72/72 frames, 8 objects, 2 key frames, 16s, peak 0.67 GiB
+
+
+  simulation_0061: 72/72 frames, 9 objects, 2 key frames, 19s, peak 0.70 GiB
+
+
+  simulation_0062: 72/72 frames, 9 objects, 2 key frames, 17s, peak 0.70 GiB
+
+
+  simulation_0063: 72/72 frames, 9 objects, 3 key frames, 21s, peak 0.67 GiB
+
+
+  simulation_0064: 72/72 frames, 8 objects, 3 key frames, 17s, peak 0.64 GiB
+
+
+  simulation_0065: 72/72 frames, 8 objects, 2 key frames, 19s, peak 0.68 GiB
+
+
+  simulation_0066: 72/72 frames, 9 objects, 2 key frames, 19s, peak 0.70 GiB
+
+
+  simulation_0066_segmented: 72/72 frames, 8 objects, 3 key frames, 18s, peak 0.64 GiB
+
+
+  simulation_0067: 72/72 frames, 8 objects, 3 key frames, 17s, peak 0.64 GiB
+
+
+  simulation_0068: 72/72 frames, 3 objects, 2 key frames, 10s, peak 0.47 GiB
+
+
+  simulation_0068_segmented: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+track:  51%|█████     | 288/568 [35:51<55:41, 11.94s/it]
+
+  simulation_0069: 72/72 frames, 2 objects, 2 key frames, 6s, peak 0.41 GiB
+
+
+  simulation_0070: 72/72 frames, 4 objects, 1 key frames, 7s, peak 0.55 GiB
+
+
+  simulation_0071: 72/72 frames, 3 objects, 2 key frames, 8s, peak 0.47 GiB
+
+
+  simulation_0072: 72/72 frames, 1 objects, 1 key frames, 6s, peak 0.41 GiB
+
+
+  simulation_0073: 72/72 frames, 3 objects, 2 key frames, 8s, peak 0.47 GiB
+
+
+  simulation_0074: 72/72 frames, 8 objects, 2 key frames, 15s, peak 0.67 GiB
+
+
+  simulation_0075: 72/72 frames, 6 objects, 3 key frames, 16s, peak 0.54 GiB
+
+
+  simulation_0076: 72/72 frames, 2 objects, 1 key frames, 5s, peak 0.47 GiB
+
+
+  simulation_0077: 72/72 frames, 2 objects, 1 key frames, 4s, peak 0.47 GiB
+
+
+  simulation_0078: 72/72 frames, 2 objects, 1 key frames, 4s, peak 0.47 GiB
+
+
+  simulation_0079: 72/72 frames, 2 objects, 1 key frames, 4s, peak 0.47 GiB
+
+
+  simulation_0080: 29/29 frames, 2 objects, 1 key frames, 2s, peak 0.43 GiB
+
+
+  simulation_0081: 29/29 frames, 2 objects, 1 key frames, 2s, peak 0.43 GiB
+
+
+  simulation_0082: 72/72 frames, 2 objects, 1 key frames, 5s, peak 0.47 GiB
+
+
+  simulation_0083: 72/72 frames, 2 objects, 1 key frames, 7s, peak 0.47 GiB
+
+
+  simulation_0084: 72/72 frames, 2 objects, 1 key frames, 4s, peak 0.47 GiB
+
+
+  simulation_0085: 72/72 frames, 2 objects, 1 key frames, 5s, peak 0.47 GiB
+
+
+  simulation_0086: 72/72 frames, 2 objects, 1 key frames, 4s, peak 0.47 GiB
+
+
+  simulation_0087: 54/54 frames, 2 objects, 1 key frames, 3s, peak 0.46 GiB
+
+
+  simulation_0088: 30/30 frames, 2 objects, 1 key frames, 2s, peak 0.43 GiB
+
+
+  simulation_0089: 30/30 frames, 2 objects, 1 key frames, 2s, peak 0.43 GiB
+
+
+  simulation_0090: 30/30 frames, 2 objects, 2 key frames, 2s, peak 0.39 GiB
+
+
+  simulation_0091: 30/30 frames, 2 objects, 1 key frames, 2s, peak 0.43 GiB
+
+
+  simulation_0092: 73/73 frames, 2 objects, 1 key frames, 8s, peak 0.48 GiB
+
+
+  simulation_0093: 38/38 frames, 2 objects, 2 key frames, 3s, peak 0.39 GiB
+
+
+  simulation_0094: 38/38 frames, 2 objects, 1 key frames, 2s, peak 0.44 GiB
+
+
+  simulation_0095: 72/72 frames, 2 objects, 2 key frames, 6s, peak 0.40 GiB
+
+
+  simulation_0096: 41/41 frames, 2 objects, 2 key frames, 3s, peak 0.39 GiB
+
+
+  simulation_0097: 41/41 frames, 2 objects, 2 key frames, 3s, peak 0.39 GiB
+
+
+  simulation_0098: 73/73 frames, 2 objects, 2 key frames, 6s, peak 0.41 GiB
+
+
+  simulation_0098_segmented: 73/73 frames, 2 objects, 1 key frames, 7s, peak 0.48 GiB
+
+
+  simulation_0099: 73/73 frames, 2 objects, 1 key frames, 5s, peak 0.48 GiB
+
+
+  simulation_0099_segmented: 73/73 frames, 2 objects, 1 key frames, 5s, peak 0.48 GiB
+
+
+  simulation_0100: 58/58 frames, 2 objects, 1 key frames, 4s, peak 0.46 GiB
+
+
+  simulation_0100_segmented: 58/58 frames, 2 objects, 1 key frames, 4s, peak 0.46 GiB
+
+
+  simulation_0101: 73/73 frames, 2 objects, 2 key frames, 6s, peak 0.41 GiB
+
+
+  simulation_0101_segmented: 73/73 frames, 2 objects, 2 key frames, 6s, peak 0.41 GiB
+
+
+  simulation_0102: 73/73 frames, 2 objects, 2 key frames, 10s, peak 0.41 GiB
+
+
+  simulation_0102_segmented: 73/73 frames, 2 objects, 2 key frames, 6s, peak 0.41 GiB
+
+
+  simulation_0103: 54/54 frames, 2 objects, 2 key frames, 5s, peak 0.40 GiB
+
+
+  simulation_0103_segmented: 54/54 frames, 2 objects, 2 key frames, 5s, peak 0.40 GiB
+
+
+  simulation_0104: 31/31 frames, 2 objects, 2 key frames, 3s, peak 0.38 GiB
+
+
+  simulation_0105: 47/47 frames, 2 objects, 2 key frames, 4s, peak 0.39 GiB
+
+
+  simulation_0106: 72/72 frames, 4 objects, 2 key frames, 12s, peak 0.54 GiB
+
+
+  simulation_0107: 72/72 frames, 4 objects, 2 key frames, 9s, peak 0.53 GiB
+
+
+  simulation_0108: 72/72 frames, 3 objects, 1 key frames, 6s, peak 0.54 GiB
+
+
+  simulation_0109: 72/72 frames, 3 objects, 2 key frames, 8s, peak 0.47 GiB
+
+
+  simulation_0110: 72/72 frames, 3 objects, 2 key frames, 11s, peak 0.47 GiB
+
+
+  simulation_0111: 71/211 frames, 2 objects, 1 key frames, 5s, peak 0.47 GiB
+
+
+  simulation_0112: 55/55 frames, 3 objects, 1 key frames, 5s, peak 0.51 GiB
+
+
+  simulation_0112_segmented: 55/55 frames, 2 objects, 1 key frames, 4s, peak 0.46 GiB
+
+
+  simulation_0113: 61/120 frames, 2 objects, 2 key frames, 6s, peak 0.40 GiB
+
+
+  simulation_0114: 80/80 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0114_segmented: 80/80 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0115_segmented: 37/37 frames, 2 objects, 1 key frames, 5s, peak 0.44 GiB
+
+
+  simulation_0116: 32/32 frames, 2 objects, 2 key frames, 3s, peak 0.39 GiB
+
+
+  simulation_0116_segmented: 32/32 frames, 4 objects, 3 key frames, 5s, peak 0.44 GiB
+
+
+  simulation_0117: 19/19 frames, 4 objects, 2 key frames, 2s, peak 0.44 GiB
+
+
+  simulation_0118: 62/121 frames, 4 objects, 2 key frames, 9s, peak 0.52 GiB
+
+
+  simulation_0119: 48/48 frames, 4 objects, 1 key frames, 6s, peak 0.50 GiB
+
+
+  simulation_0120: 49/49 frames, 5 objects, 2 key frames, 10s, peak 0.50 GiB
+
+
+  simulation_0121: 80/80 frames, 2 objects, 2 key frames, 7s, peak 0.41 GiB
+
+
+  simulation_0121_segmented: 80/80 frames, 3 objects, 3 key frames, 10s, peak 0.41 GiB
+
+
+  simulation_0122: 40/40 frames, 2 objects, 2 key frames, 3s, peak 0.39 GiB
+
+
+  simulation_0123: 72/72 frames, 6 objects, 3 key frames, 17s, peak 0.54 GiB
+
+
+  simulation_0123_segmented: 72/72 frames, 2 objects, 2 key frames, 6s, peak 0.41 GiB
+
+
+  simulation_0124: 72/72 frames, 4 objects, 2 key frames, 9s, peak 0.53 GiB
+
+
+  simulation_0124_segmented: 72/72 frames, 4 objects, 2 key frames, 9s, peak 0.47 GiB
+
+
+  simulation_0125: 71/71 frames, 3 objects, 1 key frames, 10s, peak 0.53 GiB
+
+
+  simulation_0126: 72/72 frames, 2 objects, 2 key frames, 6s, peak 0.41 GiB
+
+
+  simulation_0127: 57/57 frames, 4 objects, 3 key frames, 8s, peak 0.46 GiB
+
+
+  simulation_0128: 38/38 frames, 3 objects, 1 key frames, 3s, peak 0.48 GiB
+
+
+  simulation_0128_segmented: 38/38 frames, 2 objects, 1 key frames, 2s, peak 0.44 GiB
+
+
+  simulation_0129: 40/40 frames, 3 objects, 1 key frames, 3s, peak 0.48 GiB
+
+
+  simulation_0129_segmented: 40/40 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  simulation_0130: 72/72 frames, 3 objects, 2 key frames, 10s, peak 0.47 GiB
+
+
+  simulation_0131: 49/97 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  simulation_0132: 78/300 frames, 3 objects, 2 key frames, 8s, peak 0.48 GiB
+
+
+  simulation_0133: 90/90 frames, 3 objects, 2 key frames, 10s, peak 0.49 GiB
+
+
+  simulation_0134: 60/60 frames, 3 objects, 1 key frames, 8s, peak 0.52 GiB
+
+
+  simulation_0135: 60/60 frames, 3 objects, 2 key frames, 6s, peak 0.46 GiB
+
+
+  simulation_0136: 60/60 frames, 2 objects, 2 key frames, 5s, peak 0.40 GiB
+
+
+  simulation_0137: 51/100 frames, 3 objects, 2 key frames, 6s, peak 0.45 GiB
+
+
+  simulation_0140: 51/100 frames, 5 objects, 2 key frames, 8s, peak 0.51 GiB
+
+
+  simulation_0141: 60/60 frames, 6 objects, 2 key frames, 13s, peak 0.56 GiB
+
+
+  simulation_0142: 80/80 frames, 4 objects, 1 key frames, 9s, peak 0.56 GiB
+
+
+  simulation_0143: 51/100 frames, 2 objects, 2 key frames, 5s, peak 0.40 GiB
+
+
+  simulation_0144: 35/35 frames, 4 objects, 1 key frames, 3s, peak 0.48 GiB
+
+
+  simulation_0145: 29/29 frames, 2 objects, 1 key frames, 2s, peak 0.43 GiB
+
+
+  simulation_0145_segmented: 29/29 frames, 2 objects, 1 key frames, 2s, peak 0.43 GiB
+
+
+  simulation_0148: 26/26 frames, 4 objects, 3 key frames, 4s, peak 0.43 GiB
+
+
+  simulation_0149: 50/50 frames, 4 objects, 2 key frames, 9s, peak 0.50 GiB
+
+
+  simulation_0150: 42/42 frames, 6 objects, 3 key frames, 8s, peak 0.49 GiB
+
+
+  simulation_0151: 42/42 frames, 3 objects, 3 key frames, 5s, peak 0.39 GiB
+
+
+  simulation_0151_segmented: 42/42 frames, 3 objects, 3 key frames, 5s, peak 0.39 GiB
+
+
+  simulation_0152: 42/42 frames, 3 objects, 2 key frames, 4s, peak 0.45 GiB
+
+
+  simulation_0153: 42/42 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  simulation_0153_segmented: 42/42 frames, 2 objects, 1 key frames, 5s, peak 0.45 GiB
+
+
+  simulation_0154: 48/48 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  simulation_0155: 48/48 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  simulation_0156: 48/48 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  simulation_0157: 48/48 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  simulation_0158: 48/48 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  simulation_0159: 41/41 frames, 2 objects, 2 key frames, 3s, peak 0.39 GiB
+
+
+  simulation_0160: 40/40 frames, 3 objects, 2 key frames, 5s, peak 0.44 GiB
+
+
+  simulation_0162: 51/100 frames, 1 objects, 1 key frames, 2s, peak 0.40 GiB
+
+
+  simulation_0163: 51/51 frames, 2 objects, 2 key frames, 4s, peak 0.39 GiB
+
+
+  simulation_0164: 66/66 frames, 2 objects, 2 key frames, 6s, peak 0.40 GiB
+
+
+  simulation_0165: 80/80 frames, 3 objects, 1 key frames, 7s, peak 0.55 GiB
+
+
+  simulation_0166: 80/80 frames, 4 objects, 2 key frames, 15s, peak 0.55 GiB
+
+
+  simulation_0167: 80/80 frames, 3 objects, 3 key frames, 12s, peak 0.41 GiB
+
+
+  simulation_0168: 80/80 frames, 4 objects, 1 key frames, 9s, peak 0.56 GiB
+
+
+  simulation_0169: 80/80 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0169_segmented: 80/80 frames, 1 objects, 1 key frames, 6s, peak 0.41 GiB
+
+
+  simulation_0170: 80/80 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0170_segmented: 80/80 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0171: 80/80 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0171_segmented: 80/80 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0172: 80/80 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0172_segmented: 80/80 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0173: 40/40 frames, 2 objects, 1 key frames, 2s, peak 0.44 GiB
+
+
+  simulation_0175: 40/40 frames, 2 objects, 1 key frames, 3s, peak 0.44 GiB
+
+
+  simulation_0176: 40/40 frames, 2 objects, 1 key frames, 5s, peak 0.44 GiB
+
+
+  simulation_0177: 60/60 frames, 1 objects, 1 key frames, 3s, peak 0.40 GiB
+
+
+  simulation_0177_segmented: 60/60 frames, 1 objects, 1 key frames, 3s, peak 0.40 GiB
+
+
+  simulation_0178: 60/60 frames, 2 objects, 2 key frames, 5s, peak 0.40 GiB
+
+
+  simulation_0178_segmented: 60/60 frames, 2 objects, 1 key frames, 4s, peak 0.46 GiB
+
+
+  simulation_0179: 60/60 frames, 3 objects, 2 key frames, 7s, peak 0.46 GiB
+
+
+  simulation_0180: 60/60 frames, 3 objects, 2 key frames, 7s, peak 0.46 GiB
+
+
+  simulation_0181: 40/40 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  simulation_0182: 40/40 frames, 1 objects, 1 key frames, 5s, peak 0.39 GiB
+
+
+  simulation_0183: 45/45 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  simulation_0184: 45/45 frames, 2 objects, 2 key frames, 4s, peak 0.39 GiB
+
+
+  simulation_0185: 40/40 frames, 2 objects, 1 key frames, 3s, peak 0.44 GiB
+
+
+  simulation_0186: 40/40 frames, 2 objects, 2 key frames, 3s, peak 0.39 GiB
+
+
+  simulation_0187: 60/60 frames, 2 objects, 1 key frames, 4s, peak 0.46 GiB
+
+
+  simulation_0188: 60/60 frames, 2 objects, 1 key frames, 4s, peak 0.46 GiB
+
+
+  simulation_0188_segmented: 60/60 frames, 2 objects, 1 key frames, 4s, peak 0.46 GiB
+
+
+  simulation_0189: 81/401 frames, 3 objects, 2 key frames, 13s, peak 0.48 GiB
+
+
+  simulation_0189_segmented: 81/401 frames, 3 objects, 2 key frames, 10s, peak 0.48 GiB
+
+
+  simulation_0190: 81/401 frames, 2 objects, 2 key frames, 7s, peak 0.41 GiB
+
+
+  simulation_0190_segmented: 81/401 frames, 2 objects, 2 key frames, 7s, peak 0.41 GiB
+
+
+  simulation_0191: 69/200 frames, 3 objects, 2 key frames, 11s, peak 0.47 GiB
+
+
+  simulation_0191_segmented: 69/200 frames, 3 objects, 2 key frames, 8s, peak 0.47 GiB
+
+
+  simulation_0192: 69/200 frames, 2 objects, 2 key frames, 6s, peak 0.40 GiB
+
+
+  simulation_0192_segmented: 69/200 frames, 2 objects, 2 key frames, 6s, peak 0.40 GiB
+
+
+  simulation_0193: 51/100 frames, 5 objects, 3 key frames, 11s, peak 0.45 GiB
+
+
+  simulation_0194: 51/100 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  simulation_0195: 51/100 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  simulation_0196: 50/50 frames, 5 objects, 1 key frames, 6s, peak 0.54 GiB
+
+
+  simulation_0197: 50/50 frames, 4 objects, 2 key frames, 7s, peak 0.49 GiB
+
+
+  simulation_0198: 14/14 frames, 4 objects, 2 key frames, 2s, peak 0.43 GiB
+
+
+  simulation_0199: 14/14 frames, 4 objects, 2 key frames, 2s, peak 0.43 GiB
+
+
+  simulation_0200: 14/14 frames, 3 objects, 2 key frames, 4s, peak 0.42 GiB
+
+
+  simulation_0201: 14/14 frames, 1 objects, 1 key frames, 1s, peak 0.37 GiB
+
+
+  simulation_0202: 30/30 frames, 4 objects, 1 key frames, 3s, peak 0.47 GiB
+
+
+  simulation_0203: 30/30 frames, 4 objects, 2 key frames, 4s, peak 0.46 GiB
+
+
+  simulation_0204: 30/30 frames, 3 objects, 2 key frames, 3s, peak 0.43 GiB
+
+
+  simulation_0205: 30/30 frames, 3 objects, 1 key frames, 3s, peak 0.46 GiB
+
+
+  simulation_0206: 30/30 frames, 4 objects, 2 key frames, 4s, peak 0.46 GiB
+
+
+  simulation_0207: 30/30 frames, 4 objects, 2 key frames, 4s, peak 0.46 GiB
+
+
+  simulation_0208: 30/30 frames, 2 objects, 2 key frames, 3s, peak 0.39 GiB
+
+
+  simulation_0209: 30/30 frames, 2 objects, 2 key frames, 3s, peak 0.39 GiB
+
+
+  simulation_0210: 50/50 frames, 6 objects, 1 key frames, 10s, peak 0.57 GiB
+
+
+  simulation_0211: 50/50 frames, 6 objects, 2 key frames, 9s, peak 0.54 GiB
+
+
+  simulation_0212: 50/50 frames, 7 objects, 3 key frames, 10s, peak 0.54 GiB
+
+
+  simulation_0213: 50/50 frames, 7 objects, 2 key frames, 9s, peak 0.57 GiB
+
+
+  simulation_0214: 50/50 frames, 7 objects, 2 key frames, 12s, peak 0.57 GiB
+
+
+  simulation_0215: 50/50 frames, 6 objects, 2 key frames, 8s, peak 0.54 GiB
+
+
+  simulation_0216: 50/50 frames, 8 objects, 1 key frames, 9s, peak 0.61 GiB
+
+
+  simulation_0216_segmented: 50/50 frames, 8 objects, 1 key frames, 12s, peak 0.61 GiB
+
+
+  simulation_0217: 50/50 frames, 8 objects, 3 key frames, 12s, peak 0.57 GiB
+
+
+  simulation_0218: 50/50 frames, 3 objects, 1 key frames, 4s, peak 0.49 GiB
+
+
+  simulation_0218_segmented: 50/50 frames, 3 objects, 2 key frames, 5s, peak 0.45 GiB
+
+
+  simulation_0219: 50/50 frames, 4 objects, 2 key frames, 6s, peak 0.50 GiB
+
+
+  simulation_0220: 50/50 frames, 2 objects, 1 key frames, 6s, peak 0.45 GiB
+
+
+  simulation_0221: 80/80 frames, 8 objects, 4 key frames, 21s, peak 0.61 GiB
+
+
+  simulation_0222: 80/80 frames, 5 objects, 2 key frames, 12s, peak 0.56 GiB
+
+
+  simulation_0223: 45/45 frames, 3 objects, 2 key frames, 5s, peak 0.45 GiB
+
+
+  simulation_0224: 45/45 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  simulation_0224_segmented: 45/45 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  simulation_0225: 50/50 frames, 2 objects, 1 key frames, 4s, peak 0.45 GiB
+
+
+  simulation_0225_segmented: 50/50 frames, 2 objects, 1 key frames, 4s, peak 0.45 GiB
+
+
+  simulation_0226: 50/50 frames, 3 objects, 2 key frames, 6s, peak 0.45 GiB
+
+
+  simulation_0227: 50/50 frames, 4 objects, 2 key frames, 7s, peak 0.45 GiB
+
+
+  simulation_0227_segmented: 50/50 frames, 3 objects, 2 key frames, 8s, peak 0.45 GiB
+
+
+  simulation_0228: 50/50 frames, 4 objects, 2 key frames, 7s, peak 0.45 GiB
+
+
+  simulation_0229: 50/50 frames, 6 objects, 2 key frames, 10s, peak 0.54 GiB
+
+
+  simulation_0230: 50/50 frames, 7 objects, 4 key frames, 13s, peak 0.51 GiB
+
+
+  simulation_0231: 50/50 frames, 7 objects, 2 key frames, 10s, peak 0.57 GiB
+
+
+  simulation_0232: 50/50 frames, 6 objects, 2 key frames, 8s, peak 0.54 GiB
+
+
+  simulation_0233: 50/50 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  simulation_0233_segmented: 50/50 frames, 2 objects, 2 key frames, 4s, peak 0.39 GiB
+
+
+  simulation_0234: 50/50 frames, 3 objects, 2 key frames, 6s, peak 0.45 GiB
+
+
+  simulation_0235: 50/50 frames, 4 objects, 2 key frames, 7s, peak 0.50 GiB
+
+
+  simulation_0236: 50/50 frames, 5 objects, 1 key frames, 7s, peak 0.54 GiB
+
+
+  simulation_0237: 50/50 frames, 2 objects, 1 key frames, 4s, peak 0.45 GiB
+
+
+  simulation_0237_segmented: 50/50 frames, 1 objects, 1 key frames, 2s, peak 0.40 GiB
+
+
+  simulation_0238: 50/50 frames, 6 objects, 2 key frames, 9s, peak 0.54 GiB
+
+
+  simulation_0239: 50/50 frames, 1 objects, 1 key frames, 5s, peak 0.40 GiB
+
+
+  simulation_0239_segmented: 50/50 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  simulation_0240: 50/50 frames, 6 objects, 3 key frames, 10s, peak 0.51 GiB
+
+
+  simulation_0241: 50/50 frames, 4 objects, 2 key frames, 7s, peak 0.49 GiB
+
+
+  simulation_0242: 50/50 frames, 6 objects, 1 key frames, 7s, peak 0.57 GiB
+
+
+  simulation_0243: 75/75 frames, 2 objects, 1 key frames, 7s, peak 0.48 GiB
+
+
+  simulation_0243_segmented: 75/75 frames, 2 objects, 2 key frames, 7s, peak 0.41 GiB
+
+
+  simulation_0244: 75/75 frames, 3 objects, 1 key frames, 6s, peak 0.54 GiB
+
+
+  simulation_0245: 75/75 frames, 2 objects, 2 key frames, 6s, peak 0.41 GiB
+
+
+  simulation_0245_segmented: 75/75 frames, 2 objects, 2 key frames, 6s, peak 0.41 GiB
+
+
+  simulation_0246: 75/75 frames, 1 objects, 1 key frames, 6s, peak 0.41 GiB
+
+
+  simulation_0247: 75/75 frames, 2 objects, 1 key frames, 5s, peak 0.48 GiB
+
+
+  simulation_0247_segmented: 75/75 frames, 2 objects, 1 key frames, 5s, peak 0.48 GiB
+
+
+  simulation_0248: 50/50 frames, 2 objects, 2 key frames, 4s, peak 0.40 GiB
+
+
+  simulation_0248_segmented: 50/50 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  simulation_0249: 50/50 frames, 3 objects, 2 key frames, 5s, peak 0.45 GiB
+
+
+  simulation_0251: 51/51 frames, 1 objects, 1 key frames, 2s, peak 0.40 GiB
+
+
+  simulation_0251_segmented: 51/51 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  simulation_0252: 41/41 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  simulation_0253: 45/45 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  simulation_0254: 60/60 frames, 1 objects, 1 key frames, 6s, peak 0.40 GiB
+
+
+  simulation_0255: 41/41 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  simulation_0255_segmented: 41/41 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  simulation_0256: 41/41 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  simulation_0257: 40/40 frames, 3 objects, 2 key frames, 4s, peak 0.44 GiB
+
+
+  simulation_0258: 40/40 frames, 5 objects, 1 key frames, 5s, peak 0.51 GiB
+
+
+  simulation_0259: 40/40 frames, 6 objects, 1 key frames, 6s, peak 0.54 GiB
+
+
+  simulation_0260: 40/40 frames, 7 objects, 2 key frames, 7s, peak 0.54 GiB
+
+
+  simulation_0261: 50/50 frames, 2 objects, 2 key frames, 7s, peak 0.39 GiB
+
+
+  simulation_0261_segmented: 50/50 frames, 2 objects, 2 key frames, 4s, peak 0.40 GiB
+
+
+  simulation_0262: 50/50 frames, 1 objects, 1 key frames, 2s, peak 0.39 GiB
+
+
+  simulation_0263: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0264: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0265: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0266: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0267: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0268: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0269: 72/72 frames, 1 objects, 1 key frames, 6s, peak 0.41 GiB
+
+
+  simulation_0270: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0271: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0272: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0273: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0274: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0275: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0276: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0277: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0278: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0279: 72/72 frames, 1 objects, 1 key frames, 6s, peak 0.41 GiB
+
+
+  simulation_0280: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0281: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0282: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0283: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0284: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0285: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0286: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0287: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0288: 72/72 frames, 1 objects, 1 key frames, 6s, peak 0.41 GiB
+
+
+  simulation_0289: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0290: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0291: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0292: 72/72 frames, 2 objects, 1 key frames, 5s, peak 0.47 GiB
+
+
+  simulation_0293: 72/72 frames, 2 objects, 1 key frames, 5s, peak 0.47 GiB
+
+
+  simulation_0294: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0295: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.40 GiB
+
+
+  simulation_0296: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.40 GiB
+
+
+  simulation_0297: 72/72 frames, 1 objects, 1 key frames, 6s, peak 0.40 GiB
+
+
+  simulation_0298: 73/73 frames, 1 objects, 1 key frames, 3s, peak 0.41 GiB
+
+
+  simulation_0299: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.40 GiB
+
+
+  simulation_0300: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.40 GiB
+
+
+  simulation_0301: 72/72 frames, 2 objects, 1 key frames, 5s, peak 0.47 GiB
+
+
+  simulation_0302: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.40 GiB
+
+
+  simulation_0303: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.40 GiB
+
+
+  simulation_0304: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.40 GiB
+
+
+  simulation_0305: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.40 GiB
+
+
+  simulation_0306: 72/72 frames, 1 objects, 1 key frames, 6s, peak 0.40 GiB
+
+
+  simulation_0307: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.40 GiB
+
+
+  simulation_0308: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.40 GiB
+
+
+  simulation_0309: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.40 GiB
+
+
+  simulation_0310: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.40 GiB
+
+
+  simulation_0311: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.40 GiB
+
+
+  simulation_0312: 72/72 frames, 1 objects, 1 key frames, 3s, peak 0.40 GiB
+
+
+
+
+  findmissing captured_0014s: found ['slope']
+
+
+  findmissing captured_0014x: found ['slope']
+
+
+  findmissing captured_0018x: found ['box']
+
+
+  findmissing captured_0034a: found ['bag pencil']
+
+
+  findmissing captured_0034as: found ['bag pencil']
+
+
+  findmissing captured_0034ax: found ['bag pencil']
+
+
+  findmissing captured_0037: found ['poker tower']
+
+
+  findmissing captured_0037s: found ['poker tower']
+
+
+  findmissing captured_0037x: found ['poker tower']
+
+
+  findmissing captured_0038s: found ['poker tower']
+
+
+  findmissing captured_0038x: found ['poker tower']
+
+
+  findmissing captured_0040: found ['poker tower']
+
+
+  findmissing captured_0040s: found ['poker tower']
+
+
+  findmissing captured_0040x: found ['poker tower']
+
+
+  findmissing captured_0053: found ['trashbin']
+
+
+  findmissing captured_0054a: found ['ball pink']
+
+
+  findmissing captured_0061s: found ['ball soccer']
+
+
+  findmissing internet_0012: found ['car lane left on second to white']
+
+
+  findmissing internet_0013: found ['lane straight-through']
+
+
+  findmissing internet_0014: found ['ball player with']
+
+
+  findmissing internet_0017: found ["(middle) fingertip user's"]
+
+
+  findmissing internet_0019_segmented: found ['receiver']
+
+
+  findmissing internet_0029: found ['desk']
+
+
+  findmissing internet_0031: found ['in player shirt white']
+
+
+  findmissing simulation_0045: found ['door left near pillar', 'door far pillar right', 'door first front house in nearer step']
+
+
+  findmissing simulation_0046: found ['door left near pillar', 'door far pillar right', 'door first front house in nearer step']
+
+
+  findmissing simulation_0048: found ['booth telephone', 'door far pillar right']
+
+
+  findmissing simulation_0048_segmented: found ['door far pillar right']
+
+
+  findmissing simulation_0049: found ['door far pillar right']
+
+
+  findmissing simulation_0050: found ['door left near pillar', 'door first front house in nearer step']
+
+
+  findmissing simulation_0057_segmented: found ['streetlight']
+
+
+  findmissing simulation_0059: found ['car purple']
+
+
+  findmissing simulation_0066_segmented: found ['car turning yellow']
+
+
+  findmissing simulation_0075: found ['car turning yellow', 'car turing yellow']
+
+
+  findmissing simulation_0175: found ['aircraft gear landing on rear wheels']
+
+
+  findmissing simulation_0176: found ['aircraft gear landing on rear wheels']
+
+
+  findmissing simulation_0197: found ['bottle on skynova text', 'lettering “skynova”']
+
+
+  findmissing simulation_0203: found ['letter']
+
+
+  findmissing simulation_0215: found ['vase']
+
+
+  findmissing simulation_0222: found ['cleaner vacuum', 'vase']
+
+
+  findmissing simulation_0224_segmented: found ['chess chinese one']
+
+
+  findmissing simulation_0225: found ['pool tiles']
+
+
+  findmissing simulation_0236: found ['at back horse']
+
+
+  findmissing simulation_0237: found ['at back horse']
+
+
+  findmissing simulation_0237_segmented: found ['house']
+
+
+  findmissing simulation_0238: found ['at back horse']
+
+
+  findmissing simulation_0239: found ['at back horse', 'front horse in']
+
+
+  findmissing simulation_0239_segmented: found ['house']
+
+
+  findmissing simulation_0240: found ['at back horse']
+
+
+  findmissing simulation_0241: found ['at back horse']
+
+
+  findmissing simulation_0246: found ['rabbit']
+
+
+  findmissing simulation_0248: found ['at back horse']
+
+
+  findmissing simulation_0257: found ['phone']
+
+
+
+
+  captured_0014s: 49/49 frames, 8 objects, 3 key frames, 11s, peak 0.57 GiB
+
+
+  captured_0014x: 49/49 frames, 8 objects, 3 key frames, 14s, peak 0.57 GiB
+
+
+  captured_0018x: 49/49 frames, 8 objects, 2 key frames, 10s, peak 0.59 GiB
+
+
+  captured_0034a: 49/49 frames, 5 objects, 2 key frames, 7s, peak 0.49 GiB
+
+
+  captured_0034as: 49/49 frames, 5 objects, 2 key frames, 7s, peak 0.50 GiB
+
+
+  captured_0034ax: 49/49 frames, 5 objects, 2 key frames, 10s, peak 0.50 GiB
+
+
+  captured_0037: 49/49 frames, 5 objects, 1 key frames, 6s, peak 0.54 GiB
+
+
+  captured_0037s: 49/49 frames, 5 objects, 1 key frames, 6s, peak 0.54 GiB
+
+
+  captured_0037x: 49/49 frames, 5 objects, 1 key frames, 6s, peak 0.54 GiB
+
+
+  captured_0038s: 49/49 frames, 5 objects, 2 key frames, 7s, peak 0.51 GiB
+
+
+  captured_0038x: 49/49 frames, 5 objects, 3 key frames, 11s, peak 0.49 GiB
+
+
+  captured_0040: 49/49 frames, 5 objects, 2 key frames, 7s, peak 0.50 GiB
+
+
+  captured_0040s: 49/49 frames, 5 objects, 2 key frames, 7s, peak 0.50 GiB
+
+
+  captured_0040x: 49/49 frames, 5 objects, 2 key frames, 7s, peak 0.50 GiB
+
+
+  captured_0053: 48/48 frames, 4 objects, 2 key frames, 6s, peak 0.49 GiB
+
+
+  captured_0054a: 49/49 frames, 5 objects, 2 key frames, 10s, peak 0.50 GiB
+
+
+  captured_0061s: 49/49 frames, 3 objects, 3 key frames, 7s, peak 0.40 GiB
+
+
+  internet_0012: 55/108 frames, 6 objects, 1 key frames, 8s, peak 0.59 GiB
+
+
+  internet_0013: 95/279 frames, 8 objects, 3 key frames, 25s, peak 0.59 GiB
+
+
+  internet_0014: 99/287 frames, 6 objects, 3 key frames, 19s, peak 0.58 GiB
+
+
+  internet_0017: 28/28 frames, 5 objects, 1 key frames, 3s, peak 0.48 GiB
+
+
+  internet_0019_segmented: 40/40 frames, 6 objects, 2 key frames, 10s, peak 0.49 GiB
+
+
+  internet_0029: 25/25 frames, 3 objects, 2 key frames, 3s, peak 0.43 GiB
+
+
+  internet_0031: 87/173 frames, 4 objects, 1 key frames, 10s, peak 0.58 GiB
+
+
+  simulation_0045: 51/99 frames, 8 objects, 2 key frames, 10s, peak 0.60 GiB
+
+
+  simulation_0046: 52/99 frames, 7 objects, 3 key frames, 13s, peak 0.55 GiB
+
+
+  simulation_0048: 52/99 frames, 6 objects, 2 key frames, 8s, peak 0.51 GiB
+
+
+  simulation_0048_segmented: 52/99 frames, 7 objects, 2 key frames, 9s, peak 0.58 GiB
+
+
+  simulation_0049: 51/99 frames, 5 objects, 2 key frames, 7s, peak 0.51 GiB
+
+
+  simulation_0050: 51/99 frames, 8 objects, 2 key frames, 11s, peak 0.60 GiB
+
+
+  simulation_0057_segmented: 91/91 frames, 2 objects, 1 key frames, 7s, peak 0.49 GiB
+
+
+  simulation_0059: 72/72 frames, 11 objects, 2 key frames, 24s, peak 0.82 GiB
+
+
+  simulation_0066_segmented: 72/72 frames, 9 objects, 3 key frames, 19s, peak 0.67 GiB
+
+
+  simulation_0075: 72/72 frames, 8 objects, 3 key frames, 17s, peak 0.60 GiB
+
+
+  simulation_0175: 40/40 frames, 3 objects, 2 key frames, 4s, peak 0.44 GiB
+
+
+  simulation_0176: 40/40 frames, 3 objects, 1 key frames, 3s, peak 0.48 GiB
+
+
+  simulation_0197: 50/50 frames, 6 objects, 3 key frames, 10s, peak 0.51 GiB
+
+
+  simulation_0203: 30/30 frames, 5 objects, 2 key frames, 4s, peak 0.47 GiB
+
+
+  simulation_0215: 50/50 frames, 7 objects, 2 key frames, 10s, peak 0.54 GiB
+
+
+  simulation_0222: 80/80 frames, 7 objects, 3 key frames, 18s, peak 0.61 GiB
+
+
+  simulation_0224_segmented: 45/45 frames, 2 objects, 2 key frames, 7s, peak 0.39 GiB
+
+
+  simulation_0225: 50/50 frames, 3 objects, 2 key frames, 6s, peak 0.45 GiB
+
+
+  simulation_0236: 50/50 frames, 6 objects, 1 key frames, 8s, peak 0.57 GiB
+
+
+  simulation_0237: 50/50 frames, 3 objects, 1 key frames, 4s, peak 0.50 GiB
+
+
+  simulation_0237_segmented: 50/50 frames, 2 objects, 2 key frames, 4s, peak 0.40 GiB
+
+
+  simulation_0238: 50/50 frames, 7 objects, 2 key frames, 11s, peak 0.57 GiB
+
+
+  simulation_0239: 50/50 frames, 3 objects, 2 key frames, 5s, peak 0.45 GiB
+
+
+  simulation_0239_segmented: 50/50 frames, 3 objects, 2 key frames, 5s, peak 0.45 GiB
+
+
+  simulation_0240: 50/50 frames, 7 objects, 3 key frames, 10s, peak 0.54 GiB
+
+
+  simulation_0241: 50/50 frames, 5 objects, 3 key frames, 9s, peak 0.49 GiB
+
+
+  simulation_0246: 75/75 frames, 2 objects, 2 key frames, 10s, peak 0.41 GiB
+
+
+  simulation_0248: 50/50 frames, 3 objects, 3 key frames, 6s, peak 0.40 GiB
+
+
+  simulation_0257: 40/40 frames, 4 objects, 2 key frames, 5s, peak 0.48 GiB
+
+
+
+
+  anchors captured_0006: added ['ball']
+
+
+  anchors captured_0006s: added ['ball']
+
+
+  anchors captured_0013s: added ['slope near']
+
+
+  anchors captured_0013x: added ['slope near']
+
+
+  anchors captured_0018: added ['far person']
+
+
+  anchors captured_0018s: added ['far person']
+
+
+  anchors captured_0018x: added ['far person']
+
+
+  anchors captured_0020: added ['far person']
+
+
+  anchors captured_0020s: added ['carrot', 'far person']
+
+
+  anchors captured_0020x: added ['carrot', 'far person']
+
+
+  anchors captured_0028: added ['ball']
+
+
+  anchors captured_0028s: added ['ball']
+
+
+  anchors captured_0028x: added ['ball']
+
+
+  anchors captured_0032: added ['ping pong ball']
+
+
+  anchors captured_0032s: added ['ping pong ball']
+
+
+  anchors captured_0032x: added ['ping pong ball']
+
+
+  anchors simulation_0009: added ['stairs']
+
+
+  anchors simulation_0009_segmented: added ['stairs']
+
+
+  anchors simulation_0011: added ['nest', 'cart', 'house']
+
+
+  anchors simulation_0013: added ['nest', 'cart']
+
+
+  anchors simulation_0014: added ['nest', 'house']
+
+
+  anchors simulation_0015: added ['the pedestal of the central  sculpture and']
+
+
+  anchors simulation_0017_segmented: added ['the pedestal of the central  sculpture and']
+
+
+  anchors simulation_0019: added ['the pedestal of the central sculpture and']
+
+
+  anchors simulation_0019_segmented: added ['the pedestal of the central sculpture and']
+
+
+  anchors simulation_0030: added ['bird']
+
+
+  anchors simulation_0046: added ['bike']
+
+
+  anchors simulation_0048: added ['bike']
+
+
+  anchors simulation_0048_segmented: added ['bike']
+
+
+  anchors simulation_0050: added ['bike']
+
+
+  anchors simulation_0056: added ['human', 'far streetlight']
+
+
+  anchors simulation_0058: added ['bike']
+
+
+  anchors simulation_0059: added ['bike']
+
+
+  anchors simulation_0060: added ['bike']
+
+
+  anchors simulation_0061: added ['bike']
+
+
+  anchors simulation_0062: added ['bike']
+
+
+  anchors simulation_0063: added ['bike']
+
+
+  anchors simulation_0064: added ['bike']
+
+
+  anchors simulation_0065: added ['bike']
+
+
+  anchors simulation_0066: added ['bike']
+
+
+  anchors simulation_0066_segmented: added ['bike']
+
+
+  anchors simulation_0067: added ['bike']
+
+
+  anchors simulation_0074: added ['bike']
+
+
+  anchors simulation_0140: added ['neonsign']
+
+
+  anchors simulation_0150: added ['B1sign']
+
+
+  anchors simulation_0151: added ['yellowCarLeftFrontTire']
+
+
+  anchors simulation_0151_segmented: added ['yellowCarLeftFrontTire']
+
+
+  anchors simulation_0152: added ['blueCarRightFrontTire']
+
+
+  anchors simulation_0176: added ['aircraft nose', 'big rock']
+
+
+  anchors simulation_0195: added ['small Callisto']
+
+
+  anchors simulation_0202: added ['gun']
+
+
+  anchors simulation_0205: added ['gun']
+
+
+  anchors simulation_0209: added ['gun']
+
+
+
+
+  captured_0006: 49/49 frames, 3 objects, 3 key frames, 6s, peak 0.40 GiB
+
+
+  captured_0006s: 49/49 frames, 3 objects, 2 key frames, 5s, peak 0.45 GiB
+
+
+  captured_0013s: 49/49 frames, 8 objects, 3 key frames, 14s, peak 0.57 GiB
+
+
+  captured_0013x: 49/49 frames, 8 objects, 2 key frames, 10s, peak 0.59 GiB
+
+
+  captured_0018: 49/49 frames, 11 objects, 3 key frames, 17s, peak 0.61 GiB
+
+
+  captured_0018s: 49/49 frames, 9 objects, 4 key frames, 14s, peak 0.57 GiB
+
+
+  captured_0018x: 49/49 frames, 9 objects, 2 key frames, 11s, peak 0.61 GiB
+
+
+  captured_0020: 49/49 frames, 6 objects, 4 key frames, 13s, peak 0.50 GiB
+
+
+  captured_0020s: 49/49 frames, 7 objects, 3 key frames, 10s, peak 0.51 GiB
+
+
+  captured_0020x: 49/49 frames, 7 objects, 4 key frames, 11s, peak 0.51 GiB
+
+
+  captured_0028: 49/49 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  captured_0028s: 49/49 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  captured_0028x: 49/49 frames, 2 objects, 1 key frames, 3s, peak 0.45 GiB
+
+
+  captured_0032: 49/49 frames, 4 objects, 2 key frames, 7s, peak 0.45 GiB
+
+
+  captured_0032s: 49/49 frames, 4 objects, 2 key frames, 10s, peak 0.50 GiB
+
+
+  captured_0032x: 49/49 frames, 4 objects, 2 key frames, 7s, peak 0.50 GiB
+
+
+  simulation_0009: 66/66 frames, 6 objects, 1 key frames, 10s, peak 0.62 GiB
+
+
+  simulation_0009_segmented: 66/66 frames, 8 objects, 3 key frames, 17s, peak 0.62 GiB
+
+
+  simulation_0011: 60/60 frames, 7 objects, 3 key frames, 13s, peak 0.57 GiB
+
+
+  simulation_0013: 54/54 frames, 4 objects, 3 key frames, 8s, peak 0.46 GiB
+
+
+  simulation_0014: 73/73 frames, 6 objects, 2 key frames, 16s, peak 0.60 GiB
+
+
+  simulation_0015: 52/100 frames, 10 objects, 2 key frames, 13s, peak 0.67 GiB
+
+
+  simulation_0017_segmented: 51/101 frames, 7 objects, 1 key frames, 10s, peak 0.60 GiB
+
+
+  simulation_0019: 49/97 frames, 5 objects, 2 key frames, 10s, peak 0.51 GiB
+
+
+  simulation_0019_segmented: 49/97 frames, 5 objects, 1 key frames, 6s, peak 0.54 GiB
+
+
+  simulation_0030: 75/75 frames, 2 objects, 2 key frames, 7s, peak 0.41 GiB
+
+
+  simulation_0046: 52/99 frames, 8 objects, 3 key frames, 12s, peak 0.55 GiB
+
+
+  simulation_0048: 52/99 frames, 7 objects, 2 key frames, 13s, peak 0.51 GiB
+
+
+  simulation_0048_segmented: 53/99 frames, 8 objects, 3 key frames, 12s, peak 0.58 GiB
+
+
+  simulation_0050: 52/99 frames, 9 objects, 3 key frames, 13s, peak 0.60 GiB
+
+
+  simulation_0056: 62/62 frames, 8 objects, 3 key frames, 17s, peak 0.61 GiB
+
+
+  simulation_0058: 72/72 frames, 11 objects, 3 key frames, 24s, peak 0.76 GiB
+
+
+  simulation_0059: 72/72 frames, 12 objects, 3 key frames, 23s, peak 0.82 GiB
+
+
+  simulation_0060: 72/72 frames, 9 objects, 3 key frames, 22s, peak 0.67 GiB
+
+
+  simulation_0061: 72/72 frames, 10 objects, 3 key frames, 20s, peak 0.70 GiB
+
+
+  simulation_0062: 72/72 frames, 10 objects, 3 key frames, 20s, peak 0.70 GiB
+
+
+  simulation_0063: 72/72 frames, 10 objects, 3 key frames, 22s, peak 0.67 GiB
+
+
+  simulation_0064: 72/72 frames, 9 objects, 4 key frames, 21s, peak 0.64 GiB
+
+
+  simulation_0065: 72/72 frames, 9 objects, 3 key frames, 21s, peak 0.67 GiB
+
+
+  simulation_0066: 72/72 frames, 10 objects, 3 key frames, 23s, peak 0.70 GiB
+
+
+  simulation_0066_segmented: 72/72 frames, 10 objects, 4 key frames, 21s, peak 0.67 GiB
+
+
+  simulation_0067: 72/72 frames, 9 objects, 4 key frames, 20s, peak 0.64 GiB
+
+
+  simulation_0074: 72/72 frames, 9 objects, 3 key frames, 18s, peak 0.67 GiB
+
+track:  52%|█████▏    | 294/568 [09:44<29:19,  6.42s/it]
+
+  simulation_0140: 51/100 frames, 6 objects, 2 key frames, 15s, peak 0.54 GiB
+
+
+  simulation_0150: 42/42 frames, 7 objects, 3 key frames, 9s, peak 0.52 GiB
+
+
+  simulation_0151: 42/42 frames, 4 objects, 4 key frames, 7s, peak 0.39 GiB
+
+
+  simulation_0151_segmented: 42/42 frames, 4 objects, 4 key frames, 7s, peak 0.39 GiB
+
+
+  simulation_0152: 42/42 frames, 4 objects, 3 key frames, 6s, peak 0.45 GiB
+
+
+  simulation_0176: 40/40 frames, 5 objects, 2 key frames, 6s, peak 0.49 GiB
+
+
+  simulation_0195: 51/100 frames, 3 objects, 2 key frames, 6s, peak 0.46 GiB
+
+
+  simulation_0202: 30/30 frames, 5 objects, 1 key frames, 8s, peak 0.49 GiB
+
+
+  simulation_0205: 30/30 frames, 4 objects, 1 key frames, 3s, peak 0.47 GiB
+
+
+  simulation_0209: 30/30 frames, 3 objects, 2 key frames, 3s, peak 0.44 GiB
+
+
+
+
+  refix captured_0023x: reference 'book' re-grounded on moving region
+
+
+  refix captured_0024: reference 'book' re-grounded on moving region
+
+
+  refix captured_0024s: reference 'book' re-grounded on moving region
+
+
+  refix captured_0024x: reference 'book' re-grounded on moving region
+
+
+  refix captured_0053: reference 'trashbin' no moving match
+
+
+  refix captured_0053s: reference 'trashbin' re-grounded on moving region
+
+
+  refix captured_0053x: reference 'trashbin' no moving match
+
+
+  refix internet_0049: reference 'person riding scooter' no moving match
+
+
+  refix internet_0055: reference 'person riding scooter' no moving match
+
+
+  refix internet_0061: reference 'acorn falling' no moving match
+
+
+  refix internet_0073: reference 'belt conveyor' re-grounded on moving region
+
+
+  refix simulation_0014: reference 'falling object' no moving match
+
+
+  refix simulation_0072: reference 'bicycle' no moving match
+
+
+  refix simulation_0119: reference 'chess' no moving match
+
+
+  refix simulation_0123: reference 'cup' no moving match
+
+
+  refix simulation_0129_segmented: reference 'ball falling' no moving match
+
+
+  refix simulation_0193: reference 'callisto model' re-grounded on moving region
+
+
+  refix simulation_0258: reference 'pen' re-grounded on moving region
+
+
+
+
+  captured_0023x: 49/49 frames, 3 objects, 2 key frames, 5s, peak 0.45 GiB
+
+
+  captured_0024: 49/49 frames, 3 objects, 2 key frames, 5s, peak 0.45 GiB
+
+
+  captured_0024s: 49/49 frames, 3 objects, 2 key frames, 5s, peak 0.45 GiB
+
+
+  captured_0024x: 49/49 frames, 3 objects, 2 key frames, 5s, peak 0.45 GiB
+
+
+  captured_0053s: 48/48 frames, 4 objects, 2 key frames, 9s, peak 0.49 GiB
+
+
+  internet_0073: 71/138 frames, 7 objects, 2 key frames, 14s, peak 0.63 GiB
+
+
+  simulation_0193: 51/100 frames, 5 objects, 4 key frames, 10s, peak 0.45 GiB
+
+
+  simulation_0258: 40/40 frames, 5 objects, 2 key frames, 9s, peak 0.49 GiB
+
+
+
+
+MoGe focal-length correction (MoGe / calibrated): {'simulation/orig': 0.578, 'segmentation/seg': 0.519}
+
+solved 122/158 items in S2,D2,S3,D3; failure reasons:
+reason
+region, not an object                                12
+not grounded:                                        11
+parse failed/unsupported                              4
+reference barely moves; motion prior unusable         4
+object not tracked near t=s                           2
+target asked about motion but its track is static     1
+guard: implausible vehicle width                      1
+guard: implausible vehicle height                     1
+fallback none.csv not found: solutions saved to results_synth8b_full/cache/validation/measure_solutions.csv; build the submission with experiments/make_submission.py
+Qwen3-VL-8B+synth_qwen3-vl-8b_video_f16_px448: 36 rows, 0 already done, 36 to run
+
+
+videos:   0%|          | 0/14 [00:00<?, ?it/s][transformers] Qwen3VL video processing does not apply the per-frame pixel cap the reference implementation (qwen-vl-utils) applies, so some videos cost far more tokens than they would there. In v5.22 the capped behavior will become the default and `cap_pixels_per_frame` will be removed. Pass `cap_pixels_per_frame=True` to adopt the reference behavior now, or `False` to keep the current behavior and silence this warning.
+
+peak VRAM 17.26 GiB
+mean input tokens 1276, mean seconds/question 0.73
+sample replies: ['32.5 cm', '3.513 cm', '1.56 cm/s', '10.5 cm/s', '2.53 m', '1.25 m', '10.5 m', '17.5 m']
+Qwen3-VL-8B+synth_qwen3-vl-8b_video_f16_px448 avg  34.4  [95% CI 22.2-47.0]  S2  23.8  D2  38.1  S3  50.0  D3  25.7
+
+Official evaluator (validation):
+                                        model  mra_average  mra_S2  mra_D2  mra_S3  mra_D3  invalid_percentage
+                       floor_unit_median_lovo         35.8    24.7    32.4    43.8    42.3                 0.0
+Qwen3-VL-8B+synth_qwen3-vl-8b_video_f16_px448         34.4    23.8    38.1    50.0    25.7                 0.0
+
+solved 2749/3289 items in S2,D2,S3,D3; failure reasons:
+reason
+not grounded:                                              147
+region, not an object                                      141
+guard: implausible vehicle width                            53
+guard: implausible vehicle size in clip                     34
+guard: implausible person height in clip                    33
+no constant-acceleration phase in the reference's track     27
+parse failed/unsupported                                    26
+guard: implausible vehicle height                           19
+reference barely moves; motion prior unusable               16
+target asked about motion but its track is static           11
+guard: e+03 m/s is faster than free fall allows             10
+object not tracked near its distance timestamp t=s           9
+guard: 105 m/s is faster than free fall allows               8
+guard: 248 m/s is faster than free fall allows               5
+unsupported 3D target quantity 'path_diameter'               1
+fallback none.csv not found: solutions saved to results_synth8b_full/cache/test/measure_solutions.csv; build the submission with experiments/make_submission.py
+Qwen3-VL-8B+synth_qwen3-vl-8b_video_f16_px448: 540 rows, 0 already done, 540 to run
+
+
+videos:   0%|          | 0/191 [00:00<?, ?it/s][transformers] Qwen3VL video processing does not apply the per-frame pixel cap the reference implementation (qwen-vl-utils) applies, so some videos cost far more tokens than they would there. In v5.22 the capped behavior will become the default and `cap_pixels_per_frame` will be removed. Pass `cap_pixels_per_frame=True` to adopt the reference behavior now, or `False` to keep the current behavior and silence this warning.
+
+peak VRAM 17.27 GiB
+mean input tokens 1202, mean seconds/question 0.76
+sample replies: ['1.73 m', '10.2 m/s', '0.513 m', '2.53 m', '10.2 m', '3.933 m', '4.533 m', '2.13 m/s']
+VLM answers changed by re-parsing / unit conversion: 0
+col_0     measure  vlm  All
+category
+D2             21   16   37
+D3             40    7   47
+S2             24    8   32
+S3             37    5   42
+All           122   36  158
+
+Official evaluator (validation):
+                                        model  mra_average  mra_S2  mra_D2  mra_S3  mra_D3  invalid_percentage
+                  val_submission_synth8b_full         63.1    55.9    67.8    71.4    57.0                 0.0
+                       floor_unit_median_lovo         35.8    24.7    32.4    43.8    42.3                 0.0
+Qwen3-VL-8B+synth_qwen3-vl-8b_video_f16_px448         34.4    23.8    38.1    50.0    25.7                 0.0
+VLM answers changed by re-parsing / unit conversion: 0
+col_0     measure  vlm   All
+category
+D2            945  218  1163
+D3            817  152   969
+S2            439  140   579
+S3            548   30   578
+All          2749  540  3289
+template rows whose question wording differs from the dataset: 60 (expected 60)
+wrote upload file results_synth8b_full/submissions/submission_synth8b_full.csv: 3289 rows, columns ['id', 'video_id', 'video_source', 'video_type', 'fps', 'inference_type', 'question', 'ground_truth_prior', 'depth_info', 'parsed_value']
+DONE
